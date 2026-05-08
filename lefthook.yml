@@ -1,0 +1,15 @@
+pre-commit:
+  jobs:
+    - name: format staged files
+      glob: "*.{js,jsx,ts,tsx,json,jsonc,md,yml,yaml}"
+      exclude:
+        - ".deltas/**"
+        - "test/fixtures/**"
+      run: bunx oxfmt --write {staged_files}
+      stage_fixed: true
+
+    - name: lint staged code
+      glob: "*.{js,jsx,ts,tsx}"
+      exclude:
+        - "test/fixtures/**"
+      run: bunx oxlint {staged_files}

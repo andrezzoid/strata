@@ -34,6 +34,11 @@ notes:
     Lefthook package metadata confirms `lefthook@2.1.6` with a `lefthook`
     binary. Exact staged-file config syntax should be verified against the
     installed CLI before committing hook behavior.
+  - >
+    The `lefthook` npm package has a `postinstall` script that runs `lefthook
+    install -f` outside CI, so clean local dependency installs get hooks
+    automatically. `hooks:install` remains useful as an explicit repair/manual
+    setup command.
 
 tasks:
   - id: add-lefthook-config
@@ -45,7 +50,7 @@ tasks:
       config owns which files are checked. Use Oxfmt's write mode for staged
       formattable files and Oxlint for staged JS/TS files. Re-stage formatted
       files if Lefthook does not do it automatically.
-    status: pending
+    status: done
     acceptance:
       - `package.json` includes Lefthook installation support and the lockfile records the dependency.
       - `lefthook.yml` defines pre-commit formatting and linting for staged files only.
@@ -96,3 +101,22 @@ log:
       document contributor setup, then verify staged formatting, lint failure,
       and the existing CI-equivalent commands. Scope choice: do not run full
       tests or coverage in pre-commit; CI remains the authoritative full gate.
+
+  - id: log-002
+    timestamp: 2026-05-08T20:12Z
+    command: apply
+    task: add-lefthook-config
+    summary: >
+      Added `lefthook@2.1.6`, `lefthook.yml`, and `bun run hooks:install`.
+      The pre-commit hook formats staged JS/TS/JSON/Markdown/YAML files with
+      Oxfmt, excludes `.deltas/**` and `test/fixtures/**`, uses
+      `stage_fixed: true`, and then lints staged JS/TS files with Oxlint while
+      excluding fixtures. Verified config with `bunx lefthook validate` and
+      installed hooks locally with `bunx lefthook install`. Behavior evidence:
+      a staged unformatted temp TypeScript file was formatted and re-staged by
+      `bunx lefthook run pre-commit --file tmp-hook-format.ts --job "format
+      staged files"`; a staged temp TypeScript file with an unused variable made
+      `bunx lefthook run pre-commit --file tmp-hook-lint.ts --job "lint staged
+      code"` exit non-zero. Regression checks passed: `bun run format:check`,
+      `bun run lint`, `bun run typecheck`, and `bun run test` (56 tests, 109
+      assertions).
