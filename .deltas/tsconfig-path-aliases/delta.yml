@@ -1,0 +1,146 @@
+goal: >
+  Make strata tsconfig-aware enough to resolve project-local path aliases during
+  cross-file analysis, so aliased TypeScript imports participate in orphan-file
+  and declaration-site checks instead of being treated as external packages.
+
+acceptance:
+  - Scans run from a project root read that root's `tsconfig.json` and honor direct `compilerOptions.baseUrl` and `compilerOptions.paths` mappings.
+  - Aliased project-local imports resolve only when they point at files already inside the scanned TS/TSX file set; package imports remain external.
+  - Existing relative import resolution, scanner output shape, and detector semantics remain unchanged for projects without aliases.
+  - First-version limits are documented: one scan-root tsconfig, no monorepo config selection, no project references, and no `extends` chain evaluation.
+  - `bun run typecheck`, `bun run test`, and `bun run scan:ci` pass after the integrated change.
+
+context: |
+  Current import resolution lives in `src/scope.ts` and only handles relative sources. `orphanFile` ignores non-relative imports, while `buildFileScope()` treats non-relative imports as external/unresolvable.
+  Preferred design: a deep import resolver created once by `scanProject()` from the scan root and file set, then passed to cross-file detectors. Detectors ask for outcomes; they should not know tsconfig details.
+  Alternative considered: TypeScript compiler module resolution. It would be more complete, but adds a heavy runtime dependency and a wider config surface than this first version needs.
+  Alternative considered: rewriting AST import sources before detection. It hides less knowledge, mutates parser output, and makes detector behavior harder to reason about.
+  Scope decision from Andre: ignore monorepo/multiple-tsconfig behavior for the first version.
+
+refs:
+  - src/scope.ts
+  - src/project.ts
+  - src/scan.ts
+  - src/detectors/orphan-file.ts
+  - src/detectors/unique-implementation.ts
+  - test/core.test.ts
+  - test/fixtures.test.ts
+  - README.md
+  - CHANGELOG.md
+  - BACKLOG.md
+  - package.json
+
+open_questions: []
+
+followups:
+  - Add monorepo/multiple-tsconfig support once a real target project exposes the needed config-selection rules.
+  - Evaluate `extends` chain support if real projects commonly keep aliases outside the scan-root `tsconfig.json`.
+  - Consider namespace/default import resolution after named alias resolution is working.
+
+tasks:
+  - id: add-root-tsconfig-resolver
+    description: >
+      Add an import resolver that owns relative, `baseUrl`, and `paths` lookup
+      against the scanned project file set.
+    status: done
+    context: |
+      Keep the interface small: callers should ask `resolve(fromFile, source)`
+      and receive a project-relative file or null. Missing config, missing
+      aliases, or unmatched aliases should fall back to current relative-only
+      behavior without making package imports look project-local.
+    acceptance:
+      - Existing relative import tests still pass without changed expectations.
+      - Exact and wildcard `paths` mappings resolve to `.ts`, `.tsx`, and `index` candidates when those files are in the scan file set.
+      - `baseUrl` resolves project-local non-relative imports when no `paths` match.
+      - External package imports and aliases pointing outside the scanned file set return null.
+    depends_on: []
+
+  - id: wire-resolver-into-cross-detectors
+    description: >
+      Use the resolver in cross-file detectors so aliased project imports count
+      as graph edges and declaration-site references.
+    status: pending
+    context: |
+      Preserve `scanProject()` as the deep public API. It should create the
+      resolver once and pass a small internal dependency to the detectors that
+      need it. Avoid exposing tsconfig parsing details through detector APIs.
+    acceptance:
+      - `orphanFile` does not flag a file that is imported only through a configured alias.
+      - `uniqueImplementation` follows aliased named imports and re-exports when counting implementers/subclasses.
+      - Existing fixture expectations remain compatible unless a new alias fixture documents the intended behavior.
+    depends_on:
+      - add-root-tsconfig-resolver
+
+  - id: document-tsconfig-alias-scope
+    description: >
+      Document root tsconfig alias support and move deferred resolution accuracy
+      work into narrower backlog items.
+    status: pending
+    context: |
+      This changes user-visible scanner accuracy. README should explain the
+      supported config shape and limitation plainly. BACKLOG should no longer
+      imply all tsconfig alias support is still absent after this ships.
+    acceptance:
+      - README states that strata reads scan-root `tsconfig.json` aliases for cross-file analysis.
+      - CHANGELOG records the alias-resolution improvement.
+      - BACKLOG replaces the broad tsconfig-alias item with specific deferred monorepo/extends/import-form followups.
+    depends_on:
+      - wire-resolver-into-cross-detectors
+
+  - id: verify-tsconfig-alias-support
+    description: >
+      Run the full verification gate and review the resolver boundary for
+      avoidable complexity before declaring the delta complete.
+    status: pending
+    acceptance:
+      - `bun run format:check` passes.
+      - `bun run lint` passes.
+      - `bun run typecheck` passes.
+      - `bun run test` passes.
+      - `bun run scan:ci` passes.
+      - Manual complexity review finds no shallow wrapper around tsconfig parsing or duplicated path-candidate knowledge.
+    depends_on:
+      - document-tsconfig-alias-scope
+
+log:
+  - id: log-001
+    timestamp: 2026-05-08T20:34Z
+    command: explore
+    summary: >
+      Explored tsconfig-aware alias resolution as the next work item. No
+      existing delta owns this goal. Current resolver behavior is relative-only:
+      `orphanFile` skips non-relative imports entirely, and `buildFileScope()`
+      treats non-relative imports as external or unresolvable, which means
+      project-local aliases can distort cross-file findings. Compared a deep
+      import resolver, TypeScript compiler module resolution, and AST source
+      rewriting. The deep resolver is the best first version because it hides
+      tsconfig/baseUrl/paths details behind one `resolve(fromFile, source)`
+      outcome without adding compiler-sized runtime machinery. Monorepo config
+      selection is explicitly deferred based on Andre's scope preference.
+
+  - id: log-002
+    timestamp: 2026-05-08T20:34Z
+    command: plan
+    summary: >
+      Planned a vertical first version: add the root tsconfig resolver with unit
+      coverage, wire it into the cross-file detectors that consume import graph
+      knowledge, document the user-visible scope and deferred cases, then run the
+      full local gate plus a complexity review. Baseline before planning passed:
+      `bun test test/core.test.ts test/fixtures.test.ts` reported 22 pass / 0
+      fail, and `bun run typecheck` passed.
+
+  - id: log-003
+    timestamp: 2026-05-08T20:42Z
+    command: apply
+    task: add-root-tsconfig-resolver
+    summary: >
+      Added `createImportResolver()` in the scope/import-resolution boundary. The
+      resolver preserves relative imports and adds scan-root `tsconfig.json`
+      support for direct `compilerOptions.baseUrl` and exact/wildcard `paths`,
+      returning null for external packages or alias targets not present in the
+      scanned file set. Added a core behavior test covering exact aliases,
+      wildcard aliases, baseUrl imports, external package imports, and an alias
+      target outside the scanned file set. Verification passed: the new test
+      first failed because `createImportResolver` did not exist, then `bun test
+      test/core.test.ts` passed with 10 tests / 29 assertions; `bun run
+      typecheck`, `bun run format:check`, and `bun run lint` passed.

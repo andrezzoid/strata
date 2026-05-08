@@ -7,7 +7,7 @@ import { describe, expect, it } from "bun:test";
 import { buildLineOf } from "../src/ast.ts";
 import { formatResult } from "../src/format.ts";
 import { collectAllProjectFiles, findingTouchesChanged } from "../src/project.ts";
-import { normalizePath, resolveRelativeImport } from "../src/scope.ts";
+import { createImportResolver, normalizePath, resolveRelativeImport } from "../src/scope.ts";
 import type { Finding, ScanResult } from "../src/types.ts";
 
 describe("buildLineOf", () => {
@@ -45,6 +45,38 @@ describe("path and import resolution", () => {
       "src/widgets/index.tsx",
     );
     expect(resolveRelativeImport("src/components/view.ts", "../missing", fileSet)).toBeNull();
+  });
+
+  it("resolves root tsconfig paths and baseUrl imports against scanned project files", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-tsconfig-paths-"));
+    try {
+      await Bun.write(
+        join(root, "tsconfig.json"),
+        JSON.stringify({
+          compilerOptions: {
+            baseUrl: "src",
+            paths: {
+              "@domain": ["domain/index"],
+              "@ui/*": ["ui/*"],
+              "@outside/*": ["../outside/*"],
+            },
+          },
+        }),
+      );
+
+      const resolver = await createImportResolver(
+        root,
+        new Set(["src/app.ts", "src/domain/index.ts", "src/ui/button.tsx", "src/shared/logger.ts"]),
+      );
+
+      expect(resolver.resolve("src/app.ts", "@domain")).toBe("src/domain/index.ts");
+      expect(resolver.resolve("src/app.ts", "@ui/button")).toBe("src/ui/button.tsx");
+      expect(resolver.resolve("src/app.ts", "shared/logger")).toBe("src/shared/logger.ts");
+      expect(resolver.resolve("src/app.ts", "@outside/thing")).toBeNull();
+      expect(resolver.resolve("src/app.ts", "react")).toBeNull();
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 });
 
