@@ -6,6 +6,14 @@ Future work should earn its complexity. Each item below should be implemented on
 
 - Detector subset filtering with `--only` and `--exclude`.
 - Project configuration through `strata.toml` for thresholds and skip patterns.
+- Stable finding fingerprints in JSON and SARIF output so CI systems, agents, and future baselines can recognize the same candidate across harmless line shifts. Fingerprints should be based on detector-owned semantic anchors where possible, not just `file:line`.
+- Baseline support for adopting strata in repositories with existing findings. A baseline should distinguish known candidates from newly introduced ones without changing the scanner's candidate-not-verdict contract.
+- Suppression support for intentionally accepted findings, including a required human-readable reason. Suppressions should stay narrow enough to avoid becoming a policy language or hiding broad classes of design signal.
+
+## GitHub & Reviewdog
+
+- GitHub Action wrapper that installs/runs strata with minimal workflow glue for pull requests and CI. The action should own integration details only; detector behavior and scan semantics should remain in the CLI.
+- Reviewdog support for PR annotations/checks so strata can report candidates on changed lines without requiring GitHub code scanning/SARIF upload. This should complement SARIF rather than replace it.
 
 ## Distribution
 
