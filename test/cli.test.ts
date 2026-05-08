@@ -50,6 +50,30 @@ describe("CLI", () => {
     ).toBe(true);
   });
 
+  it("prints only requested detector findings", () => {
+    const result = runStrata([passThroughFixture, "--only", "passThroughMethod"]);
+
+    expect(result.status).toBe(0);
+    const parsed = JSON.parse(result.stdout);
+    expect(new Set(parsed.findings.map((finding: { flag: string }) => finding.flag))).toEqual(
+      new Set(["passThroughMethod"]),
+    );
+    expect(parsed.summary.byFlag).toEqual({ passThroughMethod: parsed.summary.totalFindings });
+  });
+
+  it("omits excluded detector findings", () => {
+    const result = runStrata([passThroughFixture, "--exclude", "passThroughMethod"]);
+
+    expect(result.status).toBe(0);
+    const parsed = JSON.parse(result.stdout);
+    expect(
+      parsed.findings.some((finding: { flag: string }) => finding.flag === "passThroughMethod"),
+    ).toBe(false);
+    expect(parsed.findings.some((finding: { flag: string }) => finding.flag === "orphanFile")).toBe(
+      true,
+    );
+  });
+
   it("keeps default scans report-only when findings exist", () => {
     const result = runStrata([passThroughFixture]);
 
@@ -84,6 +108,20 @@ describe("CLI", () => {
     expect(result.stdout).toContain("[passThroughMethod] case.ts:7");
   });
 
+  it("prints text output after detector filtering", () => {
+    const result = runStrata([
+      passThroughFixture,
+      "--exclude",
+      "passThroughMethod",
+      "--format",
+      "text",
+    ]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).not.toContain("[passThroughMethod]");
+    expect(result.stdout).toContain("[orphanFile]");
+  });
+
   it("prints SARIF output", () => {
     const result = runStrata([passThroughFixture, "--format", "sarif"]);
 
@@ -104,6 +142,30 @@ describe("CLI", () => {
     expect(JSON.parse(result.stdout).runs[0].results.length).toBeGreaterThan(0);
   });
 
+  it("prints filtered SARIF and fails based on the filtered result", () => {
+    const result = runStrata([
+      passThroughFixture,
+      "--only",
+      "orphanFile",
+      "--format",
+      "sarif",
+      "--fail-on-findings",
+    ]);
+
+    expect(result.status).toBe(1);
+    const sarif = JSON.parse(result.stdout);
+    expect(
+      new Set(sarif.runs[0].results.map((finding: { ruleId: string }) => finding.ruleId)),
+    ).toEqual(new Set(["orphanFile"]));
+  });
+
+  it("passes with --fail-on-findings when filtering removes every finding", () => {
+    const result = runStrata([passThroughFixture, "--only", "wideSignature", "--fail-on-findings"]);
+
+    expect(result.status).toBe(0);
+    expect(JSON.parse(result.stdout).summary.totalFindings).toBe(0);
+  });
+
   it("rejects unknown output formats", () => {
     const result = runStrata([passThroughFixture, "--format", "xml"]);
 
@@ -111,11 +173,49 @@ describe("CLI", () => {
     expect(result.stderr).toContain("--format json|text|sarif");
   });
 
+  it("rejects unknown detector names", () => {
+    const result = runStrata([passThroughFixture, "--only", "nope"]);
+
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("unknown detector: nope");
+    expect(result.stderr).toContain("valid detectors:");
+    expect(result.stderr).toContain("passThroughMethod");
+  });
+
+  it("rejects missing detector lists", () => {
+    const result = runStrata([passThroughFixture, "--only"]);
+
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("--only requires a comma-separated detector list");
+  });
+
+  it("rejects empty detector list entries", () => {
+    const result = runStrata([passThroughFixture, "--exclude", "orphanFile,"]);
+
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("empty detector in --exclude list");
+  });
+
+  it("rejects combining only and exclude detector filters", () => {
+    const result = runStrata([
+      passThroughFixture,
+      "--only",
+      "passThroughMethod",
+      "--exclude",
+      "orphanFile",
+    ]);
+
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("cannot combine --only and --exclude");
+  });
+
   it("exposes the packaged bin launcher", () => {
     const result = runPackagedBin(["--help"]);
 
     expect(result.status).toBe(0);
     expect(result.stdout).toContain("strata [PATH]");
+    expect(result.stdout).toContain("--only <detectors>");
+    expect(result.stdout).toContain("--exclude <detectors>");
   });
 
   it("rejects unknown flags", () => {

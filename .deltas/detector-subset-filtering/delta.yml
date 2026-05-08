@@ -63,7 +63,7 @@ tasks:
     description: >
       Parse `--only` and `--exclude` in the CLI, validate detector names at the
       process boundary, and pass the normalized selection into `scanProject()`.
-    status: pending
+    status: done
     context: |
       Keep the CLI thin: argument parsing, usage errors, invocation, formatting, exit behavior.
       Missing values, empty list entries, unknown detector IDs, and combining `--only` with `--exclude` are usage errors.
@@ -115,3 +115,14 @@ log:
       diff-after-selected-analysis behavior with `bun test test/core.test.ts`:
       17 pass, 0 fail. Task checks passed: `bun run format:check`, `bun run
       lint`, `bun run typecheck`, and `bun run test` (67 pass, 0 fail).
+  - id: log-003
+    timestamp: 2026-05-08T22:08Z
+    command: apply
+    task: expose-filtering-cli
+    summary: >
+      Added `--only` and `--exclude` parsing, detector-name validation, mutually
+      exclusive filter handling, and CLI wiring into `scanProject()`. CLI output
+      formats and `--fail-on-findings` now operate on filtered results without
+      format-specific branches. Verified with `bun test test/cli.test.ts`: 19
+      pass, 0 fail. Task checks passed: `bun run format:check`, `bun run lint`,
+      `bun run typecheck`, and `bun run test` (76 pass, 0 fail).
