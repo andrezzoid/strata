@@ -118,7 +118,7 @@ tasks:
       Use `oven-sh/setup-bun` and `bun install --frozen-lockfile` against the committed `bun.lock`.
       Prefer calling package scripts over embedding long commands in YAML so local and remote checks stay aligned.
       Keep the workflow single-job unless a real runtime matrix becomes necessary.
-    status: pending
+    status: done
     acceptance:
       - `.github/workflows/ci.yml` runs on pull requests and pushes to `main`.
       - The workflow runs formatting, linting, typecheck, tests, coverage, package dry-run, and strata self-scan in a deterministic order.
@@ -256,3 +256,20 @@ log:
       `bun run format:check` passed, `bun run lint` passed with 0 warnings/errors,
       `bun run typecheck` passed, and `bun run test` passed with 56 tests and
       109 assertions.
+
+  - id: log-007
+    timestamp: 2026-05-08T19:51Z
+    command: apply
+    task: add-github-actions-ci
+    summary: >
+      Added `.github/workflows/ci.yml` with one Ubuntu job using
+      `oven-sh/setup-bun@v2`, Bun 1.3.13, and `bun install --frozen-lockfile`.
+      The workflow runs local scripts in order: formatting, linting, typecheck,
+      tests, coverage, package dry-run, and source self-scan. Also included the
+      workflow YAML in `bun run format:check` so local formatting covers CI
+      config. Verified: `bun run format:check` passed on 34 files, `bun run
+      lint` passed with 0 warnings/errors, `bun run typecheck` passed, `bun run
+      test` passed with 56 tests and 109 assertions, `bun run test:coverage`
+      passed with 87.33% source line coverage against the 85% gate, `bun run
+      package:check` listed 26 package entries and exited 0, and `bun run
+      scan:ci` emitted 0 findings.
