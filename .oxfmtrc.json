@@ -2,5 +2,5 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "semi": true,
   "sortPackageJson": false,
-  "ignorePatterns": [".deltas/**"]
+  "ignorePatterns": [".deltas/**", "test/fixtures/**"]
 }

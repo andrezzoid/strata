@@ -35,8 +35,8 @@
     "access": "public"
   },
   "scripts": {
-    "format:check": "oxfmt --check src scripts bin test/*.test.ts package.json tsconfig.json README.md .github/workflows/*.yml .oxfmtrc.json .oxlintrc.json",
-    "lint": "oxlint src scripts test bin",
+    "format:check": "oxfmt --check",
+    "lint": "oxlint",
     "package:check": "npm pack --dry-run --json",
     "scan": "bun src/cli.ts",
     "scan:ci": "bun src/cli.ts src --fail-on-findings",
