@@ -1,5 +1,5 @@
 import type { Ctx } from "../ast.ts";
-import { TEST_FILE_PATTERN } from "../skip-patterns.ts";
+import { isTestOnlyPath } from "../skip-patterns.ts";
 import { buildFileScope, resolveDeclarationSite } from "../scope.ts";
 import type { Finding } from "../types.ts";
 
@@ -26,7 +26,7 @@ export function detectUniqueImplementation(ctxs: Ctx[]): Finding[] {
   }
 
   for (const ctx of ctxs) {
-    if (TEST_FILE_PATTERN.test(ctx.file)) continue;
+    if (isTestOnlyPath(ctx.file)) continue;
 
     for (const stmt of ctx.ast.body ?? []) {
       const decl =

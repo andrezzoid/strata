@@ -38,6 +38,7 @@
     "format:check": "oxfmt --check src scripts bin test/*.test.ts package.json tsconfig.json README.md .oxfmtrc.json .oxlintrc.json",
     "lint": "oxlint src scripts test bin",
     "scan": "bun src/cli.ts",
+    "scan:ci": "bun src/cli.ts src --fail-on-findings",
     "test": "bun test",
     "test:coverage": "bun scripts/check-coverage.ts",
     "test:watch": "bun test --watch",

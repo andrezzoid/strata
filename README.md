@@ -30,6 +30,7 @@ strata [PATH]
 strata [PATH] --diff <git-ref>
 strata [PATH] --format json
 strata [PATH] --format text
+strata [PATH] --fail-on-findings
 ```
 
 Defaults:
@@ -37,6 +38,7 @@ Defaults:
 - `PATH` defaults to the current directory.
 - `--format` defaults to `json`.
 - `--diff` analyzes the full project graph, then filters findings to changed files so cross-file detectors keep correct context.
+- `--fail-on-findings` exits non-zero when candidates are emitted, which is intended for CI gates; default scans remain report-only.
 
 ## Output
 

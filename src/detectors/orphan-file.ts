@@ -1,5 +1,5 @@
 import type { Ctx } from "../ast.ts";
-import { GENERATED_PATH_PATTERN, TEST_FILE_PATTERN } from "../skip-patterns.ts";
+import { isNonReviewablePath } from "../skip-patterns.ts";
 import { resolveRelativeImport } from "../scope.ts";
 import type { Finding } from "../types.ts";
 
@@ -14,8 +14,7 @@ const ORPHAN_ENTRYPOINT_PATTERNS = [
 export function detectOrphanFile(ctxs: Ctx[]): Finding[] {
   const eligibleFiles = ctxs.filter(
     (ctx) =>
-      !TEST_FILE_PATTERN.test(ctx.file) &&
-      !GENERATED_PATH_PATTERN.test(ctx.file) &&
+      !isNonReviewablePath(ctx.file) &&
       !ORPHAN_ENTRYPOINT_PATTERNS.some((pattern) => pattern.test(ctx.file)),
   );
   if (eligibleFiles.length === 0) return [];

@@ -1,5 +1,5 @@
 import type { Ctx, Node } from "../ast.ts";
-import { GENERATED_PATH_PATTERN, TEST_FILE_PATTERN } from "../skip-patterns.ts";
+import { isNonReviewablePath } from "../skip-patterns.ts";
 import type { Finding } from "../types.ts";
 
 // Agents tend to redeclare instead of reusing. Tracking declarations rather
@@ -537,8 +537,7 @@ export function detectDuplicateSymbol(ctxs: Ctx[]): Finding[] {
   const declarations: SymbolDecl[] = [];
   const sourceByFile = new Map<string, string>();
   for (const ctx of ctxs) {
-    if (TEST_FILE_PATTERN.test(ctx.file)) continue;
-    if (GENERATED_PATH_PATTERN.test(ctx.file)) continue;
+    if (isNonReviewablePath(ctx.file)) continue;
     sourceByFile.set(ctx.file, ctx.source);
     declarations.push(...extractSymbols(ctx));
   }

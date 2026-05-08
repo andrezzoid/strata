@@ -7,7 +7,7 @@ import type { OutputFormat } from "./types.ts";
 
 function printUsage(stream: { write(text: string): void }): void {
   stream.write(
-    "strata [PATH] [--diff <git-ref>] [--format json|text]\n" +
+    "strata [PATH] [--diff <git-ref>] [--format json|text] [--fail-on-findings]\n" +
       "  Scan TypeScript files for PoSD-style complexity smell candidates.\n",
   );
 }
@@ -25,6 +25,7 @@ export async function main(): Promise<void> {
   let target = "";
   let diffRef: string | null = null;
   let format: OutputFormat = "json";
+  let failOnFindings = false;
 
   const args = process.argv.slice(2);
   for (let i = 0; i < args.length; i++) {
@@ -37,6 +38,8 @@ export async function main(): Promise<void> {
       const value = args[++i];
       if (value !== "json" && value !== "text") usage(2);
       format = value;
+    } else if (arg === "--fail-on-findings") {
+      failOnFindings = true;
     } else if (arg === "-h" || arg === "--help") {
       usage(0);
     } else if (arg.startsWith("-")) {
@@ -55,6 +58,7 @@ export async function main(): Promise<void> {
 
   const result = await scanProject({ target, diffRef });
   process.stdout.write(formatResult(result, format));
+  if (failOnFindings && result.summary.totalFindings > 0) process.exit(1);
 }
 
 if (import.meta.main) {

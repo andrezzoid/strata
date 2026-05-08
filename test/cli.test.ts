@@ -1,3 +1,5 @@
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 
 import { describe, expect, it } from "bun:test";
@@ -46,6 +48,32 @@ describe("CLI", () => {
     expect(
       parsed.findings.some((finding: { flag: string }) => finding.flag === "passThroughMethod"),
     ).toBe(true);
+  });
+
+  it("keeps default scans report-only when findings exist", () => {
+    const result = runStrata([passThroughFixture]);
+
+    expect(result.status).toBe(0);
+    expect(JSON.parse(result.stdout).summary.totalFindings).toBeGreaterThan(0);
+  });
+
+  it("fails when requested and findings exist", () => {
+    const result = runStrata([passThroughFixture, "--fail-on-findings"]);
+
+    expect(result.status).toBe(1);
+    expect(JSON.parse(result.stdout).summary.totalFindings).toBeGreaterThan(0);
+  });
+
+  it("passes with --fail-on-findings when no findings exist", () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-cli-empty-"));
+    try {
+      const result = runStrata([root, "--fail-on-findings"]);
+
+      expect(result.status).toBe(0);
+      expect(JSON.parse(result.stdout).summary.totalFindings).toBe(0);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it("prints text output", () => {
