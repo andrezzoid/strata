@@ -7,6 +7,7 @@ All notable changes to `strata` will be documented here.
 - Focuses the release on CI usage: local scripts and GitHub Actions now cover formatting, linting, typechecking, tests, coverage, package dry-run validation, and source self-scan gating.
 - Adds SARIF 2.1.0 output through `--format sarif` and `bun run scan:sarif` for GitHub code scanning upload workflows.
 - Adds `--fail-on-findings` so CI can fail deliberately when candidates are emitted while default scans remain report-only.
+- Adds detector subset filtering with `--only` and `--exclude` so CI jobs and agents can focus on selected candidate families.
 - Adds Lefthook pre-commit hooks for staged formatting and linting.
 - Adds focused unit coverage for scanner core utilities and detectors.
 - Adds scan-root `tsconfig.json` `baseUrl`/`paths` resolution for cross-file `orphanFile` and `uniqueImplementation` analysis.

@@ -81,7 +81,7 @@ tasks:
     description: >
       Update release-facing docs so users understand when to use detector subset
       filtering in local scans, CI gates, and agent workflows.
-    status: pending
+    status: done
     context: |
       Position filtering as focus control, not as detector judgment.
       README should include short examples that compose with `--diff`, SARIF, and `--fail-on-findings`.
@@ -126,3 +126,14 @@ log:
       format-specific branches. Verified with `bun test test/cli.test.ts`: 19
       pass, 0 fail. Task checks passed: `bun run format:check`, `bun run lint`,
       `bun run typecheck`, and `bun run test` (76 pass, 0 fail).
+  - id: log-004
+    timestamp: 2026-05-08T22:09Z
+    command: apply
+    task: document-detector-filtering
+    summary: >
+      Documented `--only` and `--exclude` in README usage/defaults plus CI/SARIF
+      examples, added the 0.1.1 changelog entry, and removed the completed
+      backlog item. Documentation preserves filtering as focus control while all
+      findings remain review candidates. Task checks passed: `bun run
+      format:check`, `bun run lint`, `bun run typecheck`, and `bun run test` (76
+      pass, 0 fail).
