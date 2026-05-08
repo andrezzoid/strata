@@ -85,7 +85,12 @@ describe("detectPassThroughVariable", () => {
     );
 
     expect(findings).toHaveLength(1);
-    expect(findings[0].metadata.passThroughParams).toEqual(["request", "config", "logger", "metrics"]);
+    expect(findings[0].metadata.passThroughParams).toEqual([
+      "request",
+      "config",
+      "logger",
+      "metrics",
+    ]);
   });
 
   it("ignores functions that read forwarded values locally", () => {
@@ -194,7 +199,10 @@ describe("detectTsEscapeHatches", () => {
       `,
     );
 
-    expect(findings.map((finding) => finding.metadata.kind).sort()).toEqual(["@ts-expect-error", "asAny"]);
+    expect(findings.map((finding) => finding.metadata.kind).sort()).toEqual([
+      "@ts-expect-error",
+      "asAny",
+    ]);
   });
 
   it("ignores non-any casts and normal TypeScript comments", () => {
@@ -291,7 +299,10 @@ describe("module surface detectors", () => {
 
 describe("detectWideSignature", () => {
   it("flags functions with more than four required positional params", () => {
-    const findings = runSingle(detectWideSignature, "function connect(a: A, b: B, c: C, d: D, e: E) {}\n");
+    const findings = runSingle(
+      detectWideSignature,
+      "function connect(a: A, b: B, c: C, d: D, e: E) {}\n",
+    );
 
     expect(findings).toHaveLength(1);
     expect(findings[0].metadata).toEqual({ name: "connect", requiredParams: 5 });
@@ -351,7 +362,8 @@ describe("detectUniqueImplementation", () => {
   it("flags interfaces with one implementer and abstract classes with no subclasses", () => {
     const findings = runCross(detectUniqueImplementation, {
       "src/port.ts": "export interface Port { send(value: string): void; }",
-      "src/adapter.ts": "import { Port } from './port'; export class Adapter implements Port { send(value: string) {} }",
+      "src/adapter.ts":
+        "import { Port } from './port'; export class Adapter implements Port { send(value: string) {} }",
       "src/base.ts": "export abstract class BaseJob { abstract run(): void; }",
     });
 
@@ -361,8 +373,10 @@ describe("detectUniqueImplementation", () => {
   it("keeps same-name interfaces scoped while allowing real polymorphism", () => {
     const findings = runCross(detectUniqueImplementation, {
       "src/contracts.ts": "export interface Repository { find(id: string): string; }",
-      "src/sql.ts": "import { Repository } from './contracts'; export class SqlRepository implements Repository { find(id: string) { return id; } }",
-      "src/memory.ts": "import { Repository } from './contracts'; export class MemoryRepository implements Repository { find(id: string) { return id; } }",
+      "src/sql.ts":
+        "import { Repository } from './contracts'; export class SqlRepository implements Repository { find(id: string) { return id; } }",
+      "src/memory.ts":
+        "import { Repository } from './contracts'; export class MemoryRepository implements Repository { find(id: string) { return id; } }",
       "src/local.ts": "interface Repository { save(id: string): void; }",
     });
 

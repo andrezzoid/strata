@@ -53,7 +53,8 @@ function fingerprintConstValue(node: Node, name: string): string | null {
   }
   if (fingerprint.startsWith("s:")) {
     const stringValue = JSON.parse(fingerprint.slice(2));
-    if (typeof stringValue !== "string" || stringValue.length < DUP_CONST_MIN_STRING_LENGTH) return null;
+    if (typeof stringValue !== "string" || stringValue.length < DUP_CONST_MIN_STRING_LENGTH)
+      return null;
   }
   const isPrimitive = /^[+-]?[snb]:/.test(fingerprint);
   if (isPrimitive) return `name:${name}|${fingerprint}`;
@@ -93,7 +94,8 @@ function constValueRaw(node: Node): string | null {
       if (prop.type !== "Property") return null;
       let key: string;
       if (prop.key?.type === "Identifier") key = prop.key.name;
-      else if (prop.key?.type === "Literal" && typeof prop.key.value === "string") key = prop.key.value;
+      else if (prop.key?.type === "Literal" && typeof prop.key.value === "string")
+        key = prop.key.value;
       else return null;
       const value = constValueRaw(prop.value);
       if (!value) return null;
@@ -132,7 +134,8 @@ function normalizeAst(node: Node | null): string {
   if (!node || typeof node !== "object") return "";
   const type = node.type;
   if (typeof type !== "string") return "";
-  if (type.startsWith("TS") && type !== "TSAsExpression" && type !== "TSNonNullExpression") return "";
+  if (type.startsWith("TS") && type !== "TSAsExpression" && type !== "TSNonNullExpression")
+    return "";
 
   if (type === "Identifier") return "$id";
   if (type === "PrivateIdentifier") return "$pid";
@@ -206,14 +209,18 @@ function fingerprintClass(cls: Node): string | null {
   const memberFingerprints: string[] = [];
   for (const member of members) {
     const name =
-      member.key?.type === "Identifier" ? member.key.name :
-      member.key?.type === "Literal" ? String(member.key.value) :
-      "?";
+      member.key?.type === "Identifier"
+        ? member.key.name
+        : member.key?.type === "Literal"
+          ? String(member.key.value)
+          : "?";
     if (member.type === "MethodDefinition") {
       const fingerprint = fingerprintFunction(member.value);
       if (fingerprint) memberFingerprints.push(`m:${name}=${fingerprint}`);
     } else if (member.type === "PropertyDefinition") {
-      const initFingerprint = member.value ? (constValueRaw(member.value) ?? `expr:${normalizeAst(member.value)}`) : "uninit";
+      const initFingerprint = member.value
+        ? (constValueRaw(member.value) ?? `expr:${normalizeAst(member.value)}`)
+        : "uninit";
       memberFingerprints.push(`p:${name}=${initFingerprint}`);
     }
   }
@@ -250,19 +257,32 @@ function fingerprintTypeNode(node: Node | null): string {
   if (typeof type !== "string") return "";
 
   switch (type) {
-    case "TSStringKeyword": return "kw:string";
-    case "TSNumberKeyword": return "kw:number";
-    case "TSBooleanKeyword": return "kw:boolean";
-    case "TSAnyKeyword": return "kw:any";
-    case "TSUnknownKeyword": return "kw:unknown";
-    case "TSNeverKeyword": return "kw:never";
-    case "TSVoidKeyword": return "kw:void";
-    case "TSNullKeyword": return "kw:null";
-    case "TSUndefinedKeyword": return "kw:undefined";
-    case "TSBigIntKeyword": return "kw:bigint";
-    case "TSObjectKeyword": return "kw:object";
-    case "TSSymbolKeyword": return "kw:symbol";
-    case "TSThisType": return "kw:this";
+    case "TSStringKeyword":
+      return "kw:string";
+    case "TSNumberKeyword":
+      return "kw:number";
+    case "TSBooleanKeyword":
+      return "kw:boolean";
+    case "TSAnyKeyword":
+      return "kw:any";
+    case "TSUnknownKeyword":
+      return "kw:unknown";
+    case "TSNeverKeyword":
+      return "kw:never";
+    case "TSVoidKeyword":
+      return "kw:void";
+    case "TSNullKeyword":
+      return "kw:null";
+    case "TSUndefinedKeyword":
+      return "kw:undefined";
+    case "TSBigIntKeyword":
+      return "kw:bigint";
+    case "TSObjectKeyword":
+      return "kw:object";
+    case "TSSymbolKeyword":
+      return "kw:symbol";
+    case "TSThisType":
+      return "kw:this";
   }
 
   if (type === "TSLiteralType") {
@@ -292,21 +312,25 @@ function fingerprintTypeNode(node: Node | null): string {
   }
 
   if (type === "TSArrayType") return `arr<${fingerprintTypeNode(node.elementType)}>`;
-  if (type === "TSTupleType") return `tuple[${(node.elementTypes ?? []).map(fingerprintTypeNode).join(",")}]`;
+  if (type === "TSTupleType")
+    return `tuple[${(node.elementTypes ?? []).map(fingerprintTypeNode).join(",")}]`;
   if (type === "TSTypeLiteral") {
     const members = (node.members ?? []).map(fingerprintTypeMember).sort();
     return `obj[${members.join("|")}]`;
   }
   if (type === "TSFunctionType" || type === "TSConstructorType") {
     const params = (node.params ?? []).length;
-    const ret = node.returnType?.typeAnnotation ? fingerprintTypeNode(node.returnType.typeAnnotation) : "?";
+    const ret = node.returnType?.typeAnnotation
+      ? fingerprintTypeNode(node.returnType.typeAnnotation)
+      : "?";
     return `${type === "TSFunctionType" ? "fn" : "ctor"}(${params})=>${ret}`;
   }
   if (type === "TSConditionalType") {
     return `cond(${fingerprintTypeNode(node.checkType)},${fingerprintTypeNode(node.extendsType)},${fingerprintTypeNode(node.trueType)},${fingerprintTypeNode(node.falseType)})`;
   }
   if (type === "TSMappedType") return `mapped(${fingerprintTypeNode(node.typeAnnotation)})`;
-  if (type === "TSIndexedAccessType") return `idx(${fingerprintTypeNode(node.objectType)},${fingerprintTypeNode(node.indexType)})`;
+  if (type === "TSIndexedAccessType")
+    return `idx(${fingerprintTypeNode(node.objectType)},${fingerprintTypeNode(node.indexType)})`;
   if (type === "TSParenthesizedType") return fingerprintTypeNode(node.typeAnnotation);
 
   const parts: string[] = [type];
@@ -324,10 +348,13 @@ function fingerprintTypeNode(node: Node | null): string {
 
 function fingerprintTypeMember(member: Node): string {
   const name =
-    member.key?.type === "Identifier" ? member.key.name :
-    member.key?.type === "Literal" ? String(member.key.value) :
-    member.type === "TSIndexSignature" ? "[index]" :
-    "?";
+    member.key?.type === "Identifier"
+      ? member.key.name
+      : member.key?.type === "Literal"
+        ? String(member.key.value)
+        : member.type === "TSIndexSignature"
+          ? "[index]"
+          : "?";
   const optional = member.optional ? "?" : "";
   const readonly = member.readonly ? "readonly " : "";
   if (member.type === "TSPropertySignature" || member.type === "TSIndexSignature") {
@@ -340,7 +367,9 @@ function fingerprintTypeMember(member: Node): string {
     member.type === "TSConstructSignatureDeclaration"
   ) {
     const params = (member.params ?? []).length;
-    const ret = member.returnType?.typeAnnotation ? fingerprintTypeNode(member.returnType.typeAnnotation) : "?";
+    const ret = member.returnType?.typeAnnotation
+      ? fingerprintTypeNode(member.returnType.typeAnnotation)
+      : "?";
     return `${name}${optional}(${params})=>${ret}`;
   }
   return `${name}:?`;
@@ -367,9 +396,11 @@ function fingerprintEnum(enm: Node): string | null {
   const names: string[] = [];
   for (const member of members) {
     const name =
-      member.id?.type === "Identifier" ? member.id.name :
-      member.id?.type === "Literal" ? String(member.id.value) :
-      "?";
+      member.id?.type === "Identifier"
+        ? member.id.name
+        : member.id?.type === "Literal"
+          ? String(member.id.value)
+          : "?";
     const value = member.initializer ? (constValueRaw(member.initializer) ?? "expr") : "auto";
     names.push(`${name}=${value}`);
   }
@@ -404,37 +435,100 @@ function handleDeclaration(decl: Node, ctx: Ctx, out: SymbolDecl[]): void {
       const declLine = ctx.lineOf(declaration.start);
       if (init.type === "ArrowFunctionExpression" || init.type === "FunctionExpression") {
         const fingerprint = fingerprintFunction(init);
-        if (fingerprint) out.push({ kind: "function", name: declaration.id.name, fingerprint, file: ctx.file, line: declLine, start: declaration.start, end: declaration.end });
+        if (fingerprint)
+          out.push({
+            kind: "function",
+            name: declaration.id.name,
+            fingerprint,
+            file: ctx.file,
+            line: declLine,
+            start: declaration.start,
+            end: declaration.end,
+          });
       } else {
         const fingerprint = fingerprintConstValue(init, declaration.id.name);
-        if (fingerprint) out.push({ kind: "const", name: declaration.id.name, fingerprint, file: ctx.file, line: declLine, start: declaration.start, end: declaration.end });
+        if (fingerprint)
+          out.push({
+            kind: "const",
+            name: declaration.id.name,
+            fingerprint,
+            file: ctx.file,
+            line: declLine,
+            start: declaration.start,
+            end: declaration.end,
+          });
       }
     }
     return;
   }
   if (decl.type === "FunctionDeclaration" && decl.id?.name) {
     const fingerprint = fingerprintFunction(decl);
-    if (fingerprint) out.push({ kind: "function", name: decl.id.name, fingerprint, file: ctx.file, line, start: decl.start, end: decl.end });
+    if (fingerprint)
+      out.push({
+        kind: "function",
+        name: decl.id.name,
+        fingerprint,
+        file: ctx.file,
+        line,
+        start: decl.start,
+        end: decl.end,
+      });
     return;
   }
   if (decl.type === "ClassDeclaration" && decl.id?.name) {
     const fingerprint = fingerprintClass(decl);
-    if (fingerprint) out.push({ kind: "class", name: decl.id.name, fingerprint, file: ctx.file, line, start: decl.start, end: decl.end });
+    if (fingerprint)
+      out.push({
+        kind: "class",
+        name: decl.id.name,
+        fingerprint,
+        file: ctx.file,
+        line,
+        start: decl.start,
+        end: decl.end,
+      });
     return;
   }
   if (decl.type === "TSInterfaceDeclaration" && decl.id?.name) {
     const fingerprint = fingerprintInterface(decl);
-    if (fingerprint) out.push({ kind: "interface", name: decl.id.name, fingerprint, file: ctx.file, line, start: decl.start, end: decl.end });
+    if (fingerprint)
+      out.push({
+        kind: "interface",
+        name: decl.id.name,
+        fingerprint,
+        file: ctx.file,
+        line,
+        start: decl.start,
+        end: decl.end,
+      });
     return;
   }
   if (decl.type === "TSTypeAliasDeclaration" && decl.id?.name) {
     const fingerprint = fingerprintTypeAlias(decl);
-    if (fingerprint) out.push({ kind: "type", name: decl.id.name, fingerprint, file: ctx.file, line, start: decl.start, end: decl.end });
+    if (fingerprint)
+      out.push({
+        kind: "type",
+        name: decl.id.name,
+        fingerprint,
+        file: ctx.file,
+        line,
+        start: decl.start,
+        end: decl.end,
+      });
     return;
   }
   if (decl.type === "TSEnumDeclaration" && decl.id?.name) {
     const fingerprint = fingerprintEnum(decl);
-    if (fingerprint) out.push({ kind: "enum", name: decl.id.name, fingerprint, file: ctx.file, line, start: decl.start, end: decl.end });
+    if (fingerprint)
+      out.push({
+        kind: "enum",
+        name: decl.id.name,
+        fingerprint,
+        file: ctx.file,
+        line,
+        start: decl.start,
+        end: decl.end,
+      });
   }
 }
 
@@ -459,7 +553,8 @@ export function detectDuplicateSymbol(ctxs: Ctx[]): Finding[] {
 
   const findings: Finding[] = [];
   for (const group of byKey.values()) {
-    const minOccurrences = DUP_MIN_OCCURRENCES_BY_KIND[group[0].kind] ?? DUP_MIN_OCCURRENCES_DEFAULT;
+    const minOccurrences =
+      DUP_MIN_OCCURRENCES_BY_KIND[group[0].kind] ?? DUP_MIN_OCCURRENCES_DEFAULT;
     if (group.length < minOccurrences) continue;
 
     const distinct = new Set(group.map((declaration) => declaration.file));
@@ -469,12 +564,19 @@ export function detectDuplicateSymbol(ctxs: Ctx[]): Finding[] {
     const canonical = sorted[0];
     const canonicalSource = sourceByFile.get(canonical.file) ?? "";
     const preview = previewSource(canonicalSource, canonical.start, canonical.end);
-    const occurrences = sorted.map((declaration) => ({ name: declaration.name, file: declaration.file, line: declaration.line }));
+    const occurrences = sorted.map((declaration) => ({
+      name: declaration.name,
+      file: declaration.file,
+      line: declaration.line,
+    }));
     const names = [...new Set(occurrences.map((occurrence) => occurrence.name))].sort();
 
     const sampleNames = names.slice(0, 3).join(", ");
     const moreNames = names.length > 3 ? `, +${names.length - 3} more` : "";
-    const where = distinct.size === 1 ? `${group.length}× in 1 file` : `${group.length}× across ${distinct.size} files`;
+    const where =
+      distinct.size === 1
+        ? `${group.length}× in 1 file`
+        : `${group.length}× across ${distinct.size} files`;
     const message =
       `${kind} re-declared ${where} ` +
       `(e.g. ${sampleNames}${moreNames}) — agent likely re-built an existing one ` +

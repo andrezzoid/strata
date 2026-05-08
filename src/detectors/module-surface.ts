@@ -20,7 +20,8 @@ export function countModuleSurface(ast: Node): ModuleSurface {
           topLevelExports += 1;
           surfaceElements += 1;
           for (const member of d.body?.body ?? []) {
-            if (member.type !== "MethodDefinition" && member.type !== "PropertyDefinition") continue;
+            if (member.type !== "MethodDefinition" && member.type !== "PropertyDefinition")
+              continue;
             const isPrivate =
               member.accessibility === "private" ||
               (typeof member.key?.name === "string" && member.key.name.startsWith("_"));

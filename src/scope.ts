@@ -35,14 +35,17 @@ export function buildFileScope(ctx: Ctx, fileSet: Set<string>): Map<string, Scop
 
     if (stmt.type === "ImportDeclaration" && typeof stmt.source?.value === "string") {
       const source = stmt.source.value;
-      const sourceFile = source.startsWith(".") ? resolveRelativeImport(ctx.file, source, fileSet) : null;
+      const sourceFile = source.startsWith(".")
+        ? resolveRelativeImport(ctx.file, source, fileSet)
+        : null;
       const isExternal = !source.startsWith(".");
 
       for (const spec of stmt.specifiers ?? []) {
         const localName = spec.local?.name;
         if (!localName) continue;
         if (spec.type === "ImportSpecifier" && spec.imported?.name) {
-          if (sourceFile) refs.set(localName, { kind: "imported", sourceFile, sourceName: spec.imported.name });
+          if (sourceFile)
+            refs.set(localName, { kind: "imported", sourceFile, sourceName: spec.imported.name });
           else if (isExternal) refs.set(localName, { kind: "external" });
           else refs.set(localName, { kind: "unresolvable" });
         } else {
@@ -53,7 +56,9 @@ export function buildFileScope(ctx: Ctx, fileSet: Set<string>): Map<string, Scop
 
     if (stmt.type === "ExportNamedDeclaration" && typeof stmt.source?.value === "string") {
       const source = stmt.source.value;
-      const sourceFile = source.startsWith(".") ? resolveRelativeImport(ctx.file, source, fileSet) : null;
+      const sourceFile = source.startsWith(".")
+        ? resolveRelativeImport(ctx.file, source, fileSet)
+        : null;
       for (const spec of stmt.specifiers ?? []) {
         const exposedName = spec.exported?.name ?? spec.local?.name;
         const sourceName = spec.local?.name;
@@ -89,10 +94,20 @@ export function resolveDeclarationSite(
 }
 
 /** Resolves ./foo imports against the project-relative file set. */
-export function resolveRelativeImport(fromFile: string, importPath: string, fileSet: Set<string>): string | null {
+export function resolveRelativeImport(
+  fromFile: string,
+  importPath: string,
+  fileSet: Set<string>,
+): string | null {
   const fromDir = fromFile.split("/").slice(0, -1).join("/");
   const joined = normalizePath(fromDir ? `${fromDir}/${importPath}` : importPath);
-  const candidates = [joined, `${joined}.ts`, `${joined}.tsx`, `${joined}/index.ts`, `${joined}/index.tsx`];
+  const candidates = [
+    joined,
+    `${joined}.ts`,
+    `${joined}.tsx`,
+    `${joined}/index.ts`,
+    `${joined}/index.tsx`,
+  ];
   for (const candidate of candidates) {
     if (fileSet.has(candidate)) return candidate;
   }

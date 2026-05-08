@@ -23,7 +23,9 @@ export function detectGenericNaming({ file, ast, lineOf }: Ctx): Finding[] {
   walk(ast, (node) => {
     let id: Node | null = null;
     if (
-      (node.type === "ClassDeclaration" || node.type === "TSInterfaceDeclaration" || node.type === "TSTypeAliasDeclaration") &&
+      (node.type === "ClassDeclaration" ||
+        node.type === "TSInterfaceDeclaration" ||
+        node.type === "TSTypeAliasDeclaration") &&
       node.id
     ) {
       id = node.id;

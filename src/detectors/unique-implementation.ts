@@ -16,7 +16,10 @@ export function detectUniqueImplementation(ctxs: Ctx[]): Finding[] {
   const fileSet = new Set(ctxs.map((ctx) => ctx.file));
   const scopes = new Map<string, ReturnType<typeof buildFileScope>>();
   const declarations: AbstractionDecl[] = [];
-  const implementersByDecl = new Map<string, Array<{ implementer: string; file: string; line: number }>>();
+  const implementersByDecl = new Map<
+    string,
+    Array<{ implementer: string; file: string; line: number }>
+  >();
 
   for (const ctx of ctxs) {
     scopes.set(ctx.file, buildFileScope(ctx, fileSet));

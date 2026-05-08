@@ -44,7 +44,11 @@ export function collectAllProjectFiles(target: string): string[] {
   for (const entry of readdirSync(target, { withFileTypes: true })) {
     if (entry.name === "node_modules" || entry.name === ".git") continue;
     if (!entry.isDirectory()) continue;
-    for (const file of nestedGlob.scanSync({ cwd: join(target, entry.name), dot: true, onlyFiles: true })) {
+    for (const file of nestedGlob.scanSync({
+      cwd: join(target, entry.name),
+      dot: true,
+      onlyFiles: true,
+    })) {
       const relativePath = toPosix(join(entry.name, file));
       if (!isProjectFile(relativePath)) continue;
       out.push(relativePath);
@@ -63,15 +67,25 @@ export function collectChangedFiles(target: string, diffRef: string): Set<string
   );
   for (const line of committed.split("\n")) if (line) lines.add(toPosix(line));
 
-  const workingTree = tryGitOutput(["ls-files", "--modified", "--others", "--exclude-standard", "--", "*.ts", "*.tsx"], target);
+  const workingTree = tryGitOutput(
+    ["ls-files", "--modified", "--others", "--exclude-standard", "--", "*.ts", "*.tsx"],
+    target,
+  );
   for (const line of workingTree.split("\n")) if (line) lines.add(toPosix(line));
 
-  return new Set([...lines].filter((file) => statSync(join(target, file), { throwIfNoEntry: false })?.isFile()));
+  return new Set(
+    [...lines].filter((file) => statSync(join(target, file), { throwIfNoEntry: false })?.isFile()),
+  );
 }
 
 function tryGitOutput(args: string[], cwd: string): string {
   try {
-    const result = Bun.spawnSync(["git", ...args], { cwd, stdin: "ignore", stdout: "pipe", stderr: "ignore" });
+    const result = Bun.spawnSync(["git", ...args], {
+      cwd,
+      stdin: "ignore",
+      stdout: "pipe",
+      stderr: "ignore",
+    });
     return result.success ? (result.stdout?.toString() ?? "") : "";
   } catch {
     // A missing ref or non-git target means "no changed files" for this source.

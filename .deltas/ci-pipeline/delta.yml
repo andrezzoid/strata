@@ -1,0 +1,206 @@
+goal: >
+  Add a CI pipeline that proves every change is formatted, linted,
+  typechecked, tested with coverage, packageable, and free of strata red-flag
+  findings before it merges. The pipeline should be reproducible through local
+  package scripts, not only GitHub Actions YAML.
+
+acceptance:
+  - CI runs formatting checks, linting, `bun run typecheck`, tests, coverage, package dry-run, and a strata self-scan that fails when source findings are emitted.
+  - Local package scripts expose the same checks used by CI so failures can be reproduced before pushing.
+  - Strata has an explicit CI-friendly mode that exits non-zero when findings exist, while preserving the default report-only CLI behavior.
+  - Coverage is enforced at a high but currently realistic threshold in the 85-90% range.
+  - Package contents are validated with an npm pack dry run on every CI run.
+  - README or contributing docs explain the local check workflow and the red-flag failure mode.
+  - The final verification runs all CI-equivalent commands locally and they pass.
+
+context: |
+  There is currently no `.github/workflows` directory and no formatting or linting scripts in `package.json`; only `test`, `test:watch`, and `typecheck` exist.
+  I agree the red-flag failure behavior belongs in this delta because CI cannot enforce strata findings unless the CLI can fail on findings.
+  Prefer an explicit flag such as `--fail-on-findings` over changing default CLI exits: findings are candidates, and the default scanner should remain useful for interactive review.
+  Use Oxc ecosystem tooling for formatting and linting if it covers the current TypeScript/JSON/YAML needs cleanly; the scanner already depends on `oxc-parser`, so this keeps tooling coherent.
+  Enforce coverage in CI, targeting 90% if Bun's coverage threshold support works cleanly; fall back no lower than 85% only if source maps or generated/reporting behavior make 90% noisy.
+  Keep customization for future legitimate findings out of this delta; add allowlists or thresholds only when a real accepted candidate forces that design.
+
+refs:
+  - package.json
+  - bun.lock
+  - src/cli.ts
+  - test/cli.test.ts
+  - README.md
+  - .github/workflows/ci.yml
+
+open_questions: []
+
+notes:
+  - >
+    Current `bun test --coverage` passes with 95.71% line coverage overall and
+    97.45% function coverage, so a 90% aggregate threshold should be realistic
+    unless Bun's threshold semantics differ from the displayed aggregate.
+  - >
+    A publish action is useful but should be a follow-up delta. This delta can
+    prepare it by keeping package validation green through `npm pack --dry-run
+    --json`, without introducing release credentials or npm publishing behavior.
+
+tasks:
+  - id: add-style-checks
+    description: >
+      Add Oxc formatter and linter tooling plus package scripts that can run in
+      CI and locally.
+    context: |
+      Use the Oxc ecosystem first: `oxlint` for linting and the Oxc formatter if its CLI is practical for this repo.
+      If the formatter cannot cover needed files cleanly, log the gap before choosing a non-Oxc formatter.
+      Avoid mass reformatting unrelated to the chosen formatter unless the check requires it.
+    status: done
+    acceptance:
+      - `package.json` exposes formatting-check and lint scripts with clear names.
+      - The chosen formatter/linter config is committed and scoped to project-owned files.
+      - Formatting and linting commands pass locally.
+      - Oxc tool choice and any formatter limitations are recorded in this delta log or project docs.
+    depends_on: []
+
+  - id: add-coverage-gate
+    description: >
+      Add a coverage check script that runs the Bun test suite with coverage and
+      fails below the selected high threshold.
+    context: |
+      Start with a 90% aggregate threshold because current coverage is above 95% lines and 97% functions.
+      If Bun's threshold option is too coarse or unstable, use the simplest scriptable gate and record why.
+      Keep regular `bun run test` fast; put coverage behind a separate script used by CI.
+    status: pending
+    acceptance:
+      - `package.json` exposes a coverage check script used by CI.
+      - Coverage fails below the selected threshold and passes on the current suite.
+      - The selected threshold is at least 85% and preferably 90%, with the decision recorded.
+    depends_on: []
+
+  - id: add-fail-on-findings-mode
+    description: >
+      Add a CI-friendly strata CLI mode that exits non-zero when the scan emits
+      any findings, without changing default report-only behavior.
+    context: |
+      Recommended interface: `--fail-on-findings` for now.
+      Alternative considered: make findings fail by default, but that makes interactive scanning harsher and weakens the candidate-not-verdict contract.
+      Keep future customization (`--max-findings`, baselines, or ignore files) out until a real source finding needs it.
+    status: pending
+    acceptance:
+      - CLI tests prove default scans still exit 0 when findings exist.
+      - CLI tests prove `--fail-on-findings` exits non-zero when findings exist and exits 0 when no findings exist.
+      - Usage/help and README document the flag.
+      - A package script or documented command exists for the source self-scan used by CI.
+    depends_on: []
+
+  - id: add-package-check
+    description: >
+      Add a local package validation script that runs an npm pack dry run and can
+      be reused by CI.
+    context: |
+      Prior publishing work used `npm pack --dry-run --json` to validate package contents.
+      Keep this as a non-publishing check: no release creation, no npm auth, no registry writes.
+    status: pending
+    acceptance:
+      - `package.json` exposes a package dry-run check script.
+      - The package dry-run command validates the files that would be published without creating release side effects.
+      - The check passes locally.
+    depends_on: []
+
+  - id: add-github-actions-ci
+    description: >
+      Add a GitHub Actions workflow that installs Bun dependencies and runs the
+      local CI-equivalent checks on pushes and pull requests, including package
+      dry-run validation.
+    context: |
+      Use `oven-sh/setup-bun` and `bun install --frozen-lockfile` against the committed `bun.lock`.
+      Prefer calling package scripts over embedding long commands in YAML so local and remote checks stay aligned.
+      Keep the workflow single-job unless a real runtime matrix becomes necessary.
+    status: pending
+    acceptance:
+      - `.github/workflows/ci.yml` runs on pull requests and pushes to `main`.
+      - The workflow runs formatting, linting, typecheck, tests, coverage, package dry-run, and strata self-scan in a deterministic order.
+      - CI commands use the same package scripts documented for local development.
+      - The workflow avoids secrets and external services.
+    depends_on:
+      - add-style-checks
+      - add-coverage-gate
+      - add-fail-on-findings-mode
+      - add-package-check
+
+  - id: document-ci-workflow
+    description: >
+      Update project documentation so contributors know which local checks match
+      CI and why the strata self-scan can fail the pipeline.
+    context: |
+      README currently documents install, usage, detectors, and basic development commands.
+      Keep docs short: local commands, what CI checks, and how to interpret a red-flag failure.
+    status: pending
+    acceptance:
+      - README or contributing docs list the local CI-equivalent command sequence.
+      - Docs explain that red-flag failures are review candidates to fix or intentionally redesign, not automated final verdicts.
+      - Docs mention the coverage threshold and package dry-run check.
+      - Docs note that publish automation is intentionally deferred.
+    depends_on:
+      - add-github-actions-ci
+
+  - id: verify-ci-pipeline
+    description: >
+      Run all CI-equivalent checks locally and inspect the workflow/script surface
+      for avoidable complexity.
+    context: |
+      This is final verification, not a place to add new checks.
+      If verification discovers missing coverage or a workflow design gap, log it and route through Plan rather than silently expanding scope.
+    status: pending
+    acceptance:
+      - Formatting check passes.
+      - Linting passes.
+      - `bun run typecheck` passes.
+      - `bun run test` passes.
+      - Coverage check passes at the selected threshold.
+      - Package dry-run check passes.
+      - The CI strata self-scan command passes on `src` and fails on a known fixture with findings.
+      - Changed workflow/scripts pass a complexity review with no unjustified shallow wrappers or duplicated command knowledge.
+    depends_on:
+      - document-ci-workflow
+
+log:
+  - id: log-001
+    timestamp: 2026-05-08T19:25Z
+    command: plan
+    summary: >
+      Created a CI pipeline delta after confirming no existing delta owns this
+      work and the current baseline passes `bun run typecheck` and `bun run
+      test` (49 tests, 92 assertions). Planned a vertical path: add style
+      scripts, add an explicit `--fail-on-findings` CLI mode for CI enforcement,
+      wire GitHub Actions through package scripts, document the workflow, then
+      verify all checks locally. Design choice recorded: prefer explicit
+      failure mode over changing default CLI behavior because strata findings
+      are candidates, not verdicts. Formatting/linting should compare Biome
+      against Prettier+ESLint during Apply; the planned bias is the smaller
+      unified tool surface if it covers the project cleanly.
+
+  - id: log-002
+    timestamp: 2026-05-08T19:33Z
+    command: plan
+    summary: >
+      Revised the plan after human steering on CI scope. Style tooling should use
+      the Oxc ecosystem first (`oxlint` and the Oxc formatter if practical)
+      because the project already depends on `oxc-parser`; the earlier Biome
+      suggestion was replaced. Added a dedicated coverage gate task, targeting
+      90% aggregate coverage with an 85% floor only if Bun threshold semantics
+      make 90% noisy. Added package dry-run validation to CI because keeping the
+      publishable package shape healthy on every commit is useful. Publish
+      automation remains a follow-up delta because it introduces credentials,
+      release triggers, and npm side effects beyond this CI gate.
+
+  - id: log-003
+    timestamp: 2026-05-08T19:42Z
+    command: apply
+    task: add-style-checks
+    summary: >
+      Added Oxc style tooling with `oxfmt` and `oxlint`, committed formatter and
+      linter configs, and exposed `bun run format:check` plus `bun run lint`.
+      Scope decision: the formatter checks source, bin, top-level tests, package
+      metadata, README, and style configs; `.deltas/**` is excluded because delta
+      YAML carries markdown-like planning text, and linting ignores
+      `test/fixtures/**` because those files intentionally contain detector smell
+      examples. Verified: `bun run format:check` passed on 31 files, `bun run
+      lint` passed with 0 warnings/errors across 26 files, `bun run typecheck`
+      passed, and `bun run test` passed with 49 tests and 92 assertions.

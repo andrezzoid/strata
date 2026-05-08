@@ -39,7 +39,9 @@ export async function scanProject(options: ScanProjectOptions = {}): Promise<Sca
       try {
         allFindings.push(...detect(ctx));
       } catch (error) {
-        process.stderr.write(`detector ${detect.name} failed on ${ctx.file}: ${(error as Error).message}\n`);
+        process.stderr.write(
+          `detector ${detect.name} failed on ${ctx.file}: ${(error as Error).message}\n`,
+        );
       }
     }
   }
@@ -55,7 +57,9 @@ export async function scanProject(options: ScanProjectOptions = {}): Promise<Sca
     allFindings = allFindings.filter((finding) => findingTouchesChanged(finding, changedFiles));
   }
 
-  allFindings.sort((a, b) => a.flag.localeCompare(b.flag) || a.file.localeCompare(b.file) || a.line - b.line);
+  allFindings.sort(
+    (a, b) => a.flag.localeCompare(b.flag) || a.file.localeCompare(b.file) || a.line - b.line,
+  );
 
   const byFlag: Record<string, number> = {};
   for (const finding of allFindings) byFlag[finding.flag] = (byFlag[finding.flag] ?? 0) + 1;

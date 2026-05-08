@@ -46,7 +46,11 @@ export function buildLineOf(source: string): LineOf {
 }
 
 /** Depth-first AST traversal that preserves parent context for detector tests. */
-export function walk(node: Node, visit: (n: Node, parent: Node | null) => void, parent: Node | null = null): void {
+export function walk(
+  node: Node,
+  visit: (n: Node, parent: Node | null) => void,
+  parent: Node | null = null,
+): void {
   if (!node || typeof node !== "object") return;
   if (typeof node.type === "string") visit(node, parent);
   for (const key of Object.keys(node)) {

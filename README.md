@@ -64,20 +64,20 @@ Findings are sorted by `(flag, file, line)` for deterministic review and diffing
 
 ## Detectors
 
-| Flag | Scope | Signal |
-| --- | --- | --- |
-| `shallowModule` | file | API surface is large relative to body lines. |
-| `wideModule` | file | Too many top-level exports. |
-| `wideSignature` | file | Function, method, or constructor has too many required parameters. |
-| `passThroughMethod` | file | Class method delegates to instance state with the same arguments. |
-| `passThroughVariable` | file | Several parameters are only forwarded through calls. |
-| `genericNaming` | file | Type/class names end with vague suffixes such as `Manager` or `Helper`. |
-| `tsEscapeHatch` | file | `as any`, `@ts-ignore`, or `@ts-expect-error`. |
-| `emptyCatch` | file | `catch` clause has no executable statement. |
-| `catchRethrow` | file | `catch` only rethrows the caught value. |
-| `duplicateSymbol` | project | Named declarations with identical structure are repeated. |
-| `uniqueImplementation` | project | Interface or abstract class has no real polymorphism payoff. |
-| `orphanFile` | project | File is not imported by any other scanned file. |
+| Flag                   | Scope   | Signal                                                                  |
+| ---------------------- | ------- | ----------------------------------------------------------------------- |
+| `shallowModule`        | file    | API surface is large relative to body lines.                            |
+| `wideModule`           | file    | Too many top-level exports.                                             |
+| `wideSignature`        | file    | Function, method, or constructor has too many required parameters.      |
+| `passThroughMethod`    | file    | Class method delegates to instance state with the same arguments.       |
+| `passThroughVariable`  | file    | Several parameters are only forwarded through calls.                    |
+| `genericNaming`        | file    | Type/class names end with vague suffixes such as `Manager` or `Helper`. |
+| `tsEscapeHatch`        | file    | `as any`, `@ts-ignore`, or `@ts-expect-error`.                          |
+| `emptyCatch`           | file    | `catch` clause has no executable statement.                             |
+| `catchRethrow`         | file    | `catch` only rethrows the caught value.                                 |
+| `duplicateSymbol`      | project | Named declarations with identical structure are repeated.               |
+| `uniqueImplementation` | project | Interface or abstract class has no real polymorphism payoff.            |
+| `orphanFile`           | project | File is not imported by any other scanned file.                         |
 
 Notably absent: length-based long-function detection. PoSD does not treat length as the primary design problem; shallow interfaces and leaked knowledge are the target.
 

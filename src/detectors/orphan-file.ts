@@ -43,7 +43,8 @@ export function detectOrphanFile(ctxs: Ctx[]): Finding[] {
       severity: "candidate",
       file: ctx.file,
       line: 1,
-      message: "file is not imported by any other file — possible dead code or forgotten exploration",
+      message:
+        "file is not imported by any other file — possible dead code or forgotten exploration",
       metadata: {},
     });
   }

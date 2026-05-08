@@ -35,6 +35,8 @@
     "access": "public"
   },
   "scripts": {
+    "format:check": "oxfmt --check src bin test/*.test.ts package.json tsconfig.json README.md .oxfmtrc.json .oxlintrc.json",
+    "lint": "oxlint src test bin",
     "scan": "bun src/cli.ts",
     "test": "bun test",
     "test:watch": "bun test --watch",
@@ -46,6 +48,8 @@
   "devDependencies": {
     "@types/bun": "^1.3.2",
     "@types/node": "^22.15.3",
+    "oxfmt": "^0.48.0",
+    "oxlint": "^1.63.0",
     "typescript": "^5.8.3"
   }
 }

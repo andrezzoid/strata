@@ -43,7 +43,9 @@ describe("CLI", () => {
     expect(result.status).toBe(0);
     const parsed = JSON.parse(result.stdout);
     expect(parsed.summary.totalFindings).toBeGreaterThan(0);
-    expect(parsed.findings.some((finding: { flag: string }) => finding.flag === "passThroughMethod")).toBe(true);
+    expect(
+      parsed.findings.some((finding: { flag: string }) => finding.flag === "passThroughMethod"),
+    ).toBe(true);
   });
 
   it("prints text output", () => {

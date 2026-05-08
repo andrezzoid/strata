@@ -38,8 +38,12 @@ describe("path and import resolution", () => {
   it("resolves relative imports against known TS and TSX project files", () => {
     const fileSet = new Set(["src/components/view.ts", "src/model.ts", "src/widgets/index.tsx"]);
 
-    expect(resolveRelativeImport("src/components/view.ts", "../model", fileSet)).toBe("src/model.ts");
-    expect(resolveRelativeImport("src/components/view.ts", "../widgets", fileSet)).toBe("src/widgets/index.tsx");
+    expect(resolveRelativeImport("src/components/view.ts", "../model", fileSet)).toBe(
+      "src/model.ts",
+    );
+    expect(resolveRelativeImport("src/components/view.ts", "../widgets", fileSet)).toBe(
+      "src/widgets/index.tsx",
+    );
     expect(resolveRelativeImport("src/components/view.ts", "../missing", fileSet)).toBeNull();
   });
 });
@@ -121,7 +125,10 @@ describe("collectAllProjectFiles", () => {
       await Bun.write(join(root, "src", "feature.ts"), "export const feature = true;");
       await Bun.write(join(root, "src", "nested", "view.tsx"), "export const View = () => null;");
       await Bun.write(join(root, "src", "note.js"), "export const ignored = true;");
-      await Bun.write(join(root, "src", "node_modules", "ignored.ts"), "export const ignored = true;");
+      await Bun.write(
+        join(root, "src", "node_modules", "ignored.ts"),
+        "export const ignored = true;",
+      );
       await Bun.write(join(root, "node_modules", "ignored.ts"), "export const ignored = true;");
       await Bun.write(join(root, ".git", "ignored.ts"), "export const ignored = true;");
 
