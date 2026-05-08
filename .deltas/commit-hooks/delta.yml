@@ -152,3 +152,19 @@ log:
       findings). Complexity review passed: the deterministic red-flags diff scan
       against `origin/main` reported 0 findings, and the hook config keeps the
       interface small by centralizing staged-file behavior in `lefthook.yml`.
+
+  - id: log-005
+    timestamp: 2026-05-08T20:15Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Lefthook is a dev
+      dependency with committed `lefthook.yml`; local installs get hooks through
+      Lefthook's npm `postinstall`, and `bun run hooks:install` provides an
+      explicit manual path. Pre-commit formatting is staged-file scoped, fixes
+      Oxfmt-supported files, excludes `.deltas/**` and `test/fixtures/**`, and
+      re-stages changes through `stage_fixed: true`; pre-commit linting is
+      staged JS/TS scoped and fails on Oxlint errors. README documents setup,
+      hook behavior, and CI as the full gate. Regression evidence: staged
+      formatter and lint failure checks passed, all CI-equivalent commands
+      passed, and the complexity diff scan reported 0 findings. No bugs, design
+      gaps, or context gaps were found. Delta is complete.
