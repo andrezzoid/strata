@@ -87,12 +87,21 @@ Notably absent: length-based long-function detection. PoSD does not treat length
 
 ```bash
 bun install
+bun run format:check
+bun run lint
 bun run typecheck
 bun run test
+bun run test:coverage
+bun run package:check
+bun run scan:ci
 bun run scan -- test/fixtures/pass-through-method --format text
 ```
 
 Tests use Bun's test runner rather than the old shell harness. Fixture tests compare exact `(flag, file, line)` triples for each detector's primary fixture while allowing incidental cross-detector findings.
+
+GitHub Actions runs the same local scripts before merge. `bun run test:coverage` gates LCOV line coverage for `src/` at 85%, which matches the current machine-readable aggregate rather than Bun's human table. `bun run package:check` runs `npm pack --dry-run --json` to validate package contents without publishing.
+
+`bun run scan:ci` runs `strata src --fail-on-findings`. A failing self-scan means the source now contains review candidates that should be fixed or intentionally redesigned; it is still a candidate signal, not an automated final verdict. Publish automation is intentionally deferred until release credentials and side effects are handled in a separate change.
 
 ## Contributing
 

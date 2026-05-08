@@ -137,7 +137,7 @@ tasks:
     context: |
       README currently documents install, usage, detectors, and basic development commands.
       Keep docs short: local commands, what CI checks, and how to interpret a red-flag failure.
-    status: pending
+    status: done
     acceptance:
       - README or contributing docs list the local CI-equivalent command sequence.
       - Docs explain that red-flag failures are review candidates to fix or intentionally redesign, not automated final verdicts.
@@ -273,3 +273,17 @@ log:
       passed with 87.33% source line coverage against the 85% gate, `bun run
       package:check` listed 26 package entries and exited 0, and `bun run
       scan:ci` emitted 0 findings.
+
+  - id: log-008
+    timestamp: 2026-05-08T19:52Z
+    command: apply
+    task: document-ci-workflow
+    summary: >
+      Updated README development docs with the local CI-equivalent command
+      sequence: format, lint, typecheck, tests, coverage, package dry-run, and
+      source self-scan. Documented the 85% LCOV source-line coverage gate,
+      `npm pack --dry-run --json` package validation, the candidate-not-verdict
+      meaning of `scan:ci` failures, and that publish automation is deferred.
+      Verified: `bun run format:check` passed, `bun run lint` passed with 0
+      warnings/errors, `bun run typecheck` passed, and `bun run test` passed
+      with 56 tests and 109 assertions.
