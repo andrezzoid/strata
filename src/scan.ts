@@ -1,14 +1,21 @@
 import { statSync } from "node:fs";
 
-import { parseContexts } from "./ast.ts";
+import { parseContexts, type Ctx } from "./ast.ts";
 import { detectDuplicateSymbol } from "./detectors/duplicate-symbol.ts";
 import { detectOrphanFile } from "./detectors/orphan-file.ts";
 import { SINGLE_DETECTORS } from "./detectors/single-file.ts";
 import { detectUniqueImplementation } from "./detectors/unique-implementation.ts";
 import { collectScanFiles, findingTouchesChanged } from "./project.ts";
+import { createImportResolver, type ImportResolver } from "./scope.ts";
 import type { Finding, ScanResult } from "./types.ts";
 
-const CROSS_DETECTORS = [detectDuplicateSymbol, detectUniqueImplementation, detectOrphanFile];
+type CrossProjectDetector = (ctxs: Ctx[], imports: ImportResolver) => Finding[];
+
+const CROSS_DETECTORS: CrossProjectDetector[] = [
+  detectDuplicateSymbol,
+  detectUniqueImplementation,
+  detectOrphanFile,
+];
 
 export type ScanProjectOptions = {
   /** File or directory to scan. Defaults to the current working directory. */
@@ -32,6 +39,10 @@ export async function scanProject(options: ScanProjectOptions = {}): Promise<Sca
 
   const { root, files, changedFiles } = collectScanFiles(target, options.diffRef ?? null);
   const ctxs = await parseContexts(root, files);
+  const imports = await createImportResolver(
+    root,
+    ctxs.map((ctx) => ctx.file),
+  );
 
   let allFindings: Finding[] = [];
   for (const ctx of ctxs) {
@@ -47,7 +58,7 @@ export async function scanProject(options: ScanProjectOptions = {}): Promise<Sca
   }
   for (const detect of CROSS_DETECTORS) {
     try {
-      allFindings.push(...detect(ctxs));
+      allFindings.push(...detect(ctxs, imports));
     } catch (error) {
       process.stderr.write(`cross-detector ${detect.name} failed: ${(error as Error).message}\n`);
     }

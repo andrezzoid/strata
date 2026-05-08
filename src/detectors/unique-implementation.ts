@@ -1,6 +1,11 @@
 import type { Ctx } from "../ast.ts";
 import { isTestOnlyPath } from "../skip-patterns.ts";
-import { buildFileScope, resolveDeclarationSite } from "../scope.ts";
+import {
+  buildFileScope,
+  createRelativeImportResolver,
+  type ImportResolver,
+  resolveDeclarationSite,
+} from "../scope.ts";
 import type { Finding } from "../types.ts";
 
 type AbstractionDecl = {
@@ -12,8 +17,10 @@ type AbstractionDecl = {
 };
 
 /** Flags polymorphism constructs whose implementation count does not justify the abstraction cost. */
-export function detectUniqueImplementation(ctxs: Ctx[]): Finding[] {
-  const fileSet = new Set(ctxs.map((ctx) => ctx.file));
+export function detectUniqueImplementation(
+  ctxs: Ctx[],
+  imports: ImportResolver = createRelativeImportResolver(ctxs.map((ctx) => ctx.file)),
+): Finding[] {
   const scopes = new Map<string, ReturnType<typeof buildFileScope>>();
   const declarations: AbstractionDecl[] = [];
   const implementersByDecl = new Map<
@@ -22,7 +29,7 @@ export function detectUniqueImplementation(ctxs: Ctx[]): Finding[] {
   >();
 
   for (const ctx of ctxs) {
-    scopes.set(ctx.file, buildFileScope(ctx, fileSet));
+    scopes.set(ctx.file, buildFileScope(ctx, imports));
   }
 
   for (const ctx of ctxs) {

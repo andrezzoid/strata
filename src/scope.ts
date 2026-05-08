@@ -33,6 +33,18 @@ type ScopeEntry =
 
 const EMPTY_TSCONFIG_RESOLUTION: TsconfigResolverConfig = { baseUrl: null, pathRules: [] };
 
+/** Creates a resolver with today's relative-only behavior for tests and no-config projects. */
+export function createRelativeImportResolver(files: Iterable<string>): ImportResolver {
+  const fileSet = files instanceof Set ? files : new Set(files);
+  return {
+    resolve(fromFile, importPath) {
+      return importPath.startsWith(".")
+        ? resolveRelativeImport(fromFile, importPath, fileSet)
+        : null;
+    },
+  };
+}
+
 /** Creates the import resolver used by project-graph analysis for one scan root. */
 export async function createImportResolver(
   root: string,
@@ -60,7 +72,7 @@ export async function createImportResolver(
 }
 
 /** Builds the local name table needed to resolve implements/extends to concrete declaration sites. */
-export function buildFileScope(ctx: Ctx, fileSet: Set<string>): Map<string, ScopeEntry> {
+export function buildFileScope(ctx: Ctx, imports: ImportResolver): Map<string, ScopeEntry> {
   const refs = new Map<string, ScopeEntry>();
 
   for (const stmt of ctx.ast.body ?? []) {
@@ -88,10 +100,8 @@ export function buildFileScope(ctx: Ctx, fileSet: Set<string>): Map<string, Scop
 
     if (stmt.type === "ImportDeclaration" && typeof stmt.source?.value === "string") {
       const source = stmt.source.value;
-      const sourceFile = source.startsWith(".")
-        ? resolveRelativeImport(ctx.file, source, fileSet)
-        : null;
-      const isExternal = !source.startsWith(".");
+      const sourceFile = imports.resolve(ctx.file, source);
+      const isExternal = !sourceFile && !source.startsWith(".");
 
       for (const spec of stmt.specifiers ?? []) {
         const localName = spec.local?.name;
@@ -109,9 +119,7 @@ export function buildFileScope(ctx: Ctx, fileSet: Set<string>): Map<string, Scop
 
     if (stmt.type === "ExportNamedDeclaration" && typeof stmt.source?.value === "string") {
       const source = stmt.source.value;
-      const sourceFile = source.startsWith(".")
-        ? resolveRelativeImport(ctx.file, source, fileSet)
-        : null;
+      const sourceFile = imports.resolve(ctx.file, source);
       for (const spec of stmt.specifiers ?? []) {
         const exposedName = spec.exported?.name ?? spec.local?.name;
         const sourceName = spec.local?.name;

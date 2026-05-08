@@ -7,6 +7,7 @@ import { describe, expect, it } from "bun:test";
 import { buildLineOf } from "../src/ast.ts";
 import { formatResult } from "../src/format.ts";
 import { collectAllProjectFiles, findingTouchesChanged } from "../src/project.ts";
+import { scanProject } from "../src/scan.ts";
 import { createImportResolver, normalizePath, resolveRelativeImport } from "../src/scope.ts";
 import type { Finding, ScanResult } from "../src/types.ts";
 
@@ -170,6 +171,55 @@ describe("collectAllProjectFiles", () => {
         "src/feature.ts",
         "src/nested/view.tsx",
       ]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("scanProject import graph resolution", () => {
+  it("uses scan-root tsconfig aliases for orphan and declaration-site analysis", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-scan-aliases-"));
+    try {
+      mkdirSync(join(root, "src", "impl"), { recursive: true });
+      await Bun.write(
+        join(root, "tsconfig.json"),
+        JSON.stringify({
+          compilerOptions: {
+            baseUrl: "src",
+            paths: {
+              "@contracts": ["contracts"],
+              "@impl/*": ["impl/*"],
+            },
+          },
+        }),
+      );
+      await Bun.write(
+        join(root, "src", "index.ts"),
+        "import { Adapter } from '@impl/adapter'; export const adapter = new Adapter();",
+      );
+      await Bun.write(
+        join(root, "src", "contracts.ts"),
+        "export interface Port { send(value: string): void; }",
+      );
+      await Bun.write(
+        join(root, "src", "impl", "adapter.ts"),
+        "import { Port } from '@contracts'; export class Adapter implements Port { send(value: string) {} }",
+      );
+      await Bun.write(join(root, "src", "unused.ts"), "export const unused = true;");
+
+      const result = await scanProject({ target: root });
+
+      expect(
+        result.findings
+          .filter((finding) => finding.flag === "orphanFile")
+          .map((finding) => finding.file),
+      ).toEqual(["src/unused.ts"]);
+      expect(
+        result.findings
+          .filter((finding) => finding.flag === "uniqueImplementation")
+          .map((finding) => finding.metadata.name),
+      ).toEqual(["Port"]);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

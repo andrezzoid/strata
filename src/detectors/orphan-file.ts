@@ -1,6 +1,6 @@
 import type { Ctx } from "../ast.ts";
 import { isNonReviewablePath } from "../skip-patterns.ts";
-import { resolveRelativeImport } from "../scope.ts";
+import { createRelativeImportResolver, type ImportResolver } from "../scope.ts";
 import type { Finding } from "../types.ts";
 
 const ORPHAN_ENTRYPOINT_PATTERNS = [
@@ -11,7 +11,10 @@ const ORPHAN_ENTRYPOINT_PATTERNS = [
 ];
 
 /** Flags files that nothing imports, excluding common framework and CLI entrypoints. */
-export function detectOrphanFile(ctxs: Ctx[]): Finding[] {
+export function detectOrphanFile(
+  ctxs: Ctx[],
+  imports: ImportResolver = createRelativeImportResolver(ctxs.map((ctx) => ctx.file)),
+): Finding[] {
   const eligibleFiles = ctxs.filter(
     (ctx) =>
       !isNonReviewablePath(ctx.file) &&
@@ -19,16 +22,14 @@ export function detectOrphanFile(ctxs: Ctx[]): Finding[] {
   );
   if (eligibleFiles.length === 0) return [];
 
-  const fileSet = new Set(ctxs.map((ctx) => ctx.file));
   const incoming = new Map<string, number>();
 
   for (const ctx of ctxs) {
     for (const stmt of ctx.ast.body ?? []) {
       const source = stmt.source?.value;
       if (typeof source !== "string") continue;
-      if (!source.startsWith(".")) continue;
 
-      const resolved = resolveRelativeImport(ctx.file, source, fileSet);
+      const resolved = imports.resolve(ctx.file, source);
       if (!resolved) continue;
       incoming.set(resolved, (incoming.get(resolved) ?? 0) + 1);
     }

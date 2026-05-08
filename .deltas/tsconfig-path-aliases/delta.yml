@@ -59,7 +59,7 @@ tasks:
     description: >
       Use the resolver in cross-file detectors so aliased project imports count
       as graph edges and declaration-site references.
-    status: pending
+    status: done
     context: |
       Preserve `scanProject()` as the deep public API. It should create the
       resolver once and pass a small internal dependency to the detectors that
@@ -143,4 +143,21 @@ log:
       target outside the scanned file set. Verification passed: the new test
       first failed because `createImportResolver` did not exist, then `bun test
       test/core.test.ts` passed with 10 tests / 29 assertions; `bun run
+      typecheck`, `bun run format:check`, and `bun run lint` passed.
+
+  - id: log-004
+    timestamp: 2026-05-08T20:46Z
+    command: apply
+    task: wire-resolver-into-cross-detectors
+    summary: >
+      Wired the scan-root import resolver into cross-file analysis. `scanProject()`
+      now creates one resolver from parsed project files and passes it to the
+      project detectors; `orphanFile` records incoming edges through aliases, and
+      `uniqueImplementation` builds scopes through the resolver so aliased named
+      imports and re-exports can reach declaration sites. Added an integration
+      test that first failed with aliased `src/contracts.ts` and
+      `src/impl/adapter.ts` incorrectly reported as orphans, then passed after
+      wiring. Verification passed: `bun test test/detectors.test.ts
+      test/fixtures.test.ts test/core.test.ts` reported 47 tests / 89 assertions,
+      `bun run test` reported 58 tests / 116 assertions, and `bun run
       typecheck`, `bun run format:check`, and `bun run lint` passed.
