@@ -30,6 +30,7 @@ strata [PATH]
 strata [PATH] --diff <git-ref>
 strata [PATH] --format json
 strata [PATH] --format text
+strata [PATH] --format sarif
 strata [PATH] --fail-on-findings
 ```
 
@@ -37,6 +38,7 @@ Defaults:
 
 - `PATH` defaults to the current directory.
 - `--format` defaults to `json`.
+- `--format sarif` emits SARIF 2.1.0 for GitHub code scanning and other CI consumers.
 - `--diff` analyzes the full project graph, then filters findings to changed files so cross-file detectors keep correct context.
 - `--fail-on-findings` exits non-zero when candidates are emitted, which is intended for CI gates; default scans remain report-only.
 
@@ -71,6 +73,31 @@ Project resolution:
 
 Findings are sorted by `(flag, file, line)` for deterministic review and diffing.
 
+### SARIF For CI
+
+Generate a SARIF log for GitHub code scanning:
+
+```bash
+strata . --format sarif > strata.sarif
+```
+
+Diff-scoped SARIF keeps full-project graph analysis, then reports only findings that touch changed files:
+
+```bash
+strata . --diff origin/main --format sarif > strata.sarif
+```
+
+Example GitHub Actions upload step:
+
+```yaml
+- run: bunx @andrezzoid/strata . --format sarif > strata.sarif
+- uses: github/codeql-action/upload-sarif@v3
+  with:
+    sarif_file: strata.sarif
+```
+
+SARIF is for annotations and review workflow integration. If you want a blocking quality gate, run `strata . --fail-on-findings` as a separate CI step so candidates fail the job deliberately rather than being confused with SARIF upload behavior.
+
 ## Detectors
 
 | Flag                   | Scope   | Signal                                                                  |
@@ -102,6 +129,7 @@ bun run test
 bun run test:coverage
 bun run package:check
 bun run scan:ci
+bun run scan:sarif
 bun run scan -- test/fixtures/pass-through-method --format text
 ```
 
@@ -109,9 +137,9 @@ Tests use Bun's test runner rather than the old shell harness. Fixture tests com
 
 Lefthook installs the repo's Git hooks during local dependency installation; run `bun run hooks:install` if you need to repair or reinstall them manually. The pre-commit hook formats staged JS/TS, JSON, Markdown, and YAML files with Oxfmt, re-stages fixes, then lints staged JS/TS files with Oxlint. It intentionally skips full tests and coverage so commits stay fast; GitHub Actions still runs the complete gate before merge.
 
-GitHub Actions runs the same local scripts before merge. `bun run test:coverage` gates LCOV line coverage for `src/` at 85%, which matches the current machine-readable aggregate rather than Bun's human table. `bun run package:check` runs `npm pack --dry-run --json` to validate package contents without publishing.
+GitHub Actions runs the local gate scripts before merge. `bun run test:coverage` gates LCOV line coverage for `src/` at 85%, which matches the current machine-readable aggregate rather than Bun's human table. `bun run package:check` runs `npm pack --dry-run --json` to validate package contents without publishing.
 
-`bun run scan:ci` runs `strata src --fail-on-findings`. A failing self-scan means the source now contains review candidates that should be fixed or intentionally redesigned; it is still a candidate signal, not an automated final verdict. Publish automation is intentionally deferred until release credentials and side effects are handled in a separate change.
+`bun run scan:ci` runs `strata src --fail-on-findings`. A failing self-scan means the source now contains review candidates that should be fixed or intentionally redesigned; it is still a candidate signal, not an automated final verdict. `bun run scan:sarif` emits the same source scan as SARIF for CI smoke tests or upload workflows. Publish automation is intentionally deferred until release credentials and side effects are handled in a separate change.
 
 ## Contributing
 

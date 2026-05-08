@@ -1,8 +1,10 @@
 import type { OutputFormat, ScanResult } from "./types.ts";
+import { formatSarif } from "./sarif.ts";
 
 /** Converts a scan result to the requested CLI output without mutating result ordering. */
 export function formatResult(result: ScanResult, format: OutputFormat): string {
   if (format === "json") return JSON.stringify(result, null, 2) + "\n";
+  if (format === "sarif") return formatSarif(result);
   return formatText(result);
 }
 

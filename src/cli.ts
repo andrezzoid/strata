@@ -7,7 +7,7 @@ import type { OutputFormat } from "./types.ts";
 
 function printUsage(stream: { write(text: string): void }): void {
   stream.write(
-    "strata [PATH] [--diff <git-ref>] [--format json|text] [--fail-on-findings]\n" +
+    "strata [PATH] [--diff <git-ref>] [--format json|text|sarif] [--fail-on-findings]\n" +
       "  Scan TypeScript files for PoSD-style complexity smell candidates.\n",
   );
 }
@@ -36,7 +36,7 @@ export async function main(): Promise<void> {
       diffRef = value;
     } else if (arg === "--format") {
       const value = args[++i];
-      if (value !== "json" && value !== "text") usage(2);
+      if (value !== "json" && value !== "text" && value !== "sarif") usage(2);
       format = value;
     } else if (arg === "--fail-on-findings") {
       failOnFindings = true;

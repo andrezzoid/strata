@@ -1,0 +1,234 @@
+goal: >
+  Make 0.1.1 a CI-focused release by adding GitHub-code-scanning-friendly SARIF
+  output to `strata`, while preserving the existing JSON/text CLI behavior and
+  candidate-not-verdict contract.
+
+acceptance:
+  - CLI accepts `--format sarif` alongside existing `json` and `text` formats.
+  - SARIF output is valid SARIF 2.1.0 shape for GitHub code scanning: `$schema`, `version`, one run, `tool.driver`, rule descriptors, results, source locations, and stable partial fingerprints.
+  - SARIF results preserve deterministic scanner ordering and use repository-relative file URIs.
+  - Default JSON/text output, `--diff`, and `--fail-on-findings` behavior remain unchanged.
+  - README and CHANGELOG position 0.1.1 as a CI-focused release with SARIF/code-scanning usage.
+  - `bun run format:check`, `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:coverage`, `bun run package:check`, and `bun run scan:ci` pass.
+
+context: |
+  Current formatting is centralized in `src/format.ts`; CLI only parses `--format json|text` and delegates to `formatResult()`.
+  GitHub SARIF support expects SARIF 2.1.0 with explicit schema/version, `tool.driver.name`, `tool.driver.rules[]`, result messages, at least one location, and stable `partialFingerprints` for alert identity.
+  Design A considered: extend `formatResult()` inline with SARIF construction. It keeps one formatter file but would mix the compact native output with SARIF schema knowledge.
+  Design B chosen: add a dedicated `src/sarif.ts` module owned by SARIF schema mapping, with `formatResult()` remaining the small format router. This hides SARIF details from the CLI and scan core.
+  SARIF levels should stay non-punitive: use `warning` for code-scanning visibility while keeping `severity: candidate` in native JSON.
+
+refs:
+  - src/cli.ts
+  - src/format.ts
+  - src/types.ts
+  - test/core.test.ts
+  - test/cli.test.ts
+  - README.md
+  - CHANGELOG.md
+  - .github/workflows/ci.yml
+  - https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning
+  - https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
+
+open_questions: []
+
+followups:
+  - Consider uploading SARIF from GitHub Actions after deciding whether repository code-scanning permissions should be enabled by default.
+  - Consider richer SARIF related locations for multi-location findings such as duplicate symbols after the first code-scanning path ships.
+
+tasks:
+  - id: add-sarif-formatter
+    description: >
+      Add a dedicated SARIF formatter module and unit coverage for the SARIF 2.1.0
+      shape generated from existing scan results.
+    status: done
+    context: |
+      Keep SARIF schema knowledge in one module; callers should still ask `formatResult(result, format)`.
+      Use GitHub-friendly relative artifact URIs and stable fingerprints based on deterministic finding identity.
+      Do not change the native `ScanResult` JSON schema.
+    acceptance:
+      - `formatResult(result, "sarif")` returns SARIF 2.1.0 JSON with schema, version, driver, rules, results, source locations, and partial fingerprints.
+      - SARIF results preserve the scanner's existing finding order.
+      - Existing `json` and `text` formatter tests still pass unchanged in behavior.
+    depends_on: []
+
+  - id: expose-sarif-cli
+    description: >
+      Wire SARIF into the CLI surface and package scripts so CI jobs can generate
+      a SARIF log without custom code.
+    status: done
+    context: |
+      Extend `--format` validation and usage text only; do not add an output-file flag in this first version.
+      CI users can redirect stdout to a `.sarif` file or pipe it to an upload step.
+      Preserve `--fail-on-findings` so SARIF output can still be used as a blocking gate when desired.
+    acceptance:
+      - CLI accepts `--format sarif` and rejects other unknown formats.
+      - A package script exists for source SARIF generation.
+      - CLI tests prove SARIF output parses and `--fail-on-findings` still exits non-zero after writing SARIF.
+    depends_on:
+      - add-sarif-formatter
+
+  - id: document-ci-focused-release
+    description: >
+      Update release-facing docs and version metadata so 0.1.1 is positioned as
+      the CI/SARIF release.
+    status: done
+    context: |
+      README should show a practical GitHub Actions/code-scanning command path without forcing this repo to upload SARIF by default.
+      CHANGELOG should summarize all CI-centered 0.1.1 work: CI gate, hooks, coverage, SARIF, and tsconfig aliases.
+      Leave package metadata at the currently published version; bump it only during the publish flow.
+    acceptance:
+      - README documents `--format sarif`, a CI redirection/upload example, and how it relates to `--fail-on-findings`.
+      - CHANGELOG presents 0.1.1 as an unreleased CI-focused version including SARIF and prior CI improvements.
+      - `package.json` version remains at the currently published version until publish time.
+    depends_on:
+      - expose-sarif-cli
+
+  - id: verify-sarif-ci-release
+    description: >
+      Run the full local gate and review the SARIF boundary for complexity before
+      declaring the delta complete.
+    status: done
+    acceptance:
+      - `bun run format:check` passes.
+      - `bun run lint` passes.
+      - `bun run typecheck` passes.
+      - `bun run test` passes.
+      - `bun run test:coverage` passes.
+      - `bun run package:check` passes.
+      - `bun run scan:ci` passes.
+      - Complexity review finds no SARIF schema leakage into scan core or CLI orchestration.
+    depends_on:
+      - document-ci-focused-release
+
+log:
+  - id: log-001
+    timestamp: 2026-05-08T21:19Z
+    command: explore
+    summary: >
+      Explored SARIF as the next 0.1.1 focus after human steering toward a
+      CI-centered release. Current CLI formatting has a small router in
+      `src/format.ts`; the scan core already emits deterministic findings with
+      repository-relative paths and one-based lines. GitHub's SARIF support
+      requires SARIF 2.1.0, schema/version, one or more runs, `tool.driver`,
+      rule descriptors, result messages, source locations, and recommends stable
+      partial fingerprints. Compared an inline formatter extension against a
+      dedicated SARIF module; chose the dedicated module because it keeps SARIF
+      schema knowledge out of the CLI and native formatter while preserving a
+      tiny `formatResult(result, format)` call site. No open questions remain;
+      richer GitHub Actions upload wiring and multi-location SARIF enrichment are
+      deferred followups.
+
+  - id: log-002
+    timestamp: 2026-05-08T21:20Z
+    command: plan
+    summary: >
+      Planned the CI/SARIF work as four verifiable slices: first add the SARIF
+      formatter behind the existing format boundary, then expose it through CLI
+      parsing and a package script, then update docs/version metadata for a
+      CI-focused 0.1.1, then run the full gate plus a complexity review. Baseline
+      before planning passed: `bun test test/core.test.ts test/cli.test.ts`
+      reported 18 tests / 47 assertions, and `bun run typecheck` passed.
+
+  - id: log-003
+    timestamp: 2026-05-08T21:22Z
+    command: apply
+    task: add-sarif-formatter
+    summary: >
+      Added `src/sarif.ts` as the dedicated SARIF 2.1.0 mapping boundary and
+      wired `formatResult(result, "sarif")` to it. The new unit test first failed
+      because `sarif` fell through to text output, then passed after the formatter
+      produced schema/version, `tool.driver`, rule descriptors, warning-level
+      results, repository-relative artifact URIs, source lines, and stable
+      `primaryLocationLineHash` fingerprints. Verification passed: `bun test
+      test/core.test.ts` reported 12 tests / 36 assertions, `bun run typecheck`
+      passed, `bun run format:check` passed after formatting, and `bun run lint`
+      passed with 0 warnings/errors.
+
+  - id: log-004
+    timestamp: 2026-05-08T21:23Z
+    command: apply
+    task: expose-sarif-cli
+    summary: >
+      Wired SARIF through the CLI and package scripts. `--format` usage and
+      validation now accept `sarif`, `package.json` exposes `bun run scan:sarif`
+      for source SARIF generation, and CLI tests prove SARIF output parses,
+      unknown formats are rejected, and `--fail-on-findings` exits 1 after
+      writing SARIF. The new CLI tests first failed while `sarif` was rejected,
+      then passed after the CLI update. Verification passed: `bun test
+      test/cli.test.ts` reported 10 tests / 23 assertions, `bun run scan:sarif`
+      emitted a SARIF 2.1.0 log for `src`, `bun run typecheck` passed, and `bun
+      run format:check` passed after formatting.
+
+  - id: log-005
+    timestamp: 2026-05-08T21:23Z
+    command: apply
+    task: document-ci-focused-release
+    summary: >
+      Updated release-facing docs and metadata for a CI-focused 0.1.1. README now
+      documents `--format sarif`, GitHub code-scanning redirection/upload usage,
+      diff-scoped SARIF, and the distinction between SARIF annotations and
+      deliberate `--fail-on-findings` gating. Development docs include `bun run
+      scan:sarif`. CHANGELOG reframes 0.1.1 around CI usage: local/GitHub gates,
+      SARIF, `--fail-on-findings`, Lefthook, unit coverage, and tsconfig alias
+      resolution. `package.json` version is now `0.1.1`. Verification passed:
+      `bun run format:check` and `bun run typecheck` both passed.
+
+  - id: log-006
+    timestamp: 2026-05-08T21:24Z
+    command: apply
+    task: verify-sarif-ci-release
+    summary: >
+      Ran the full local verification gate and complexity review. Passed: `bun
+      run format:check`, `bun run lint` with 0 warnings/errors, `bun run
+      typecheck`, `bun run test` with 62 tests / 128 assertions, `bun run
+      test:coverage` with 88.49% source line coverage against the 85% gate,
+      `bun run package:check` for `@andrezzoid/strata@0.1.1` with 27 package
+      entries, and `bun run scan:ci` with 0 findings. The diff-scoped complexity
+      scan `bun run scan -- . --diff origin/main --format json` reported 0
+      findings. Manual review found SARIF schema knowledge centralized in
+      `src/sarif.ts`; `src/format.ts` remains the small router and `src/cli.ts`
+      only parses the selected output format, with no SARIF schema leakage into
+      scan core or detector code.
+
+  - id: log-007
+    timestamp: 2026-05-08T21:25Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass for 4 tasks and 6
+      integrated criteria. Formatter evidence: `formatResult(result, "sarif")`
+      returns SARIF 2.1.0 JSON with schema/version, `tool.driver`, rule
+      descriptors, result locations, repository-relative artifact URIs, and
+      stable `primaryLocationLineHash` fingerprints while preserving result order;
+      existing JSON/text tests still pass. CLI evidence: `--format sarif` is
+      accepted, unknown output formats are rejected, `--fail-on-findings` exits
+      non-zero after writing SARIF, and `bun run scan:sarif` emits a SARIF log for
+      `src`. Documentation and metadata evidence: README documents SARIF usage,
+      CI upload examples, and gating semantics; CHANGELOG frames 0.1.1 as the
+      CI-focused release; `package.json` is version `0.1.1`. Regression evidence:
+      `bun run format:check`, `bun run lint`, `bun run typecheck`, `bun run test`
+      (62 tests / 128 assertions), `bun run test:coverage` (88.49% against the
+      85% gate), `bun run package:check` (27 package entries), and `bun run
+      scan:ci` all passed. The diff-scoped complexity scan reported 0 findings,
+      and manual review found SARIF details isolated to `src/sarif.ts`. No bugs,
+      design gaps, or context gaps were found. Delta is complete.
+
+  - id: log-008
+    timestamp: 2026-05-08T21:25Z
+    command: apply
+    task: document-ci-focused-release
+    summary: >
+      Applied human steering on release timing: reverted `package.json` from
+      `0.1.1` back to `0.1.0` so the version bump happens during the publish
+      flow. Updated this delta's release-metadata acceptance to match that
+      policy. This does not change SARIF behavior, CLI behavior, or the
+      CI-focused 0.1.1 changelog positioning.
+
+  - id: log-009
+    timestamp: 2026-05-08T21:33Z
+    command: verify
+    summary: >
+      Re-verified the package dry-run after the publish-time version-bump policy
+      change. `bun run package:check` passed and reported
+      `@andrezzoid/strata@0.1.0` with 27 package entries, confirming the package
+      remains publishable while the version bump is deferred.

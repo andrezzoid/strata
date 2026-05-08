@@ -41,6 +41,7 @@
     "package:check": "npm pack --dry-run --json",
     "scan": "bun src/cli.ts",
     "scan:ci": "bun src/cli.ts src --fail-on-findings",
+    "scan:sarif": "bun src/cli.ts src --format sarif",
     "test": "bun test",
     "test:coverage": "bun scripts/check-coverage.ts",
     "test:watch": "bun test --watch",

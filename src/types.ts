@@ -34,4 +34,4 @@ export type ScanResult = {
 };
 
 /** CLI output formats intentionally kept small for deterministic consumers. */
-export type OutputFormat = "json" | "text";
+export type OutputFormat = "json" | "text" | "sarif";

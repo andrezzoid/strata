@@ -84,6 +84,33 @@ describe("CLI", () => {
     expect(result.stdout).toContain("[passThroughMethod] case.ts:7");
   });
 
+  it("prints SARIF output", () => {
+    const result = runStrata([passThroughFixture, "--format", "sarif"]);
+
+    expect(result.status).toBe(0);
+    const sarif = JSON.parse(result.stdout);
+    expect(sarif.version).toBe("2.1.0");
+    expect(
+      sarif.runs[0].results.some(
+        (finding: { ruleId: string }) => finding.ruleId === "passThroughMethod",
+      ),
+    ).toBe(true);
+  });
+
+  it("can fail on findings after writing SARIF", () => {
+    const result = runStrata([passThroughFixture, "--format", "sarif", "--fail-on-findings"]);
+
+    expect(result.status).toBe(1);
+    expect(JSON.parse(result.stdout).runs[0].results.length).toBeGreaterThan(0);
+  });
+
+  it("rejects unknown output formats", () => {
+    const result = runStrata([passThroughFixture, "--format", "xml"]);
+
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("--format json|text|sarif");
+  });
+
   it("exposes the packaged bin launcher", () => {
     const result = runPackagedBin(["--help"]);
 

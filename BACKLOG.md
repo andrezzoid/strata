@@ -4,7 +4,6 @@ Future work should earn its complexity. Each item below should be implemented on
 
 ## CLI & Output
 
-- SARIF output for GitHub code scanning and IDE annotations.
 - Detector subset filtering with `--only` and `--exclude`.
 - Project configuration through `strata.toml` for thresholds and skip patterns.
 

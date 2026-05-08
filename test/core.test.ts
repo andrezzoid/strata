@@ -142,6 +142,39 @@ describe("formatResult", () => {
     expect(output).toContain("      preview (from src/a.ts):");
     expect(output).toContain("      occurrences (1):");
   });
+
+  it("emits GitHub-code-scanning-friendly SARIF", () => {
+    const output = formatResult(result, "sarif");
+    const sarif = JSON.parse(output);
+    const run = sarif.runs[0];
+    const duplicateRuleIndex = run.tool.driver.rules.findIndex(
+      (rule: { id: string }) => rule.id === "duplicateSymbol",
+    );
+
+    expect(sarif.$schema).toBe("https://json.schemastore.org/sarif-2.1.0.json");
+    expect(sarif.version).toBe("2.1.0");
+    expect(run.tool.driver.name).toBe("strata");
+    expect(duplicateRuleIndex).toBeGreaterThanOrEqual(0);
+    expect(run.results).toEqual([
+      {
+        ruleId: "duplicateSymbol",
+        ruleIndex: duplicateRuleIndex,
+        level: "warning",
+        message: { text: "Duplicate shape" },
+        locations: [
+          {
+            physicalLocation: {
+              artifactLocation: { uri: "src/a.ts" },
+              region: { startLine: 3 },
+            },
+          },
+        ],
+        partialFingerprints: {
+          primaryLocationLineHash: "duplicateSymbol:src/a.ts:3:Duplicate shape",
+        },
+      },
+    ]);
+  });
 });
 
 describe("collectAllProjectFiles", () => {
