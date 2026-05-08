@@ -102,7 +102,7 @@ tasks:
     context: |
       Prior publishing work used `npm pack --dry-run --json` to validate package contents.
       Keep this as a non-publishing check: no release creation, no npm auth, no registry writes.
-    status: pending
+    status: done
     acceptance:
       - `package.json` exposes a package dry-run check script.
       - The package dry-run command validates the files that would be published without creating release side effects.
@@ -244,3 +244,15 @@ log:
       run typecheck` passed, `bun run test` passed with 56 tests and 109
       assertions, and `bun run test:coverage` passed with 87.33% source line
       coverage against the 85% gate.
+
+  - id: log-006
+    timestamp: 2026-05-08T19:50Z
+    command: apply
+    task: add-package-check
+    summary: >
+      Added `bun run package:check` as a local `npm pack --dry-run --json`
+      validation with no publish, registry, or release side effects. Verified:
+      `bun run package:check` listed 26 package entries and exited 0,
+      `bun run format:check` passed, `bun run lint` passed with 0 warnings/errors,
+      `bun run typecheck` passed, and `bun run test` passed with 56 tests and
+      109 assertions.
