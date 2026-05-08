@@ -64,7 +64,7 @@ tasks:
     description: >
       Add focused tests for each detector or detector family using small inline
       TypeScript snippets parsed through the real parser.
-    status: pending
+    status: done
     context: |
       Unit tests should supplement fixtures, not duplicate them mechanically.
       Include negative cases: legitimate wrappers, optional/default params, comments-only catch, generated/test skips, scope-aware same-name interfaces.
@@ -127,3 +127,19 @@ log:
       24 assertions; `bun run typecheck` passed; `bun run test`: 26 pass, 0
       fail, 60 assertions across 3 files; changed-file complexity scan reported
       0 findings.
+
+  - id: log-004
+    timestamp: 2026-05-08T19:05Z
+    command: apply
+    task: add-detector-unit-tests
+    summary: >
+      Added `test/detectors.test.ts` with focused behavior-level tests for the
+      single-file detectors, cross-file detectors, and the module-surface detector
+      family. Inline TypeScript snippets are parsed through `oxc-parser` into
+      real `Ctx` objects; no fake ASTs or fixture expected files were used. The
+      tests cover positive and negative or boundary cases including legitimate
+      wrappers, optional/default params, comments-only catch bodies, generated
+      and test-file skips, and same-name interface scoping. Verified `bun test
+      test/detectors.test.ts`: 23 pass, 0 fail, 32 assertions; `bun run
+      typecheck` passed; `bun run test`: 49 pass, 0 fail, 92 assertions across 4
+      files; changed-file complexity scan reported 0 findings.
