@@ -137,3 +137,15 @@ log:
       findings remain review candidates. Task checks passed: `bun run
       format:check`, `bun run lint`, `bun run typecheck`, and `bun run test` (76
       pass, 0 fail).
+  - id: log-005
+    timestamp: 2026-05-08T22:10Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Verified CLI/core
+      behavior through `bun run test` (76 pass, 0 fail), including filtered JSON,
+      text, SARIF, invalid detector usage, fail-on-filtered-findings, default
+      behavior, selected cross-project detectors, and diff-scoped selected
+      findings. Full gate passed: `bun run format:check`, `bun run lint`, `bun
+      run typecheck`, `bun run test`, `bun run test:coverage` (90.32% lines >=
+      85%), `bun run package:check`, and `bun run scan:ci` (0 findings). Delta
+      is complete.
