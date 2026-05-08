@@ -19,9 +19,10 @@
   ],
   "type": "module",
   "bin": {
-    "strata": "./src/cli.ts"
+    "strata": "./bin/strata.js"
   },
   "files": [
+    "bin",
     "src",
     "README.md",
     "CHANGELOG.md",

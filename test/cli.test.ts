@@ -5,10 +5,25 @@ import { describe, expect, it } from "bun:test";
 const here = dirname(Bun.fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
 const cli = join(repoRoot, "src/cli.ts");
+const bin = join(repoRoot, "bin/strata.js");
 const passThroughFixture = join(repoRoot, "test/fixtures/pass-through-method");
 
 function runStrata(args: string[]) {
   const result = Bun.spawnSync(["bun", cli, ...args], {
+    cwd: repoRoot,
+    stdin: "ignore",
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  return {
+    status: result.exitCode,
+    stdout: result.stdout?.toString() ?? "",
+    stderr: result.stderr?.toString() ?? "",
+  };
+}
+
+function runPackagedBin(args: string[]) {
+  const result = Bun.spawnSync(["bun", bin, ...args], {
     cwd: repoRoot,
     stdin: "ignore",
     stdout: "pipe",
@@ -37,6 +52,13 @@ describe("CLI", () => {
     expect(result.status).toBe(0);
     expect(result.stdout).toContain("Total:");
     expect(result.stdout).toContain("[passThroughMethod] case.ts:7");
+  });
+
+  it("exposes the packaged bin launcher", () => {
+    const result = runPackagedBin(["--help"]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain("strata [PATH]");
   });
 
   it("rejects unknown flags", () => {

@@ -11,7 +11,7 @@ acceptance:
 
 context: |
   Current friction: users must clone the repo, install dependencies, and link the package before running `strata`.
-  The CLI is Bun-native today: package bin points at `./src/cli.ts`, and the entrypoint uses `#!/usr/bin/env bun`.
+  The CLI is Bun-native today: package bin points at `./bin/strata.js`, which uses `#!/usr/bin/env bun` and delegates to `src/cli.ts`.
   The unscoped npm package name `strata` is already taken by an unrelated HTTP server package; `@andrezzoid/strata` appears available.
   Recommended sequence: scoped npm package for Bun users first, GitHub Release binaries second, mise via GitHub releases third, Homebrew tap fourth.
   Standalone binaries need extra design work: a throwaway `bun build --compile` binary crashed because `oxc-parser` loads a native optional binding dynamically.
@@ -24,6 +24,8 @@ refs:
   - CHANGELOG.md
   - BACKLOG.md
   - src/cli.ts
+  - bin/strata.js
+  - test/cli.test.ts
   - test/fixtures/pass-through-method
   - https://bun.com/docs/pm/cli/publish
   - https://bun.com/docs/pm/cli/install
@@ -132,6 +134,25 @@ tasks:
       - README install instructions match the package that was actually published.
     depends_on:
       - verify-packed-install
+      - add-package-bin-launcher
+
+  - id: add-package-bin-launcher
+    description: >
+      Add an npm-conventional executable launcher so package managers preserve
+      the installed `strata` command while the implementation stays Bun-native.
+    status: done
+    context: |
+      npm tooling warns when the package bin points directly at `src/cli.ts` and also rejects an extensionless launcher in this package.
+      Keep `src/cli.ts` as the real implementation and make `bin/strata.js` a tiny Bun shebang launcher.
+      The source CLI must export `main()` so direct CLI execution and package-bin execution share behavior.
+    acceptance:
+      - "`package.json` maps `bin.strata` to `./bin/strata.js` and includes `bin` in the published files."
+      - "`bin/strata.js` has a Bun shebang and delegates to the exported `main()` from `src/cli.ts`."
+      - "CLI tests cover the packaged bin launcher."
+      - "`npm pack --dry-run` includes the launcher and preserves the package `bin` entry."
+      - "Packed global install still exposes a working `strata` command."
+    depends_on:
+      - verify-packed-install
 
 log:
   - id: log-001
@@ -224,3 +245,28 @@ log:
       bunx npm login)`. The task is blocked on npm registry authentication; no
       registry install verification was possible because no package version was
       published.
+  - id: log-009
+    timestamp: 2026-05-08T14:51Z
+    command: plan
+    summary: >
+      Revised the pending release plan after npm dry-run showed it would
+      auto-correct the direct `src/cli.ts` bin target. Added a package-bin
+      launcher task before publish so Bun remains the runtime while the package
+      uses a conventional executable under `bin/`.
+  - id: log-010
+    timestamp: 2026-05-08T14:55Z
+    command: apply
+    task: add-package-bin-launcher
+    summary: >
+      Added `bin/strata.js` as the package launcher with a Bun shebang and
+      updated `package.json` so the installed `strata` command points at that
+      launcher while `src/cli.ts` remains the implementation. Exported
+      `main()` from `src/cli.ts` so direct and packaged execution share the same
+      behavior, and added a CLI test covering `bun bin/strata.js --help`.
+      Verification: the new CLI test initially failed before the launcher
+      existed, then `bun test test/cli.test.ts` passed with 4 tests; `bun run
+      typecheck` passed; `npm pack --dry-run --json` included `bin/strata.js`
+      with executable mode; npm-packed `package.json` preserved `bin.strata` as
+      `./bin/strata.js`; `bun pm pack` plus isolated global install exposed a
+      working `strata` command that printed help and emitted the expected
+      pass-through fixture findings.

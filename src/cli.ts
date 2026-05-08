@@ -17,7 +17,11 @@ function usage(exitCode: 0 | 2): never {
   process.exit(exitCode);
 }
 
-async function main(): Promise<void> {
+/**
+ * Runs the process-oriented CLI: reads argv, writes output, and exits for usage errors.
+ * Kept exportable so package bin launchers can stay tiny and share this exact behavior.
+ */
+export async function main(): Promise<void> {
   let target = "";
   let diffRef: string | null = null;
   let format: OutputFormat = "json";
