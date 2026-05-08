@@ -91,7 +91,7 @@ tasks:
     description: >
       Run the full verification gate and review the resolver boundary for
       avoidable complexity before declaring the delta complete.
-    status: pending
+    status: done
     acceptance:
       - `bun run format:check` passes.
       - `bun run lint` passes.
@@ -177,3 +177,17 @@ log:
       `extends` followups while preserving import-form followups. Verification
       passed: `bun run format:check`, `bun run lint`, `bun run typecheck`, and
       `bun run test` (58 tests / 116 assertions).
+
+  - id: log-006
+    timestamp: 2026-05-08T20:48Z
+    command: apply
+    task: verify-tsconfig-alias-support
+    summary: >
+      Ran the final task-level verification gate and complexity review. Passed:
+      `bun run format:check`, `bun run lint`, `bun run typecheck`, `bun run
+      test` (58 tests / 116 assertions), and `bun run scan:ci` with 0 source
+      findings. The diff-scoped complexity scan `bun run scan -- . --diff
+      origin/main --format json` also reported 0 findings. Manual review found
+      the tsconfig/baseUrl/paths knowledge centralized in the import resolver;
+      detectors depend only on the small `ImportResolver.resolve()` outcome, with
+      no shallow tsconfig wrapper or duplicated candidate path expansion.
