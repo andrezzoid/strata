@@ -153,7 +153,7 @@ tasks:
     context: |
       This is final verification, not a place to add new checks.
       If verification discovers missing coverage or a workflow design gap, log it and route through Plan rather than silently expanding scope.
-    status: pending
+    status: done
     acceptance:
       - Formatting check passes.
       - Linting passes.
@@ -287,3 +287,22 @@ log:
       Verified: `bun run format:check` passed, `bun run lint` passed with 0
       warnings/errors, `bun run typecheck` passed, and `bun run test` passed
       with 56 tests and 109 assertions.
+
+  - id: log-009
+    timestamp: 2026-05-08T19:54Z
+    command: apply
+    task: verify-ci-pipeline
+    summary: >
+      Ran the full local CI-equivalent verification. Passed: `bun run
+      format:check` on 34 files, `bun run lint` with 0 warnings/errors, `bun
+      run typecheck`, `bun run test` with 56 tests and 109 assertions, `bun run
+      test:coverage` with 87.33% source line coverage against the 85% gate,
+      `bun run package:check` with 26 dry-run package entries, and `bun run
+      scan:ci` with 0 source findings. Verified the negative red-flag gate with
+      `bun src/cli.ts test/fixtures/pass-through-method --fail-on-findings`,
+      which emitted 4 findings and exited 1. Complexity review passed: the
+      changed workflow and scripts are thin local-script callers, command
+      knowledge is centralized in `package.json`, the coverage helper owns LCOV
+      parsing and threshold enforcement behind one script entry point, and the
+      deterministic red-flags diff scan against `origin/main` reported 0
+      findings.
