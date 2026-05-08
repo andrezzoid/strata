@@ -1,5 +1,4 @@
 import { parseSync } from "oxc-parser";
-import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import type { Finding } from "./types.ts";
@@ -62,13 +61,13 @@ export function walk(node: Node, visit: (n: Node, parent: Node | null) => void, 
 }
 
 /** Parses every requested file into detector-ready contexts, skipping unreadable or empty-invalid files. */
-export function parseContexts(root: string, files: string[]): Ctx[] {
+export async function parseContexts(root: string, files: string[]): Promise<Ctx[]> {
   const ctxs: Ctx[] = [];
   for (const file of files) {
     const abs = join(root, file);
     let source: string;
     try {
-      source = readFileSync(abs, "utf8");
+      source = await Bun.file(abs).text();
     } catch {
       continue;
     }

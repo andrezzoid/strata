@@ -1,19 +1,24 @@
-import { spawnSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "bun:test";
 
-const here = dirname(fileURLToPath(import.meta.url));
+const here = dirname(Bun.fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
 const cli = join(repoRoot, "src/cli.ts");
 const passThroughFixture = join(repoRoot, "test/fixtures/pass-through-method");
 
 function runStrata(args: string[]) {
-  return spawnSync("bun", [cli, ...args], {
+  const result = Bun.spawnSync(["bun", cli, ...args], {
     cwd: repoRoot,
-    encoding: "utf8",
+    stdin: "ignore",
+    stdout: "pipe",
+    stderr: "pipe",
   });
+  return {
+    status: result.exitCode,
+    stdout: result.stdout?.toString() ?? "",
+    stderr: result.stderr?.toString() ?? "",
+  };
 }
 
 describe("CLI", () => {

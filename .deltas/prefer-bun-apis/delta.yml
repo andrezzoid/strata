@@ -1,0 +1,175 @@
+goal: >
+  Make strata idiomatically Bun-native by replacing avoidable Node compatibility
+  APIs with Bun APIs and recording that preference in project guidance.
+
+acceptance:
+  - Runtime file reads use `Bun.file()` where the operation is reading file contents.
+  - Process execution uses `Bun.spawnSync()` or Bun Shell instead of `node:child_process` where synchronous CLI behavior is needed.
+  - Project file discovery uses `Bun.Glob` or another Bun-native approach instead of hand-written recursive `node:fs` traversal when behavior remains equivalent.
+  - `AGENTS.md` documents the Bun-first rule and the allowed exceptions for path manipulation and directory APIs that Bun docs still route through Node compatibility.
+  - Existing fixture, CLI, typecheck, and self-scan verification still pass.
+
+context: |
+  I agree with this improvement. Current code imports `node:fs`, `node:path`, `node:url`, and `node:child_process` in src and tests.
+  Bun docs identify `Bun.file`/`Bun.write`, `Bun.spawn`/`Bun.spawnSync`, `Bun.Glob`, `Bun.fileURLToPath`, and `bun:test` as canonical Bun-native APIs.
+  Bun docs still explicitly recommend `node:fs` for directory operations such as readdir/mkdir and `path` for path manipulation, so the target is Bun-first rather than Node-zero.
+  Keep `scanProject()` as the deep interface; this is an implementation/API-usage cleanup, with CLI and scanner-output behavior preserved.
+
+refs:
+  - AGENTS.md
+  - package.json
+  - src/ast.ts
+  - src/project.ts
+  - src/scan.ts
+  - src/cli.ts
+  - test/cli.test.ts
+  - test/fixtures.test.ts
+  - https://bun.com/docs/runtime/bun-apis
+  - https://bun.com/docs/runtime/file-io
+  - https://bun.com/docs/runtime/child-process
+  - https://bun.com/docs/runtime/glob
+  - https://bun.com/docs/runtime/utils
+
+open_questions: []
+
+notes:
+  - >
+    `bun run test` now uses `bun test`; Vitest's Node runtime cannot load
+    source and tests that rely on Bun globals after this migration.
+  - >
+    `Bun.file().text()` is async, so `scanProject()` remains the single deep
+    scan API but now returns `Promise<ScanResult>`.
+
+tasks:
+  - id: document-bun-first-rule
+    description: >
+      Update AGENTS.md so future agents prefer Bun-native APIs and know which
+      Node compatibility APIs are still acceptable in Bun projects.
+    status: done
+    context: |
+      Rule should be concrete: prefer `Bun.file`, `Bun.write`, `Bun.spawnSync`, `Bun.Glob`, `Bun.fileURLToPath`, and `bun:test`.
+      Avoid a dogmatic ban on `node:path`; Bun docs show `path` for path manipulation.
+      Avoid banning `node:fs` directory APIs where Bun docs still recommend them.
+    acceptance:
+      - AGENTS.md contains a Bun-first runtime rule with concrete preferred APIs.
+      - The rule explicitly allows documented exceptions for path manipulation and directory operations.
+      - CLAUDE.md still resolves to the updated guidance through the symlink.
+    depends_on: []
+
+  - id: migrate-runtime-apis
+    description: >
+      Replace avoidable Node compatibility usage in src with Bun-native APIs
+      while preserving scanner output and CLI behavior.
+    status: done
+    context: |
+      Use `Bun.file(path).text()` for source reads and target existence checks where practical.
+      Use `Bun.Glob` for TS/TSX file discovery if it can preserve node_modules/.git exclusion and sorted relative paths.
+      Use `Bun.spawnSync` for git commands in diff collection; keep shell injection protection by passing argv arrays.
+    acceptance:
+      - No avoidable `node:child_process` import remains in src.
+      - Source-content reads no longer use `readFileSync` in src.
+      - File discovery behavior remains deterministic and excludes node_modules/.git.
+      - `bun run typecheck`, `bun run test`, and fixture CLI scans pass.
+    depends_on:
+      - document-bun-first-rule
+
+  - id: migrate-test-runtime-apis
+    description: >
+      Move tests toward Bun-native APIs where that does not reduce clarity or
+      coverage.
+    status: done
+    context: |
+      This can either stay minimal here or be completed by the unit-test delta if that delta switches to `bun:test`.
+      At minimum, replace CLI subprocess tests with `Bun.spawnSync` and replace fixture reads with `Bun.file().json()` if test structure stays similar.
+    acceptance:
+      - CLI tests do not rely on `node:child_process`.
+      - Fixture expected JSON reads use Bun-native file reads where practical.
+      - Test output and assertions remain behavior-focused.
+    depends_on:
+      - migrate-runtime-apis
+
+  - id: verify-bun-api-migration
+    description: >
+      Run the full verification suite and a source self-scan to prove the API
+      migration changed implementation style without changing scanner behavior.
+    status: done
+    acceptance:
+      - `bun run typecheck` passes.
+      - `bun run test` passes.
+      - `bun src/cli.ts test/fixtures/pass-through-method --format text` emits expected candidates.
+      - `bun src/cli.ts src --format json` reports no source findings or only justified candidates.
+    depends_on:
+      - migrate-test-runtime-apis
+
+log:
+  - id: log-001
+    timestamp: 2026-05-08T12:53Z
+    command: plan
+    summary: >
+      Reviewed current Node compatibility usage and Bun documentation. Agreed
+      with the Bun-first direction, with an explicit exception: Bun docs still
+      point to `node:path` for path manipulation and `node:fs` for some
+      directory operations. Planned documentation first, then runtime migration,
+      test migration, and verification.
+
+  - id: log-002
+    timestamp: 2026-05-08T13:12Z
+    command: apply
+    task: document-bun-first-rule
+    summary: >
+      Added the Bun-first runtime rule to AGENTS.md with concrete preferred
+      APIs: `Bun.file`, `Bun.write`, `Bun.spawnSync`, `Bun.Glob`,
+      `Bun.fileURLToPath`, and `bun:test`. The rule explicitly preserves
+      `node:path` for path manipulation and `node:fs` directory APIs where Bun
+      docs still route directory work through Node compatibility. Verified
+      CLAUDE.md resolves through the AGENTS.md symlink and exposes the same
+      updated guidance.
+
+  - id: log-003
+    timestamp: 2026-05-08T13:12Z
+    command: apply
+    task: migrate-runtime-apis
+    summary: >
+      Migrated source-content reads to `Bun.file().text()`, TS/TSX discovery
+      to `Bun.Glob`, and git diff collection to `Bun.spawnSync` argv arrays.
+      Kept `scanProject()` as the deep scan API, now returning
+      `Promise<ScanResult>` because Bun content reads are async. Kept
+      `node:path` and `node:fs` stat/readdir boundaries for path and directory
+      work. Verified no source `node:child_process`, `readFileSync`, `execSync`,
+      or `existsSync` usage remains; `bun run typecheck` passed.
+
+  - id: log-004
+    timestamp: 2026-05-08T13:12Z
+    command: apply
+    task: migrate-test-runtime-apis
+    summary: >
+      Replaced CLI subprocess tests with `Bun.spawnSync`, file URL conversion
+      with `Bun.fileURLToPath`, and expected fixture JSON reads with
+      `Bun.file().json()`. Switched package test scripts from Vitest to
+      `bun:test` and removed the obsolete Vitest dev dependency because Vitest
+      runs these tests in Node, where Bun globals are unavailable after the
+      runtime migration. Verified `bun run test`: 16 pass, 0 fail, 34
+      assertions.
+
+  - id: log-005
+    timestamp: 2026-05-08T13:12Z
+    command: apply
+    task: verify-bun-api-migration
+    summary: >
+      Ran the requested verification suite. `bun run typecheck` passed.
+      `bun run test` passed: 16 tests, 34 assertions. `bun src/cli.ts
+      test/fixtures/pass-through-method --format text` emitted expected
+      candidates including `[passThroughMethod] case.ts:7`. `bun src/cli.ts src
+      --format json` reported `totalFindings: 0`. The complexity red-flags diff
+      scan also reported `totalFindings: 0`.
+
+  - id: log-006
+    timestamp: 2026-05-08T13:12Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Runtime file
+      contents use `Bun.file()`, synchronous process execution uses
+      `Bun.spawnSync`, project discovery uses `Bun.Glob`, AGENTS.md documents
+      the Bun-first rule and exceptions, Vitest has been removed from
+      devDependencies, and the full verification suite passed. No regressions or
+      additional findings detected. Delta is complete.

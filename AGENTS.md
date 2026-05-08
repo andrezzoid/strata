@@ -15,6 +15,7 @@ This project is grounded in John Ousterhout's _A Philosophy of Software Design_.
 
 - Preserve existing detector semantics unless a test exposes a real bug.
 - Write tests before changing detector behavior.
+- Prefer Bun-native runtime APIs: use `Bun.file()`/`Bun.write()` for file contents, `Bun.spawnSync()` or Bun Shell for process execution, `Bun.Glob` for project file discovery, `Bun.fileURLToPath()` for file URL conversion, and `bun:test` for Bun-owned tests. `node:path` remains appropriate for path manipulation, and `node:fs` directory APIs such as `readdir`/`mkdir` remain acceptable where Bun docs still route directory work through Node compatibility.
 - Keep public interfaces documented enough that callers do not need to read implementation code.
 - Add comments for contracts, invariants, and non-obvious tradeoffs; do not translate obvious code into prose.
 - Update `README.md`, `CHANGELOG.md`, or `BACKLOG.md` when behavior, release surface, or deferred work changes.

@@ -1,5 +1,4 @@
-import { execSync } from "node:child_process";
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { readdirSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 
 import type { Finding } from "./types.ts";
@@ -34,42 +33,46 @@ export function collectScanFiles(target: string, diffRef: string | null): ScanFi
 /** Collects TS/TSX files without shelling out, so scanning works outside Unix-like environments too. */
 export function collectAllProjectFiles(target: string): string[] {
   const out: string[] = [];
-  collectRecursive(target, target, out);
-  return out.sort();
-}
-
-function collectRecursive(root: string, dir: string, out: string[]): void {
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name === "node_modules" || entry.name === ".git") continue;
-    const abs = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      collectRecursive(root, abs, out);
-      continue;
-    }
-    if (!entry.isFile()) continue;
-    if (!/\.tsx?$/.test(entry.name)) continue;
-    out.push(toPosix(relative(root, abs)));
+  const rootGlob = new Bun.Glob("*.{ts,tsx}");
+  for (const file of rootGlob.scanSync({ cwd: target, dot: true, onlyFiles: true })) {
+    out.push(toPosix(file));
   }
+
+  // Bun.Glob owns recursive matching; the shallow directory pass keeps common
+  // top-level dependency/VCS trees out of the expensive recursive scans.
+  const nestedGlob = new Bun.Glob("**/*.{ts,tsx}");
+  for (const entry of readdirSync(target, { withFileTypes: true })) {
+    if (entry.name === "node_modules" || entry.name === ".git") continue;
+    if (!entry.isDirectory()) continue;
+    for (const file of nestedGlob.scanSync({ cwd: join(target, entry.name), dot: true, onlyFiles: true })) {
+      const relativePath = toPosix(join(entry.name, file));
+      if (!isProjectFile(relativePath)) continue;
+      out.push(relativePath);
+    }
+  }
+
+  return out.sort();
 }
 
 /** Returns files changed since diffRef, including committed diff, worktree changes, and untracked files. */
 export function collectChangedFiles(target: string, diffRef: string): Set<string> {
   const lines = new Set<string>();
   const committed = tryGitOutput(
-    `git diff --name-only --diff-filter=ACMR ${shellQuote(diffRef)} -- '*.ts' '*.tsx'`,
+    ["diff", "--name-only", "--diff-filter=ACMR", diffRef, "--", "*.ts", "*.tsx"],
     target,
   );
   for (const line of committed.split("\n")) if (line) lines.add(toPosix(line));
 
-  const workingTree = tryGitOutput("git ls-files --modified --others --exclude-standard -- '*.ts' '*.tsx'", target);
+  const workingTree = tryGitOutput(["ls-files", "--modified", "--others", "--exclude-standard", "--", "*.ts", "*.tsx"], target);
   for (const line of workingTree.split("\n")) if (line) lines.add(toPosix(line));
 
-  return new Set([...lines].filter((file) => existsSync(join(target, file))));
+  return new Set([...lines].filter((file) => statSync(join(target, file), { throwIfNoEntry: false })?.isFile()));
 }
 
-function tryGitOutput(command: string, cwd: string): string {
+function tryGitOutput(args: string[], cwd: string): string {
   try {
-    return execSync(command, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+    const result = Bun.spawnSync(["git", ...args], { cwd, stdin: "ignore", stdout: "pipe", stderr: "ignore" });
+    return result.success ? (result.stdout?.toString() ?? "") : "";
   } catch {
     // A missing ref or non-git target means "no changed files" for this source.
     return "";
@@ -86,10 +89,11 @@ export function findingTouchesChanged(finding: Finding, changed: Set<string>): b
   return false;
 }
 
-function shellQuote(value: string): string {
-  return `'${value.replace(/'/g, "'\\''")}'`;
-}
-
 function toPosix(path: string): string {
   return path.split("\\").join("/");
+}
+
+function isProjectFile(path: string): boolean {
+  const parts = path.split("/");
+  return !parts.includes("node_modules") && !parts.includes(".git");
 }

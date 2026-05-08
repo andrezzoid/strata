@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { statSync } from "node:fs";
 
 import { parseContexts } from "./ast.ts";
 import { detectDuplicateSymbol } from "./detectors/duplicate-symbol.ts";
@@ -22,15 +22,16 @@ export type ScanProjectOptions = {
  *
  * Cross-file detectors always receive the full project graph; `diffRef` only
  * filters emitted findings after analysis so graph-dependent answers stay valid.
+ * Returns a Promise because source contents are read through Bun's async file API.
  */
-export function scanProject(options: ScanProjectOptions = {}): ScanResult {
+export async function scanProject(options: ScanProjectOptions = {}): Promise<ScanResult> {
   const target = options.target ?? ".";
-  if (!existsSync(target)) {
+  if (!statSync(target, { throwIfNoEntry: false })) {
     throw new Error(`no such path: ${target}`);
   }
 
   const { root, files, changedFiles } = collectScanFiles(target, options.diffRef ?? null);
-  const ctxs = parseContexts(root, files);
+  const ctxs = await parseContexts(root, files);
 
   let allFindings: Finding[] = [];
   for (const ctx of ctxs) {

@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { existsSync } from "node:fs";
+import { statSync } from "node:fs";
 
 import { formatResult } from "./format.ts";
 import { scanProject } from "./scan.ts";
@@ -17,7 +17,7 @@ function usage(exitCode: 0 | 2): never {
   process.exit(exitCode);
 }
 
-function main(): void {
+async function main(): Promise<void> {
   let target = "";
   let diffRef: string | null = null;
   let format: OutputFormat = "json";
@@ -44,15 +44,15 @@ function main(): void {
   }
 
   target = target || ".";
-  if (!existsSync(target)) {
+  if (!statSync(target, { throwIfNoEntry: false })) {
     process.stderr.write(`no such path: ${target}\n`);
     process.exit(2);
   }
 
-  const result = scanProject({ target, diffRef });
+  const result = await scanProject({ target, diffRef });
   process.stdout.write(formatResult(result, format));
 }
 
 if (import.meta.main) {
-  main();
+  void main();
 }
