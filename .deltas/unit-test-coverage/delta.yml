@@ -49,7 +49,7 @@ tasks:
   - id: add-core-unit-tests
     description: >
       Add small, direct tests around scanner core utilities and formatting.
-    status: pending
+    status: done
     context: |
       Good targets: `buildLineOf`, `normalizePath`, `resolveRelativeImport`, `findingTouchesChanged`, `formatResult`, and project file discovery exclusions.
       Keep tests DAMP enough that failures explain the contract without reading helper setup.
@@ -112,3 +112,18 @@ log:
       temporary filesystem setup through existing runtime APIs, and subprocess
       checks through `Bun.spawnSync`. Verified `bun run test`: 17 pass, 0 fail,
       36 assertions across 2 files.
+
+  - id: log-003
+    timestamp: 2026-05-08T18:59Z
+    command: apply
+    task: add-core-unit-tests
+    summary: >
+      Added `test/core.test.ts` with direct behavior coverage for `buildLineOf`,
+      `normalizePath`, `resolveRelativeImport`, `findingTouchesChanged`,
+      `formatResult`, and `collectAllProjectFiles`. The tests assert returned
+      values and formatted output rather than interactions, and the filesystem
+      discovery test creates an isolated temp directory that is removed in a
+      `finally` block. Verified `bun test test/core.test.ts`: 9 pass, 0 fail,
+      24 assertions; `bun run typecheck` passed; `bun run test`: 26 pass, 0
+      fail, 60 assertions across 3 files; changed-file complexity scan reported
+      0 findings.
