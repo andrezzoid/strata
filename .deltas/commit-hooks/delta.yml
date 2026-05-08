@@ -66,7 +66,7 @@ tasks:
       Keep docs short and practical: install command, what pre-commit runs, and
       that CI remains authoritative. Mention that hooks intentionally avoid full
       tests and coverage to keep commits fast.
-    status: pending
+    status: done
     acceptance:
       - README mentions Lefthook setup after dependency installation.
       - README lists the pre-commit format/lint behavior.
@@ -120,3 +120,15 @@ log:
       code"` exit non-zero. Regression checks passed: `bun run format:check`,
       `bun run lint`, `bun run typecheck`, and `bun run test` (56 tests, 109
       assertions).
+
+  - id: log-003
+    timestamp: 2026-05-08T20:13Z
+    command: apply
+    task: document-commit-hooks
+    summary: >
+      Updated README development docs with `bun run hooks:install`, Lefthook's
+      automatic local install behavior, pre-commit staged-file formatting and
+      linting, and the choice to keep full tests/coverage in CI rather than on
+      every commit. Verified: `bun run format:check` passed, `bun run lint`
+      passed with 0 warnings/errors, `bun run typecheck` passed, and `bun run
+      test` passed with 56 tests and 109 assertions.

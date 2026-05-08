@@ -87,6 +87,7 @@ Notably absent: length-based long-function detection. PoSD does not treat length
 
 ```bash
 bun install
+bun run hooks:install
 bun run format:check
 bun run lint
 bun run typecheck
@@ -98,6 +99,8 @@ bun run scan -- test/fixtures/pass-through-method --format text
 ```
 
 Tests use Bun's test runner rather than the old shell harness. Fixture tests compare exact `(flag, file, line)` triples for each detector's primary fixture while allowing incidental cross-detector findings.
+
+Lefthook installs the repo's Git hooks during local dependency installation; run `bun run hooks:install` if you need to repair or reinstall them manually. The pre-commit hook formats staged JS/TS, JSON, Markdown, and YAML files with Oxfmt, re-stages fixes, then lints staged JS/TS files with Oxlint. It intentionally skips full tests and coverage so commits stay fast; GitHub Actions still runs the complete gate before merge.
 
 GitHub Actions runs the same local scripts before merge. `bun run test:coverage` gates LCOV line coverage for `src/` at 85%, which matches the current machine-readable aggregate rather than Bun's human table. `bun run package:check` runs `npm pack --dry-run --json` to validate package contents without publishing.
 
