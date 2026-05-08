@@ -1,9 +1,37 @@
 {
-  "name": "strata",
+  "name": "@andrezzoid/strata",
   "version": "0.1.0",
+  "description": "Deterministic candidate scanner for PoSD-style complexity red flags in TypeScript codebases.",
+  "license": "MIT",
+  "homepage": "https://github.com/andrezzoid/strata#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrezzoid/strata.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andrezzoid/strata/issues"
+  },
+  "keywords": [
+    "complexity",
+    "posd",
+    "scanner",
+    "typescript"
+  ],
   "type": "module",
   "bin": {
     "strata": "./src/cli.ts"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "bun": ">=1.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "scan": "bun src/cli.ts",

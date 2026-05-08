@@ -1,0 +1,226 @@
+goal: >
+  Explore how strata should be packaged and published so users can install and
+  run it without cloning, installing, and linking the repository manually.
+
+acceptance:
+  - Bun users can install the scoped package globally and run the `strata` command without cloning or linking this repository.
+  - The published package has release-appropriate metadata and excludes `.deltas/`, tests, fixtures, and agent-only files.
+  - README, CHANGELOG, and BACKLOG describe the Bun/npm install path, Bun runtime requirement, and deferred binary/mise/Homebrew roadmap.
+  - Local packed-install verification proves the packaged CLI can run `--help` and scan a fixture before registry publishing.
+  - GitHub Release binaries, mise, and Homebrew remain explicitly deferred until the standalone binary native-binding strategy is proven.
+
+context: |
+  Current friction: users must clone the repo, install dependencies, and link the package before running `strata`.
+  The CLI is Bun-native today: package bin points at `./src/cli.ts`, and the entrypoint uses `#!/usr/bin/env bun`.
+  The unscoped npm package name `strata` is already taken by an unrelated HTTP server package; `@andrezzoid/strata` appears available.
+  Recommended sequence: scoped npm package for Bun users first, GitHub Release binaries second, mise via GitHub releases third, Homebrew tap fourth.
+  Standalone binaries need extra design work: a throwaway `bun build --compile` binary crashed because `oxc-parser` loads a native optional binding dynamically.
+  Homebrew core is premature; a personal tap is realistic only after release assets and checksums are stable.
+  Plan scopes this delta to the Bun/npm source package; binary channels stay followups until native-binding packaging is proven.
+
+refs:
+  - package.json
+  - README.md
+  - CHANGELOG.md
+  - BACKLOG.md
+  - src/cli.ts
+  - test/fixtures/pass-through-method
+  - https://bun.com/docs/pm/cli/publish
+  - https://bun.com/docs/pm/cli/install
+  - https://bun.com/docs/bundler/executables
+  - https://mise.jdx.dev/dev-tools/backends/github.html
+  - https://mise.jdx.dev/registry.html
+  - https://docs.brew.sh/Formula-Cookbook
+  - https://docs.brew.sh/Acceptable-Formulae
+
+open_questions: []
+
+followups:
+  - Create a follow-up binary-distribution delta after the scoped Bun/npm package ships.
+  - For binaries, evaluate packaging the platform `.node` binding, switching to the OXC WASM binding, or replacing the parser dependency.
+  - Add mise install docs and a Homebrew tap only after GitHub Release assets and checksums exist.
+
+notes:
+  - >
+    `bun publish --dry-run` currently packs `.deltas/`, tests, fixtures, and agent guidance; a release task should add a package `files` allowlist before publishing.
+  - >
+    `package.json` lacks release-facing metadata such as `description`, `repository`, `homepage`, `license`, and probably `engines.bun`.
+  - >
+    mise's preferred path for new tools is the `github` backend, not `npm`, because npm tools depend on a runtime/toolchain on PATH.
+  - >
+    Homebrew core rejects or discourages binary-only and niche/self-submitted formulae; start with a personal tap after GitHub release assets exist.
+
+tasks:
+  - id: settle-release-gates
+    description: >
+      Confirm the public release gates before editing release metadata: package
+      identity, license, and publishing access.
+    status: done
+    context: |
+      `strata` is taken on npm, while `@andrezzoid/strata` appears available.
+      Keep the installed command name `strata` even if the package is scoped.
+      License choice is a project/legal decision; do not invent it during Apply.
+    acceptance:
+      - The npm package identity is confirmed, with `@andrezzoid/strata` as the recommended default.
+      - The license choice is confirmed so package metadata and a LICENSE file can be made truthful.
+      - The npm publishing owner/token/OTP path is known, or publishing is explicitly marked blocked by missing access.
+    depends_on: []
+
+  - id: prepare-scoped-npm-package
+    description: >
+      Update package metadata and package contents for a scoped Bun-native npm
+      release.
+    status: done
+    context: |
+      Preserve the deep CLI contract: package install exposes `strata`, and `strata` delegates to the existing source CLI.
+      Add a `files` allowlist; do not ship `.deltas/`, tests, fixtures, AGENTS.md, or other development-only material.
+      Prefer release metadata over new release machinery unless verification proves automation is needed.
+    acceptance:
+      - "`package.json` has the confirmed package name, release metadata, `publishConfig.access`, `engines.bun`, and a runtime-focused `files` allowlist."
+      - "The `bin.strata` entry still points at the Bun CLI entrypoint and the entrypoint keeps its Bun shebang."
+      - "`bun publish --dry-run` lists only expected release files and excludes `.deltas/`, tests, fixtures, and agent-only files."
+      - "`bun run typecheck` and `bun run test` pass."
+    depends_on:
+      - settle-release-gates
+
+  - id: document-source-install-roadmap
+    description: >
+      Update user-facing docs and release notes for the scoped Bun/npm install
+      path and the deliberately deferred binary channels.
+    status: done
+    context: |
+      README should be honest that this first channel requires Bun on PATH.
+      CHANGELOG records what changed for the release surface.
+      BACKLOG is the right home for GitHub Release binaries, mise, and Homebrew until binary packaging is proven.
+    acceptance:
+      - README install instructions use the confirmed scoped package and mention the Bun runtime requirement.
+      - CHANGELOG records the scoped package publishing/install surface for 0.1.0.
+      - BACKLOG captures GitHub Release binaries, mise GitHub backend docs, and Homebrew tap as deferred work depending on binary release assets.
+    depends_on:
+      - prepare-scoped-npm-package
+
+  - id: verify-packed-install
+    description: >
+      Prove the package works without clone/link by packing it and installing the
+      tarball through Bun in an isolated temporary environment.
+    status: done
+    context: |
+      This is the release smoke test before touching the public registry.
+      Use temp paths outside the repo so verification does not depend on workspace symlinks or the user's global Bun install state.
+      Smoke test `strata --help` and a fixture scan through the installed command.
+    acceptance:
+      - A packed tarball installs globally through Bun from a temp location without `bun link` or repository-relative execution.
+      - The installed `strata` command runs `--help` successfully.
+      - The installed `strata` command scans `test/fixtures/pass-through-method --format text` and emits the expected pass-through findings.
+      - Verification commands and results are recorded in the delta log during Apply.
+    depends_on:
+      - document-source-install-roadmap
+
+  - id: publish-scoped-npm-release
+    description: >
+      Publish the scoped package to the npm registry and verify that a fresh
+      registry install exposes the working `strata` command.
+    status: blocked
+    context: |
+      Requires npm publishing access and may require interactive OTP; mark blocked if access is unavailable.
+      Do not publish under unscoped `strata`, which is already occupied by another package.
+      Publish only after local packed-install verification passes.
+    acceptance:
+      - "`bun publish --access public` publishes the scoped package version, or the task is blocked with the exact missing-access reason."
+      - A fresh global install from the registry exposes `strata` on PATH.
+      - The registry-installed `strata` runs `--help` and scans a fixture successfully.
+      - README install instructions match the package that was actually published.
+    depends_on:
+      - verify-packed-install
+
+log:
+  - id: log-001
+    timestamp: 2026-05-08T13:41Z
+    command: explore
+    summary: >
+      Created the distribution exploration delta. Initial unknowns are target
+      user environment, source-vs-binary packaging, package-name availability,
+      and registry/tap credential ownership.
+  - id: log-002
+    timestamp: 2026-05-08T13:46Z
+    command: explore
+    summary: >
+      Compared scoped npm/Bun publishing, GitHub Release binaries, mise, and
+      Homebrew. The best first move is a scoped npm package for Bun users because
+      it matches the existing `#!/usr/bin/env bun` source CLI and avoids binary
+      release machinery. GitHub Release binaries are the right second layer, but
+      a throwaway compile smoke test produced a runtime native-binding failure in
+      `oxc-parser`; using `NAPI_RS_NATIVE_LIBRARY_PATH` with the platform `.node`
+      binding works, proving binary distribution needs a deliberate packaging or
+      parser strategy. `strata` is taken on npm, `@andrezzoid/strata` appears
+      available, Homebrew has no current formula conflict, and mise should use
+      GitHub release assets rather than the npm backend.
+  - id: log-003
+    timestamp: 2026-05-08T13:50Z
+    command: plan
+    summary: >
+      Planned the first shippable distribution slice as a scoped Bun/npm source
+      package rather than attempting every channel at once. The task graph gates
+      on package identity, license, and publishing access, then prepares package
+      metadata and a files allowlist, updates README/CHANGELOG/BACKLOG, verifies
+      a local packed install, and only then publishes to npm. GitHub Release
+      binaries, mise, and Homebrew are deferred followups because the compiled
+      binary path currently fails on `oxc-parser` native binding loading. Baseline
+      checks before planning passed: `bun run typecheck` and `bun run test` (16
+      tests, 0 failures).
+  - id: log-004
+    timestamp: 2026-05-08T14:17Z
+    command: apply
+    task: settle-release-gates
+    summary: >
+      User confirmed the release gates: publish as `@andrezzoid/strata`, keep
+      the installed command name `strata`, use the MIT license, and attempt npm
+      publish after local packed verification. Publishing access was not known
+      yet at gate time, so downstream publish remains conditional on registry
+      authentication.
+  - id: log-005
+    timestamp: 2026-05-08T14:17Z
+    command: apply
+    task: prepare-scoped-npm-package
+    summary: >
+      Updated package metadata for the scoped Bun-native npm package, added MIT
+      license text, set `publishConfig.access` to public, added `engines.bun >=
+      1.3.0`, and limited published files to runtime source plus README,
+      CHANGELOG, and LICENSE. Preserved `bin.strata` pointing at `./src/cli.ts`
+      with the Bun shebang. Verification: `bun publish --dry-run` listed 25
+      expected files and excluded `.deltas/`, tests, fixtures, and AGENTS.md;
+      `bun run typecheck` passed; `bun run test` passed with 16 tests and 0
+      failures.
+  - id: log-006
+    timestamp: 2026-05-08T14:17Z
+    command: apply
+    task: document-source-install-roadmap
+    summary: >
+      Updated README install instructions to use `bun add -g
+      @andrezzoid/strata`, documented that the first channel requires Bun on
+      PATH, updated CHANGELOG for the scoped package release surface, corrected
+      the test-runner wording to Bun's test runner, and added BACKLOG
+      distribution followups for GitHub Release binaries, mise, and Homebrew.
+  - id: log-007
+    timestamp: 2026-05-08T14:17Z
+    command: apply
+    task: verify-packed-install
+    summary: >
+      Packed the package with `bun pm pack --destination
+      /var/folders/vq/fhkcv4q51cq4_p3z4nc8fgc00000gn/T/opencode/strata-pack-check`
+      and installed the tarball through Bun using isolated `BUN_INSTALL` at
+      `/var/folders/vq/fhkcv4q51cq4_p3z4nc8fgc00000gn/T/opencode/strata-bun-home`.
+      Verification: `strata --help` printed usage, and `strata
+      test/fixtures/pass-through-method --format text` emitted the expected two
+      `[passThroughMethod]` findings along with incidental orphan/shallow
+      fixture findings.
+  - id: log-008
+    timestamp: 2026-05-08T14:17Z
+    command: apply
+    task: publish-scoped-npm-release
+    summary: >
+      Attempted `bun publish --access public`; Bun packed the expected 25 files
+      but failed before publishing with `error: missing authentication (run
+      bunx npm login)`. The task is blocked on npm registry authentication; no
+      registry install verification was possible because no package version was
+      published.

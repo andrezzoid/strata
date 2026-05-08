@@ -8,6 +8,12 @@ Future work should earn its complexity. Each item below should be implemented on
 - Detector subset filtering with `--only` and `--exclude`.
 - Project configuration through `strata.toml` for thresholds and skip patterns.
 
+## Distribution
+
+- GitHub Release binaries after the `oxc-parser` native binding can be packaged or replaced for standalone executables.
+- mise installation through the GitHub backend after release assets and checksums exist.
+- Homebrew tap after binary release assets are stable; Homebrew core is premature for this project.
+
 ## Resolution Accuracy
 
 - `tsconfig.json` path alias support for `orphanFile` and `uniqueImplementation`.

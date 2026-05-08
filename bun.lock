@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "strata",
+      "name": "@andrezzoid/strata",
       "dependencies": {
         "oxc-parser": "^0.129.0",
       },

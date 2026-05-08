@@ -6,16 +6,21 @@ Deterministic candidate scanner for PoSD-style complexity red flags in TypeScrip
 
 ## Install
 
+Published package:
+
+```bash
+bun add -g @andrezzoid/strata
+strata --help
+```
+
+This first distribution channel is Bun-native and requires `bun` on `PATH`. Standalone binaries, mise, and Homebrew are deferred until binary packaging is proven.
+
+From a local checkout:
+
 ```bash
 bun install
 bun link
 strata --help
-```
-
-When published, install it as a Bun-native CLI:
-
-```bash
-bun add -g strata
 ```
 
 ## Usage
@@ -85,7 +90,7 @@ bun run test
 bun run scan -- test/fixtures/pass-through-method --format text
 ```
 
-Tests use Vitest rather than the old shell harness. Fixture tests compare exact `(flag, file, line)` triples for each detector's primary fixture while allowing incidental cross-detector findings.
+Tests use Bun's test runner rather than the old shell harness. Fixture tests compare exact `(flag, file, line)` triples for each detector's primary fixture while allowing incidental cross-detector findings.
 
 ## Contributing
 
