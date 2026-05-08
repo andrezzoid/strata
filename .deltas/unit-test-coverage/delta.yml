@@ -80,7 +80,7 @@ tasks:
     description: >
       Run verification and review the new tests for brittleness or implementation
       coupling.
-    status: pending
+    status: done
     acceptance:
       - `bun run typecheck` passes.
       - `bun run test` passes.
@@ -143,3 +143,18 @@ log:
       test/detectors.test.ts`: 23 pass, 0 fail, 32 assertions; `bun run
       typecheck` passed; `bun run test`: 49 pass, 0 fail, 92 assertions across 4
       files; changed-file complexity scan reported 0 findings.
+
+  - id: log-005
+    timestamp: 2026-05-08T19:15Z
+    command: apply
+    task: verify-unit-coverage
+    summary: >
+      Ran the final task verification and reviewed the new unit tests for
+      brittleness. `bun run typecheck` passed. `bun run test` passed: 49 tests,
+      92 assertions across 4 files. `bun src/cli.ts src --format json` reported
+      `totalFindings: 0`. The delta complexity scan across the unit-test commits
+      also reported 0 findings. Review result: `test/core.test.ts` and
+      `test/detectors.test.ts` are behavior-level; they assert returned values,
+      emitted findings, and stable public metadata, use real parser-backed `Ctx`
+      objects for detector tests, avoid interaction mocks, and do not assert
+      private traversal implementation details.
