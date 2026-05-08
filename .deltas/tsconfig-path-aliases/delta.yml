@@ -75,7 +75,7 @@ tasks:
     description: >
       Document root tsconfig alias support and move deferred resolution accuracy
       work into narrower backlog items.
-    status: pending
+    status: done
     context: |
       This changes user-visible scanner accuracy. README should explain the
       supported config shape and limitation plainly. BACKLOG should no longer
@@ -161,3 +161,19 @@ log:
       test/fixtures.test.ts test/core.test.ts` reported 47 tests / 89 assertions,
       `bun run test` reported 58 tests / 116 assertions, and `bun run
       typecheck`, `bun run format:check`, and `bun run lint` passed.
+
+  - id: log-005
+    timestamp: 2026-05-08T20:47Z
+    command: apply
+    task: document-tsconfig-alias-scope
+    summary: >
+      Documented the user-visible alias scope. README now states that `strata`
+      reads scan-root `tsconfig.json` for cross-file analysis, supports direct
+      `compilerOptions.baseUrl` and exact/wildcard `compilerOptions.paths`, keeps
+      package imports external, and explicitly excludes monorepo config
+      selection, project references, and `extends` evaluation from this first
+      version. CHANGELOG records the 0.1.1 alias-resolution improvement. BACKLOG
+      replaces the broad alias-support item with narrower deferred monorepo and
+      `extends` followups while preserving import-form followups. Verification
+      passed: `bun run format:check`, `bun run lint`, `bun run typecheck`, and
+      `bun run test` (58 tests / 116 assertions).

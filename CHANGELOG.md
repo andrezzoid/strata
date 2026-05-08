@@ -4,6 +4,8 @@ All notable changes to `strata` will be documented here.
 
 ## 0.1.1 - Unreleased
 
+- Adds scan-root `tsconfig.json` `baseUrl`/`paths` resolution for cross-file `orphanFile` and `uniqueImplementation` analysis.
+
 ## 0.1.0 - 2026-05-08
 
 - Migrates the original red-flags scanner into a standalone Bun-native CLI named `strata`.

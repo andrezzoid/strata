@@ -40,6 +40,13 @@ Defaults:
 - `--diff` analyzes the full project graph, then filters findings to changed files so cross-file detectors keep correct context.
 - `--fail-on-findings` exits non-zero when candidates are emitted, which is intended for CI gates; default scans remain report-only.
 
+Project resolution:
+
+- `strata` reads `tsconfig.json` from the scan root for cross-file analysis.
+- Supported today: direct `compilerOptions.baseUrl` and exact or wildcard `compilerOptions.paths` mappings.
+- Aliases resolve only to scanned `.ts` and `.tsx` files; package imports stay external.
+- First-version limit: no monorepo tsconfig selection, project references, or `extends` chain evaluation.
+
 ## Output
 
 ```json

@@ -16,7 +16,8 @@ Future work should earn its complexity. Each item below should be implemented on
 
 ## Resolution Accuracy
 
-- `tsconfig.json` path alias support for `orphanFile` and `uniqueImplementation`.
+- Monorepo path alias resolution across multiple package `tsconfig.json` files.
+- `tsconfig.json` `extends` chain support for aliases inherited from base configs.
 - Namespace import support for scope-aware interface resolution.
 - Default-export-of-type support for projects that avoid named type exports.
 - Semantic binding for pass-through argument matching to avoid rare shadowing false positives.
