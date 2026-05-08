@@ -35,10 +35,11 @@
     "access": "public"
   },
   "scripts": {
-    "format:check": "oxfmt --check src bin test/*.test.ts package.json tsconfig.json README.md .oxfmtrc.json .oxlintrc.json",
-    "lint": "oxlint src test bin",
+    "format:check": "oxfmt --check src scripts bin test/*.test.ts package.json tsconfig.json README.md .oxfmtrc.json .oxlintrc.json",
+    "lint": "oxlint src scripts test bin",
     "scan": "bun src/cli.ts",
     "test": "bun test",
+    "test:coverage": "bun scripts/check-coverage.ts",
     "test:watch": "bun test --watch",
     "typecheck": "tsc --noEmit"
   },
