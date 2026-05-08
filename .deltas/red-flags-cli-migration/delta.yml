@@ -1,0 +1,181 @@
+goal: >
+  Migrate the red-flags scanner from the dotfiles skill directory into this
+  repository as a standalone CLI package with durable docs, modular TypeScript
+  source, AI-agent project context, and automated tests beyond the shell harness.
+
+acceptance:
+  - README explains installation, usage, output, detector behavior, and contribution workflow.
+  - CHANGELOG and BACKLOG exist and separate released history from future ideas.
+  - AGENTS.md and CLAUDE.md both resolve to the same PoSD-grounded agent guidance.
+  - Scanner behavior matches the existing fixture suite before and after migration.
+  - CLI can be installed through the package bin and supports path, --diff, and --format json|text.
+  - Tests run through a maintained package test runner and cover detectors, CLI behavior, and output shape without relying on test.sh.
+
+context: |
+  Source project is a Bun TypeScript script using oxc-parser plus fixtures; ./test.sh passes 13/13 in the source directory.
+  Target repository is empty except for .git, so this migration defines the initial package structure and conventions.
+  Preserve the tool's role as a deterministic high-recall candidate scanner; the AI audit skill remains responsible for judging findings.
+  Design comparison favors a deep scanProject() core with a thin CLI over a plugin framework or one-file script.
+  User chose a Bun-native CLI and package/command name strata.
+
+refs:
+  - /Users/andrejonas/Projects/config/dotfiles/.agents/skills/complexity-red-flags/red-flags/red-flags.ts
+  - /Users/andrejonas/Projects/config/dotfiles/.agents/skills/complexity-red-flags/red-flags/fixtures
+  - /Users/andrejonas/Projects/config/dotfiles/.agents/skills/complexity-red-flags/red-flags/README.md
+  - /Users/andrejonas/Projects/config/dotfiles/.agents/skills/complexity-red-flags/red-flags/BACKLOG.md
+
+open_questions: []
+
+followups:
+  - Source BACKLOG already contains detector and ergonomics ideas that should be carried forward, not implemented during the migration.
+
+tasks:
+  - id: bootstrap-package-and-docs
+    description: >
+      Create the Bun package shell for strata and add the release/contribution
+      documentation requested for the new home.
+    status: done
+    context: |
+      Keep the CLI Bun-native with a #!/usr/bin/env bun shebang and package bin named strata.
+      AGENTS.md is the canonical agent guidance; CLAUDE.md should resolve to the same content via symlink.
+      Documentation should describe candidate findings, not verdicts.
+    acceptance:
+      - package.json exposes a strata bin and scripts for test/typecheck.
+      - README.md covers install, usage, output, detectors, testing, and contribution workflow.
+      - CHANGELOG.md and BACKLOG.md exist with current migration notes and deferred ideas.
+      - AGENTS.md and CLAUDE.md resolve to the same PoSD-grounded guidance.
+    depends_on: []
+
+  - id: modularize-scanner-core
+    description: >
+      Move the scanner out of the single script into a small set of modules
+      centered on scanProject(), with the CLI as a thin adapter.
+    status: done
+    context: |
+      Split by owned knowledge, not by temporal phases: AST walking, project file discovery, scope/import resolution, detectors, formatting, CLI.
+      Preserve the existing JSON output schema and detector semantics unless tests force a correction.
+      Avoid plugin-framework machinery until a real extension point exists.
+    acceptance:
+      - src exposes a scanProject() API returning the existing summary/findings shape.
+      - src/cli.ts parses path, --diff, --format json|text, and delegates to scanProject().
+      - Detector code is grouped by shared knowledge with no shallow pass-through modules.
+      - Existing detector messages, flags, severity, and metadata remain compatible with fixture expectations.
+    depends_on:
+      - bootstrap-package-and-docs
+
+  - id: port-fixture-tests
+    description: >
+      Replace the shell fixture harness with maintained test-runner coverage for
+      detector behavior and the CLI surface.
+    status: done
+    context: |
+      Keep the fixture contract: expected.json defines exact (flag,file,line) triples for that fixture's primary flag.
+      Other detectors may fire on the same fixture and should remain ignored by the fixture matcher.
+      CLI tests should exercise the installed command shape through bun without relying on jq.
+    acceptance:
+      - Existing fixture directories are migrated into the repo.
+      - Vitest test suite verifies all 13 fixture expectations.
+      - CLI tests cover default JSON output, text output, and invalid argument behavior.
+      - test.sh is not required for normal verification.
+    depends_on:
+      - modularize-scanner-core
+
+  - id: verify-release-readiness
+    description: >
+      Install dependencies, run the full verification suite, and perform a
+      final complexity audit pass before declaring the migration complete.
+    status: done
+    context: |
+      Verification should prove both behavior and the new structure: tests/typecheck for correctness, then a PoSD red-flags pass for complexity creep.
+      Keep unrelated source-dotfiles changes untouched.
+    acceptance:
+      - bun install succeeds and produces the lockfile for this repo.
+      - bun run typecheck passes.
+      - bun test passes.
+      - bun src/cli.ts can scan a fixture and the repo itself without crashing.
+      - Final review finds no obvious shallow modules, pass-through wrappers, or temporal decomposition introduced by the migration.
+    depends_on:
+      - port-fixture-tests
+
+log:
+  - id: log-001
+    timestamp: 2026-05-08T12:20Z
+    command: explore
+    summary: >
+      Explored the source red-flags project and target repository. Source is a
+      single 1,620-line Bun script with 13 fixture directories and existing
+      README/BACKLOG; current fixture baseline passes 13/13 via ./test.sh.
+      Target repo has no package/files yet. Compared three migration shapes:
+      keep a one-file Bun script, build a deep scanProject() core with a thin
+      CLI, or introduce a plugin-style detector framework. The deep core wins
+      on information hiding and testability without exposing speculative plugin
+      machinery. Runtime/package identity remains the only alignment gap before
+      planning/apply.
+  - id: log-002
+    timestamp: 2026-05-08T12:25Z
+    command: plan
+    summary: >
+      User resolved the alignment gap: Bun-native CLI, package/command named
+      strata. Planned four vertical tasks: package/docs foundation, modular
+      scanProject() core, Vitest-based fixture/CLI tests, and release-readiness
+      verification. Dependencies keep each slice independently checkable while
+      avoiding layer-by-layer decomposition.
+  - id: log-003
+    timestamp: 2026-05-08T12:26Z
+    command: apply
+    task: bootstrap-package-and-docs
+    summary: >
+      Created the Bun package shell for strata with bin mapping, scripts,
+      TypeScript configuration, README, CHANGELOG, BACKLOG, and AGENTS.md.
+      Created CLAUDE.md as a symlink to AGENTS.md; verified via `readlink
+      CLAUDE.md` returning `AGENTS.md`. Documentation captures install/use,
+      detector scope, contribution rules, and the candidate-not-verdict
+      contract.
+  - id: log-004
+    timestamp: 2026-05-08T12:32Z
+    command: apply
+    task: modularize-scanner-core
+    summary: >
+      Migrated the scanner into modules organized around owned knowledge:
+      AST parsing/walking, project file discovery, scope/import resolution,
+      single-file detectors, cross-file detectors, scanProject(), formatting,
+      and the Bun CLI. Verified `bun src/cli.ts --help` and smoke-tested
+      `bun src/cli.ts src --format json`. The self-scan initially flagged two
+      shallow barrel files, so they were removed; the rerun produced 0 findings
+      for src.
+  - id: log-005
+    timestamp: 2026-05-08T12:34Z
+    command: apply
+    task: port-fixture-tests
+    summary: >
+      Imported the existing 13 fixture directories into test/fixtures and added
+      Vitest coverage for fixture expectations plus CLI behavior. Fixture tests
+      preserve the old contract by comparing exact (flag,file,line) triples for
+      each fixture's primary detector while ignoring incidental cross-detector
+      findings. Verified `bun run test`: 2 files passed, 16 tests passed.
+  - id: log-006
+    timestamp: 2026-05-08T12:35Z
+    command: apply
+    task: verify-release-readiness
+    summary: >
+      Installed dependencies with `bun install` and generated bun.lock. Initial
+      typecheck included intentionally-invalid fixture sources, so tsconfig was
+      narrowed to src plus *.test.ts files. Verified `bun run typecheck` passes,
+      `bun run test` passes with 2 files / 16 tests, `bun test` passes with 16
+      tests, `bun src/cli.ts test/fixtures/pass-through-method --format text`
+      emits expected fixture candidates, `bun src/cli.ts . --format json` scans
+      the repository without crashing, and `bun src/cli.ts src --format json`
+      reports 0 source findings after removing shallow barrel files.
+  - id: log-007
+    timestamp: 2026-05-08T12:36Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Documentation,
+      changelog, backlog, package shell, AGENTS.md/CLAUDE.md symlink, modular
+      scanner source, fixture migration, and maintained tests are present.
+      Verification evidence: source fixture baseline passed before migration
+      (13/13 via ./test.sh), `bun run typecheck` passed, `bun run test` passed
+      (2 files / 16 tests), `bun test` passed (16 tests), fixture CLI scan
+      emitted expected candidates, repository CLI scan completed, and source
+      self-scan reported 0 findings. No regressions or design gaps detected;
+      delta is complete.

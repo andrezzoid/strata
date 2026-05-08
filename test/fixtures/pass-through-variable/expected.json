@@ -1,0 +1,5 @@
+{
+  "findings": [
+    { "flag": "passThroughVariable", "file": "case.ts", "line": 8 }
+  ]
+}
