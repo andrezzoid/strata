@@ -1,0 +1,119 @@
+goal: >
+  Split the crowded single-file detector module into detector-owned modules
+  without introducing shallow wrappers, duplicate AST knowledge, or behavior
+  changes.
+
+acceptance:
+  - Each single-file detector has a clear module home named for the detector or a tightly related detector pair.
+  - Shared detector knowledge such as AST classification helpers and threshold constants lives in one place rather than being copied.
+  - `scanProject()` still consumes a simple detector registry and scanner output remains compatible with current fixtures.
+  - The source self-scan does not flag new shallow module or pass-through wrapper candidates introduced by the split.
+
+context: |
+  I agree with this improvement. `src/detectors/single-file.ts` currently owns nine unrelated detectors and a registry in 348 lines.
+  The current grouping avoided tiny files during the initial migration, but it now forces unrelated detector rules to share one edit surface.
+  One detector per file is acceptable here because each detector has real behavior; any shared helper must earn its place by owning common AST knowledge.
+  Watch for shallow registry/barrel files: a registry with one exported list is fine, but export-only barrels already self-scanned as shallow in the initial migration.
+
+refs:
+  - src/detectors/single-file.ts
+  - src/detectors/duplicate-symbol.ts
+  - src/detectors/orphan-file.ts
+  - src/detectors/unique-implementation.ts
+  - src/scan.ts
+  - test/fixtures.test.ts
+
+open_questions: []
+
+tasks:
+  - id: design-detector-module-map
+    description: >
+      Define the target detector module layout and shared-helper boundaries
+      before moving code.
+    status: done
+    context: |
+      Prefer modules such as `shallow-module.ts`, `pass-through-method.ts`, `pass-through-variable.ts`, `catch-handling.ts`, `generic-naming.ts`, `ts-escape-hatches.ts`, `wide-module.ts`, and `wide-signature.ts`.
+      A paired `catch-handling.ts` is probably deeper than two tiny files because empty-catch and catch-rethrow share CatchClause knowledge.
+      Shared helpers should describe concepts like exported surface counting or required parameter counting, not generic dumping grounds.
+      Chosen layout keeps detector-owned files plus `module-surface.ts` for exported-surface counting, used by shallow-module and wide-module.
+      Alternative considered: grouping by AST concern (module surface, delegation, syntax smells) would create fewer files but less direct detector ownership.
+    acceptance:
+      - The intended module list is documented in this delta or in code comments where useful.
+      - Any shared helper module has a named responsibility and at least two real consumers.
+      - No public scanner API changes are planned.
+    depends_on: []
+
+  - id: split-single-file-detectors
+    description: >
+      Move detector implementations out of `single-file.ts` into their module
+      homes and keep a minimal single-file detector registry.
+    status: done
+    context: |
+      Preserve exact flag names, messages, metadata, and line behavior.
+      Export detector functions so unit tests can target them directly later.
+      Avoid a barrel whose only job is re-exporting many names.
+    acceptance:
+      - `src/detectors/single-file.ts` is reduced to registry responsibility or renamed to make that responsibility explicit.
+      - Each moved detector remains discoverable from `scanProject()` through one detector list.
+      - Fixture tests pass without expected.json changes.
+    depends_on:
+      - design-detector-module-map
+
+  - id: verify-detector-layout
+    description: >
+      Verify that the refactor preserved behavior and did not create new PoSD
+      complexity red flags.
+    status: done
+    acceptance:
+      - `bun run typecheck` passes.
+      - `bun run test` passes.
+      - `bun src/cli.ts src --format json` reports no new structural findings or only justified candidates.
+      - Manual review finds no duplicated detector thresholds or AST-shape knowledge across modules.
+    depends_on:
+      - split-single-file-detectors
+
+log:
+  - id: log-001
+    timestamp: 2026-05-08T12:53Z
+    command: plan
+    summary: >
+      Agreed that `single-file.ts` has outgrown its current boundary. Planned a
+      detector-owned module split with shared helpers only where knowledge is
+      genuinely shared. The important design constraint is avoiding shallow
+      export barrels and preserving fixture behavior exactly.
+
+  - id: log-002
+    timestamp: 2026-05-08T13:30Z
+    command: apply
+    task: design-detector-module-map
+    summary: >
+      Chose detector-owned modules for shallow-module, pass-through-method,
+      pass-through-variable, catch-handling, generic-naming,
+      ts-escape-hatches, wide-module, and wide-signature. Shared AST surface
+      counting belongs in `module-surface.ts`, with two real consumers:
+      shallow-module and wide-module. `scanProject()` keeps a single
+      single-file detector registry, so no public scanner API changes are
+      planned.
+
+  - id: log-003
+    timestamp: 2026-05-08T13:34Z
+    command: apply
+    task: split-single-file-detectors
+    summary: >
+      Moved the single-file detector implementations into detector-owned
+      modules and reduced `src/detectors/single-file.ts` to the registry used
+      by `scanProject()`. Detector functions are exported from their module
+      homes for direct unit testing. Acceptance evidence: `bun run test` passed
+      with 16 tests, 0 failures, and no expected fixture changes.
+
+  - id: log-004
+    timestamp: 2026-05-08T13:34Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass for 3 tasks and
+      4 delta criteria. `bun run typecheck` completed with `tsc --noEmit` and
+      no errors. `bun run test` passed with 16 tests and 0 failures. The source
+      self-scan reported 0 findings. Manual review found detector thresholds
+      kept in their detector modules and exported-surface AST knowledge
+      centralized in `module-surface.ts`, with shallow-module and wide-module
+      as its two consumers. No regressions detected; delta is complete.
