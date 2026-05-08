@@ -81,7 +81,7 @@ tasks:
       Exercise hook behavior without creating a dummy user-facing commit. Use
       Lefthook's run command or an isolated temporary repository if needed, and
       avoid disturbing unrelated staged changes.
-    status: pending
+    status: done
     acceptance:
       - Staged supported files are formatted and re-staged by the pre-commit hook.
       - Staged lintable files fail the pre-commit hook when Oxlint reports errors.
@@ -132,3 +132,23 @@ log:
       every commit. Verified: `bun run format:check` passed, `bun run lint`
       passed with 0 warnings/errors, `bun run typecheck` passed, and `bun run
       test` passed with 56 tests and 109 assertions.
+
+  - id: log-004
+    timestamp: 2026-05-08T20:15Z
+    command: apply
+    task: verify-commit-hooks
+    summary: >
+      Verified staged hook behavior and the unchanged CI-equivalent gate. A
+      staged unformatted temp TypeScript file was formatted and re-staged by
+      `bunx lefthook run pre-commit --file tmp-hook-verify-format.ts --job
+      "format staged files"`; `git diff` showed no unstaged temp-file delta and
+      `git diff --cached` contained the formatted content. A staged temp
+      TypeScript file with an unused variable made `bunx lefthook run pre-commit
+      --file tmp-hook-verify-lint.ts --job "lint staged code"` exit non-zero.
+      Full checks passed: `bun run format:check`, `bun run lint`, `bun run
+      typecheck`, `bun run test` (56 tests, 109 assertions), `bun run
+      test:coverage` (87.33% source line coverage against the 85% gate), `bun
+      run package:check` (26 package entries), and `bun run scan:ci` (0
+      findings). Complexity review passed: the deterministic red-flags diff scan
+      against `origin/main` reported 0 findings, and the hook config keeps the
+      interface small by centralizing staged-file behavior in `lefthook.yml`.
