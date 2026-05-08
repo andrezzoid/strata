@@ -1,0 +1,98 @@
+goal: >
+  Add Lefthook-powered local commit hooks that keep staged changes formatted and
+  linted before a commit is created, without replacing CI as the full merge
+  gate.
+
+acceptance:
+  - Lefthook is installed as a development dependency and has a committed configuration.
+  - A local install path exists so contributors get hooks after installing dependencies.
+  - Pre-commit formatting runs only on staged files that Oxfmt can safely format, writes fixes, and re-stages fixed files.
+  - Pre-commit linting runs only on staged JavaScript/TypeScript files and fails the commit on lint errors.
+  - Detector fixtures and `.deltas/**` remain excluded from hook formatting/linting for the same reasons as CI style checks.
+  - README explains hook setup, what runs on commit, and how this relates to CI.
+  - Final verification proves the hook commands work on staged files and the CI-equivalent checks still pass.
+
+context: |
+  This is a separate delta from CI: CI is the merge gate, while hooks are fast local ergonomics.
+  Use Lefthook because Andre prefers it and it is a modern hook manager with staged-file support.
+  Keep pre-commit scope small: format and lint changed/staged files only; do not run coverage or full tests on every commit.
+  Preserve fixture and delta exclusions because those files intentionally contain unformatted/bad-code examples or planning prose.
+  Hooks may auto-modify files, so verification must confirm fixed files are re-staged.
+
+refs:
+  - package.json
+  - bun.lock
+  - lefthook.yml
+  - .oxfmtrc.json
+  - .oxlintrc.json
+  - README.md
+
+open_questions: []
+
+notes:
+  - >
+    Lefthook package metadata confirms `lefthook@2.1.6` with a `lefthook`
+    binary. Exact staged-file config syntax should be verified against the
+    installed CLI before committing hook behavior.
+
+tasks:
+  - id: add-lefthook-config
+    description: >
+      Add Lefthook as a dev dependency and configure pre-commit commands for
+      staged-file formatting and linting.
+    context: |
+      Prefer a deep hook surface: contributors run `lefthook install`, while the
+      config owns which files are checked. Use Oxfmt's write mode for staged
+      formattable files and Oxlint for staged JS/TS files. Re-stage formatted
+      files if Lefthook does not do it automatically.
+    status: pending
+    acceptance:
+      - `package.json` includes Lefthook installation support and the lockfile records the dependency.
+      - `lefthook.yml` defines pre-commit formatting and linting for staged files only.
+      - Formatting fixes are applied and staged for supported staged files.
+      - Linting fails on staged JS/TS lint errors.
+      - Existing CI-equivalent style and test commands still pass.
+    depends_on: []
+
+  - id: document-commit-hooks
+    description: >
+      Document how contributors install and use the Lefthook commit hooks.
+    context: |
+      Keep docs short and practical: install command, what pre-commit runs, and
+      that CI remains authoritative. Mention that hooks intentionally avoid full
+      tests and coverage to keep commits fast.
+    status: pending
+    acceptance:
+      - README mentions Lefthook setup after dependency installation.
+      - README lists the pre-commit format/lint behavior.
+      - README explains that CI still runs the full gate.
+    depends_on:
+      - add-lefthook-config
+
+  - id: verify-commit-hooks
+    description: >
+      Verify staged-file hook behavior and the unchanged CI-equivalent gate.
+    context: |
+      Exercise hook behavior without creating a dummy user-facing commit. Use
+      Lefthook's run command or an isolated temporary repository if needed, and
+      avoid disturbing unrelated staged changes.
+    status: pending
+    acceptance:
+      - Staged supported files are formatted and re-staged by the pre-commit hook.
+      - Staged lintable files fail the pre-commit hook when Oxlint reports errors.
+      - `bun run format:check`, `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:coverage`, `bun run package:check`, and `bun run scan:ci` pass.
+      - Changed hook/script/config surface passes a complexity review.
+    depends_on:
+      - document-commit-hooks
+
+log:
+  - id: log-001
+    timestamp: 2026-05-08T20:08Z
+    command: plan
+    summary: >
+      Created a separate commit-hooks delta because local pre-commit ergonomics
+      are related to, but materially different from, the completed CI pipeline
+      goal. Planned a focused Lefthook path: add staged-file format/lint hooks,
+      document contributor setup, then verify staged formatting, lint failure,
+      and the existing CI-equivalent commands. Scope choice: do not run full
+      tests or coverage in pre-commit; CI remains the authoritative full gate.
