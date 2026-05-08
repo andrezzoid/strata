@@ -1,0 +1,114 @@
+goal: >
+  Add focused unit tests for strata's core scanner utilities and detectors so
+  future refactors are protected by fast behavior-level tests, not only fixture
+  integration coverage.
+
+acceptance:
+  - Core pure logic has unit coverage for line mapping, path/import resolution, diff filtering, result formatting, and file discovery edge cases where practical.
+  - Detector behavior has focused unit coverage for each detector or detector family, including negative cases that fixtures do not currently document.
+  - Tests use Bun-native testing APIs unless a specific non-Bun dependency earns its keep.
+  - Existing fixture and CLI tests remain as integration coverage.
+  - `bun run typecheck`, `bun run test`, and source self-scan pass.
+
+context: |
+  I agree with this improvement. The migration ported fixture integration tests but did not add the unit tests I should have written while splitting the code.
+  The fixture suite proves old behavior broadly; unit tests should make detector contracts precise and protect future refactors.
+  Recommended order: do this after the detector module layout delta so detector functions have stable, direct module homes.
+  Prefer state-based tests over interaction mocks; parse small inline TypeScript snippets into real Ctx objects rather than mocking ASTs.
+
+refs:
+  - src/ast.ts
+  - src/project.ts
+  - src/scope.ts
+  - src/format.ts
+  - src/detectors/single-file.ts
+  - src/detectors/duplicate-symbol.ts
+  - src/detectors/orphan-file.ts
+  - src/detectors/unique-implementation.ts
+  - test/fixtures.test.ts
+  - test/cli.test.ts
+
+open_questions: []
+
+tasks:
+  - id: choose-test-runner-surface
+    description: >
+      Decide and apply the test API surface for unit tests, favoring Bun's
+      built-in `bun:test` unless Vitest has a concrete advantage here.
+    status: done
+    context: |
+      This overlaps with the Bun API delta. If the Bun API delta has already migrated tests, reuse that result.
+      If not, this task should compare `bun:test` with Vitest for current needs: describe/it/expect, temp dirs, subprocess checks, and TypeScript support.
+      Remove Vitest only if `bun:test` covers the current suite cleanly.
+    acceptance:
+      - Test runner choice is recorded in this delta log or project docs.
+      - If switching to `bun:test`, package scripts and dependencies are updated.
+      - Existing fixture and CLI tests still run with the chosen test command.
+    depends_on: []
+
+  - id: add-core-unit-tests
+    description: >
+      Add small, direct tests around scanner core utilities and formatting.
+    status: pending
+    context: |
+      Good targets: `buildLineOf`, `normalizePath`, `resolveRelativeImport`, `findingTouchesChanged`, `formatResult`, and project file discovery exclusions.
+      Keep tests DAMP enough that failures explain the contract without reading helper setup.
+    acceptance:
+      - Core tests cover both positive and negative/boundary behavior.
+      - Tests avoid interaction mocks and assert returned values or emitted findings.
+      - Temporary filesystem tests clean up after themselves or use isolated temp directories.
+    depends_on:
+      - choose-test-runner-surface
+
+  - id: add-detector-unit-tests
+    description: >
+      Add focused tests for each detector or detector family using small inline
+      TypeScript snippets parsed through the real parser.
+    status: pending
+    context: |
+      Unit tests should supplement fixtures, not duplicate them mechanically.
+      Include negative cases: legitimate wrappers, optional/default params, comments-only catch, generated/test skips, scope-aware same-name interfaces.
+      If detector modules have not been split yet, either wait for that delta or test through the current exported detector list without widening public API unnecessarily.
+    acceptance:
+      - Each detector has at least one focused positive test and one meaningful negative or boundary test, unless covered by a paired detector-family test.
+      - Tests parse real TypeScript source; they do not construct fake ASTs by hand.
+      - Fixture expected.json files remain unchanged unless a unit test exposes a real bug.
+    depends_on:
+      - add-core-unit-tests
+
+  - id: verify-unit-coverage
+    description: >
+      Run verification and review the new tests for brittleness or implementation
+      coupling.
+    status: pending
+    acceptance:
+      - `bun run typecheck` passes.
+      - `bun run test` passes.
+      - New tests are behavior-level and do not assert private traversal implementation details.
+      - `bun src/cli.ts src --format json` reports no new source findings or only justified candidates.
+    depends_on:
+      - add-detector-unit-tests
+
+log:
+  - id: log-001
+    timestamp: 2026-05-08T12:53Z
+    command: plan
+    summary: >
+      Agreed that fixture integration tests are not enough. Planned unit tests
+      for core scanner utilities and detectors, with a deliberate runner choice
+      up front so Bun-native testing can replace Vitest if it covers the current
+      suite. Detector unit tests should be added after or alongside the detector
+      layout split for direct module-level coverage.
+
+  - id: log-002
+    timestamp: 2026-05-08T18:54Z
+    command: apply
+    task: choose-test-runner-surface
+    summary: >
+      Reused the completed Bun API migration decision: package scripts already
+      run `bun test`, fixture and CLI tests import from `bun:test`, and Vitest is
+      no longer a dev dependency. This keeps unit tests on Bun's native runner
+      because it covers describe/it/expect, TypeScript execution, Bun globals,
+      temporary filesystem setup through existing runtime APIs, and subprocess
+      checks through `Bun.spawnSync`. Verified `bun run test`: 17 pass, 0 fail,
+      36 assertions across 2 files.
