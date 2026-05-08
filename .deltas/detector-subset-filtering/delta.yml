@@ -1,0 +1,117 @@
+goal: >
+  Add detector subset filtering so CI jobs and agents can run only the strata
+  detector families they want to review or gate, without changing default scan
+  behavior or turning strata into a policy engine.
+
+acceptance:
+  - CLI accepts `--only <detectors>` and `--exclude <detectors>` with comma-separated detector IDs.
+  - `--only` and `--exclude` are mutually exclusive usage choices; unknown, empty, or missing detector IDs produce exit code 2 before scanning and show the valid detector list.
+  - Default scans still run every detector and preserve current JSON, text, SARIF, `--diff`, and `--fail-on-findings` behavior.
+  - Filtered scans run only the selected detector set before summaries and formatted output are produced, so excluded detectors cannot add findings or fail the run.
+  - README, CHANGELOG, and BACKLOG reflect the shipped filtering behavior and keep the candidate-not-verdict contract clear.
+  - `bun run format:check`, `bun run lint`, `bun run typecheck`, `bun run test`, `bun run test:coverage`, `bun run package:check`, and `bun run scan:ci` pass.
+
+context: |
+  Current scan orchestration has separate single-file and cross-project detector arrays; detector flag IDs exist only inside emitted findings.
+  Design A considered: run every detector, then filter findings. It is simpler but misleading for CI because excluded detectors can still fail and still consume cross-project work.
+  Design B chosen: introduce detector definitions that pair stable flag IDs with detector functions, then select detectors before execution. This gives callers a small surface while keeping detector registry knowledge in one place.
+  Keep the public abstraction deep: callers choose detector IDs, not detector functions, thresholds, or plugin hooks.
+  Treat invalid CLI detector names as usage errors at the boundary; avoid pushing validation complexity into detector implementations.
+
+refs:
+  - src/cli.ts
+  - src/scan.ts
+  - src/detectors/single-file.ts
+  - src/detectors/duplicate-symbol.ts
+  - src/detectors/orphan-file.ts
+  - src/detectors/unique-implementation.ts
+  - src/types.ts
+  - test/cli.test.ts
+  - test/core.test.ts
+  - test/fixtures.test.ts
+  - README.md
+  - CHANGELOG.md
+  - BACKLOG.md
+
+open_questions: []
+
+followups:
+  - Consider baseline/suppression only after stable finding fingerprints exist and a real workflow needs stateful adoption controls.
+  - Consider a future config file only if repeated CLI filtering becomes painful enough to justify a persisted project policy surface.
+
+tasks:
+  - id: add-detector-selection-core
+    description: >
+      Add an internal detector registry that owns the mapping from public detector
+      IDs to detector functions, then teach `scanProject()` to run a normalized
+      subset of that registry.
+    status: done
+    context: |
+      Write tests first around `scanProject()` using existing fixtures or small temp projects.
+      Keep default behavior identical when no filter is provided.
+      Prefer a typed detector ID list over raw string plumbing after CLI parsing.
+      Do not add thresholds, config files, or plugin machinery in this delta.
+    acceptance:
+      - A single source of truth lists every public detector ID in deterministic order.
+      - `scanProject()` can run only requested detector IDs and summarize only those findings.
+      - `scanProject()` can exclude requested detector IDs while running the rest.
+      - Diff filtering still happens after selected detectors run, preserving cross-file graph correctness for selected cross-project detectors.
+      - Core tests prove default, `only`, and `exclude` behavior.
+    depends_on: []
+
+  - id: expose-filtering-cli
+    description: >
+      Parse `--only` and `--exclude` in the CLI, validate detector names at the
+      process boundary, and pass the normalized selection into `scanProject()`.
+    status: pending
+    context: |
+      Keep the CLI thin: argument parsing, usage errors, invocation, formatting, exit behavior.
+      Missing values, empty list entries, unknown detector IDs, and combining `--only` with `--exclude` are usage errors.
+      Filtered findings should flow through existing JSON/text/SARIF formatting and `--fail-on-findings` without format-specific branches.
+    acceptance:
+      - Usage text documents `--only` and `--exclude` without becoming a long manual.
+      - CLI JSON output contains only requested detectors for `--only`.
+      - CLI JSON output omits excluded detectors for `--exclude`.
+      - CLI SARIF/text output and `--fail-on-findings` observe the filtered result.
+      - CLI tests cover unknown detector names and mutually exclusive flags with exit code 2.
+    depends_on:
+      - add-detector-selection-core
+
+  - id: document-detector-filtering
+    description: >
+      Update release-facing docs so users understand when to use detector subset
+      filtering in local scans, CI gates, and agent workflows.
+    status: pending
+    context: |
+      Position filtering as focus control, not as detector judgment.
+      README should include short examples that compose with `--diff`, SARIF, and `--fail-on-findings`.
+      CHANGELOG should mention the CI-focused value; BACKLOG should remove or narrow the completed item.
+    acceptance:
+      - README usage/defaults include `--only` and `--exclude` examples.
+      - CHANGELOG 0.1.1 records detector subset filtering.
+      - BACKLOG no longer lists basic detector subset filtering as future work.
+      - Documentation preserves the candidate-not-verdict framing.
+    depends_on:
+      - expose-filtering-cli
+
+log:
+  - id: log-001
+    timestamp: 2026-05-08T21:57Z
+    command: plan
+    summary: >
+      Planned detector subset filtering as a focused CI/agent workflow feature.
+      Reviewed existing deltas and found no matching active delta. Current CLI,
+      scan core, detector registries, and tests provide enough context to skip
+      Explore and decompose directly into core selection, CLI exposure, and docs.
+      Relevant baseline test run passed: `bun run test` reported 62 pass, 0 fail.
+  - id: log-002
+    timestamp: 2026-05-08T22:06Z
+    command: apply
+    task: add-detector-selection-core
+    summary: >
+      Added a detector registry as the single ordered source of truth for public
+      detector IDs and wired `scanProject()` to select detectors before execution.
+      Verified default, `only`, `exclude`, selected cross-project detector, and
+      diff-after-selected-analysis behavior with `bun test test/core.test.ts`:
+      17 pass, 0 fail. Task checks passed: `bun run format:check`, `bun run
+      lint`, `bun run typecheck`, and `bun run test` (67 pass, 0 fail).

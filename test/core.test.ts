@@ -1,6 +1,6 @@
 import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
 
 import { describe, expect, it } from "bun:test";
 
@@ -10,6 +10,19 @@ import { collectAllProjectFiles, findingTouchesChanged } from "../src/project.ts
 import { scanProject } from "../src/scan.ts";
 import { createImportResolver, normalizePath, resolveRelativeImport } from "../src/scope.ts";
 import type { Finding, ScanResult } from "../src/types.ts";
+
+const here = dirname(Bun.fileURLToPath(import.meta.url));
+const fixturesRoot = join(here, "fixtures");
+
+function runGit(cwd: string, args: string[]): void {
+  const result = Bun.spawnSync(["git", ...args], {
+    cwd,
+    stdin: "ignore",
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  expect(result.success, result.stderr?.toString()).toBe(true);
+}
 
 describe("buildLineOf", () => {
   it("maps parser offsets to one-based source lines", () => {
@@ -253,6 +266,87 @@ describe("scanProject import graph resolution", () => {
           .filter((finding) => finding.flag === "uniqueImplementation")
           .map((finding) => finding.metadata.name),
       ).toEqual(["Port"]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("scanProject detector selection", () => {
+  const passThroughFixture = join(fixturesRoot, "pass-through-method");
+  const uniqueImplementationFixture = join(fixturesRoot, "unique-implementation");
+
+  it("runs every detector when no detector selection is provided", async () => {
+    const result = await scanProject({ target: passThroughFixture });
+
+    expect(result.findings.some((finding) => finding.flag === "passThroughMethod")).toBe(true);
+    expect(result.findings.some((finding) => finding.flag === "orphanFile")).toBe(true);
+  });
+
+  it("runs only requested detectors", async () => {
+    const result = await scanProject({
+      target: passThroughFixture,
+      detectorSelection: { kind: "only", ids: ["passThroughMethod"] },
+    });
+
+    expect(new Set(result.findings.map((finding) => finding.flag))).toEqual(
+      new Set(["passThroughMethod"]),
+    );
+    expect(result.summary.byFlag).toEqual({ passThroughMethod: result.summary.totalFindings });
+  });
+
+  it("omits excluded detectors", async () => {
+    const result = await scanProject({
+      target: passThroughFixture,
+      detectorSelection: { kind: "exclude", ids: ["passThroughMethod"] },
+    });
+
+    expect(result.findings.some((finding) => finding.flag === "passThroughMethod")).toBe(false);
+    expect(result.findings.some((finding) => finding.flag === "orphanFile")).toBe(true);
+  });
+
+  it("can select cross-project detectors", async () => {
+    const result = await scanProject({
+      target: uniqueImplementationFixture,
+      detectorSelection: { kind: "only", ids: ["uniqueImplementation"] },
+    });
+
+    expect(result.findings.some((finding) => finding.flag === "uniqueImplementation")).toBe(true);
+    expect(new Set(result.findings.map((finding) => finding.flag))).toEqual(
+      new Set(["uniqueImplementation"]),
+    );
+  });
+
+  it("filters selected cross-project findings after diff collection", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-selection-diff-"));
+    try {
+      mkdirSync(join(root, "src"), { recursive: true });
+      await Bun.write(join(root, "src", "index.ts"), "export const entry = true;\n");
+      await Bun.write(join(root, "src", "orphan-a.ts"), "export const a = true;\n");
+      await Bun.write(join(root, "src", "orphan-b.ts"), "export const b = true;\n");
+
+      runGit(root, ["init"]);
+      runGit(root, ["add", "."]);
+      runGit(root, [
+        "-c",
+        "user.name=strata-test",
+        "-c",
+        "user.email=strata-test@example.com",
+        "commit",
+        "-m",
+        "base",
+      ]);
+      await Bun.write(join(root, "src", "orphan-b.ts"), "export const b = false;\n");
+
+      const result = await scanProject({
+        target: root,
+        diffRef: "HEAD",
+        detectorSelection: { kind: "only", ids: ["orphanFile"] },
+      });
+
+      expect(result.findings.map((finding) => `${finding.flag}:${finding.file}`)).toEqual([
+        "orphanFile:src/orphan-b.ts",
+      ]);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

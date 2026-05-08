@@ -1,27 +1,18 @@
 import { statSync } from "node:fs";
 
-import { parseContexts, type Ctx } from "./ast.ts";
-import { detectDuplicateSymbol } from "./detectors/duplicate-symbol.ts";
-import { detectOrphanFile } from "./detectors/orphan-file.ts";
-import { SINGLE_DETECTORS } from "./detectors/single-file.ts";
-import { detectUniqueImplementation } from "./detectors/unique-implementation.ts";
+import { parseContexts } from "./ast.ts";
+import { selectDetectors, type DetectorSelection } from "./detectors/registry.ts";
 import { collectScanFiles, findingTouchesChanged } from "./project.ts";
-import { createImportResolver, type ImportResolver } from "./scope.ts";
+import { createImportResolver } from "./scope.ts";
 import type { Finding, ScanResult } from "./types.ts";
-
-type CrossProjectDetector = (ctxs: Ctx[], imports: ImportResolver) => Finding[];
-
-const CROSS_DETECTORS: CrossProjectDetector[] = [
-  detectDuplicateSymbol,
-  detectUniqueImplementation,
-  detectOrphanFile,
-];
 
 export type ScanProjectOptions = {
   /** File or directory to scan. Defaults to the current working directory. */
   target?: string;
   /** Git ref for diff-scoped output; full project analysis still runs. */
   diffRef?: string | null;
+  /** Detector subset to run. Defaults to all detectors. */
+  detectorSelection?: DetectorSelection;
 };
 
 /**
@@ -43,24 +34,25 @@ export async function scanProject(options: ScanProjectOptions = {}): Promise<Sca
     root,
     ctxs.map((ctx) => ctx.file),
   );
+  const detectors = selectDetectors(options.detectorSelection);
 
   let allFindings: Finding[] = [];
   for (const ctx of ctxs) {
-    for (const detect of SINGLE_DETECTORS) {
+    for (const detector of detectors.single) {
       try {
-        allFindings.push(...detect(ctx));
+        allFindings.push(...detector.detect(ctx));
       } catch (error) {
         process.stderr.write(
-          `detector ${detect.name} failed on ${ctx.file}: ${(error as Error).message}\n`,
+          `detector ${detector.id} failed on ${ctx.file}: ${(error as Error).message}\n`,
         );
       }
     }
   }
-  for (const detect of CROSS_DETECTORS) {
+  for (const detector of detectors.cross) {
     try {
-      allFindings.push(...detect(ctxs, imports));
+      allFindings.push(...detector.detect(ctxs, imports));
     } catch (error) {
-      process.stderr.write(`cross-detector ${detect.name} failed: ${(error as Error).message}\n`);
+      process.stderr.write(`cross-detector ${detector.id} failed: ${(error as Error).message}\n`);
     }
   }
 
