@@ -93,7 +93,7 @@ tasks:
       Expose introduced-only filtering through the CLI with `--new-since <git-ref>`
       and keep all output formats and failure behavior operating on the filtered
       result.
-    status: pending
+    status: done
     context: |
       Keep CLI orchestration thin: parse the flag, reject confusing combinations,
       delegate to `scanProject()`, format the returned result, and base
@@ -211,3 +211,20 @@ log:
       expect calls), `bun run test` (85 pass, 214 expect calls), `bun run
       typecheck`, `bun run format:check`, and `bun run lint`. Complexity check
       `bun src/cli.ts src --diff HEAD --format json` returned 0 findings.
+  - id: log-005
+    timestamp: 2026-05-09T15:50Z
+    command: apply
+    task: expose-new-since-cli
+    summary: >
+      Exposed introduced-only filtering through the CLI with `--new-since
+      <git-ref>`, updated usage text, rejected missing `--new-since` refs, and
+      rejected combining `--new-since` with `--diff`. The CLI now delegates
+      `newSinceRef` to `scanProject()`, so JSON, SARIF, and `--fail-on-findings`
+      operate on the filtered introduced-only result. Verified red first: CLI
+      tests initially failed because `--new-since` was unknown. Acceptance passed
+      with tests covering JSON output, SARIF output, filtered fail-on-findings
+      success/failure, usage, missing values, and `--diff` combination rejection.
+      Verification passed: `bun test test/cli.test.ts` (25 pass, 73 expect
+      calls), `bun run test` (91 pass, 239 expect calls), `bun run typecheck`,
+      `bun run format:check`, and `bun run lint`. Complexity check `bun
+      src/cli.ts src --diff HEAD --format json` returned 0 findings.

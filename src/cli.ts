@@ -10,7 +10,7 @@ const DETECTOR_ID_SET = new Set<string>(DETECTOR_IDS);
 
 function printUsage(stream: { write(text: string): void }): void {
   stream.write(
-    "strata [PATH] [--diff <git-ref>] [--format json|text|sarif] [--only <detectors>|--exclude <detectors>] [--fail-on-findings]\n" +
+    "strata [PATH] [--diff <git-ref>|--new-since <git-ref>] [--format json|text|sarif] [--only <detectors>|--exclude <detectors>] [--fail-on-findings]\n" +
       "  Scan TypeScript files for PoSD-style complexity smell candidates.\n",
   );
 }
@@ -24,6 +24,12 @@ function detectorUsageError(message: string): never {
   process.stderr.write(`${message}\n`);
   printUsage(process.stderr);
   process.stderr.write(`valid detectors: ${DETECTOR_IDS.join(", ")}\n`);
+  process.exit(2);
+}
+
+function usageError(message: string): never {
+  process.stderr.write(`${message}\n`);
+  printUsage(process.stderr);
   process.exit(2);
 }
 
@@ -45,6 +51,7 @@ function parseDetectorIds(flag: "--only" | "--exclude", value: string): Detector
 export async function main(): Promise<void> {
   let target = "";
   let diffRef: string | null = null;
+  let newSinceRef: string | null = null;
   let format: OutputFormat = "json";
   let failOnFindings = false;
   let detectorSelection: DetectorSelection = { kind: "all" };
@@ -57,6 +64,10 @@ export async function main(): Promise<void> {
       const value = args[++i];
       if (!value) usage(2);
       diffRef = value;
+    } else if (arg === "--new-since") {
+      const value = args[++i];
+      if (!value || value.startsWith("-")) usageError("--new-since requires a git ref");
+      newSinceRef = value;
     } else if (arg === "--format") {
       const value = args[++i];
       if (value !== "json" && value !== "text" && value !== "sarif") usage(2);
@@ -91,12 +102,13 @@ export async function main(): Promise<void> {
   }
 
   target = target || ".";
+  if (diffRef && newSinceRef) usageError("cannot combine --diff and --new-since");
   if (!statSync(target, { throwIfNoEntry: false })) {
     process.stderr.write(`no such path: ${target}\n`);
     process.exit(2);
   }
 
-  const result = await scanProject({ target, diffRef, detectorSelection });
+  const result = await scanProject({ target, diffRef, newSinceRef, detectorSelection });
   process.stdout.write(formatResult(result, format));
   if (failOnFindings && result.summary.totalFindings > 0) process.exit(1);
 }
