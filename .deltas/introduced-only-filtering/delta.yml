@@ -72,7 +72,7 @@ tasks:
       Wire `newSinceRef` scan semantics so current findings are filtered against
       base findings by stable fingerprint while preserving summaries, ordering,
       detector selection, and existing changed-file filtering behavior.
-    status: pending
+    status: done
     context: |
       Compare identity sets only: a finding is introduced when its current
       `fingerprint` is absent from the base scan. Rebuild the summary from the
@@ -192,5 +192,22 @@ log:
       cleanup on success or thrown snapshot work. Verified red first: the new
       core tests initially failed on missing exports. Acceptance passed with
       `bun test test/core.test.ts` (21 pass, 73 expect calls), `bun run
+      typecheck`, `bun run format:check`, and `bun run lint`. Complexity check
+      `bun src/cli.ts src --diff HEAD --format json` returned 0 findings.
+  - id: log-004
+    timestamp: 2026-05-09T15:47Z
+    command: apply
+    task: filter-introduced-findings
+    summary: >
+      Added `newSinceRef` scan semantics to `scanProject()`: current and base
+      snapshots run with the same detector selection, then current findings are
+      filtered by fingerprints absent from the base result and summaries are
+      rebuilt from the filtered findings. Verified red first: the introduced-only
+      single-file test initially emitted the inherited changed-file finding too.
+      Acceptance passed with tests covering inherited changed-file omission,
+      newly introduced single-file findings, cross-file graph-introduced
+      findings, detector selection, and duplicate-symbol occurrence summary
+      rebuilding. Verification passed: `bun test test/core.test.ts` (24 pass, 87
+      expect calls), `bun run test` (85 pass, 214 expect calls), `bun run
       typecheck`, `bun run format:check`, and `bun run lint`. Complexity check
       `bun src/cli.ts src --diff HEAD --format json` returned 0 findings.

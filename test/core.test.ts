@@ -417,6 +417,121 @@ describe("scanProject base snapshots", () => {
   });
 });
 
+describe("scanProject introduced-only filtering", () => {
+  it("emits only selected current findings whose fingerprints are absent from the base scan", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-new-since-single-"));
+    try {
+      mkdirSync(join(root, "src"), { recursive: true });
+      await Bun.write(join(root, "src", "index.ts"), "export const entry = true;\n");
+      await Bun.write(
+        join(root, "src", "service.ts"),
+        "export class UserService { constructor(private repo: any) {} getUser(id: string) { return this.repo.getUser(id); } }\n",
+      );
+      runGit(root, ["init"]);
+      commitAll(root, "base");
+
+      await Bun.write(
+        join(root, "src", "service.ts"),
+        "export class UserService { constructor(private repo: any) {} getUser(id: string) { return this.repo.getUser(id); } }\nexport const touched = true;\n",
+      );
+      await Bun.write(
+        join(root, "src", "new-service.ts"),
+        "export class ProjectService { constructor(private repo: any) {} getProject(id: string) { return this.repo.getProject(id); } }\n",
+      );
+
+      const result = await scanProject({
+        target: join(root, "src"),
+        newSinceRef: "HEAD",
+        detectorSelection: { kind: "only", ids: ["passThroughMethod"] },
+      });
+
+      expect(result.findings.map((finding) => `${finding.flag}:${finding.file}`)).toEqual([
+        "passThroughMethod:new-service.ts",
+      ]);
+      expect(result.summary).toEqual({
+        totalFindings: 1,
+        byFlag: { passThroughMethod: 1 },
+        topFiles: [{ file: "new-service.ts", count: 1 }],
+      });
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("emits cross-file findings introduced by full-project graph changes", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-new-since-cross-"));
+    try {
+      mkdirSync(join(root, "src"), { recursive: true });
+      await Bun.write(join(root, "src", "index.ts"), "export const entry = true;\n");
+      await Bun.write(
+        join(root, "src", "contracts.ts"),
+        "export interface Port { send(value: string): void; }\n",
+      );
+      await Bun.write(
+        join(root, "src", "adapter-a.ts"),
+        "import { Port } from './contracts'; export class AdapterA implements Port { send(value: string) {} }\n",
+      );
+      await Bun.write(
+        join(root, "src", "adapter-b.ts"),
+        "import { Port } from './contracts'; export class AdapterB implements Port { send(value: string) {} }\n",
+      );
+      runGit(root, ["init"]);
+      commitAll(root, "base");
+
+      rmSync(join(root, "src", "adapter-b.ts"));
+
+      const result = await scanProject({
+        target: join(root, "src"),
+        newSinceRef: "HEAD",
+        detectorSelection: { kind: "only", ids: ["uniqueImplementation"] },
+      });
+
+      expect(result.findings.map((finding) => `${finding.flag}:${finding.file}`)).toEqual([
+        "uniqueImplementation:contracts.ts",
+      ]);
+      expect(result.findings[0].metadata).toMatchObject({
+        name: "Port",
+        implementerCount: 1,
+      });
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("rebuilds summaries with duplicate-symbol occurrence counts after filtering", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-new-since-duplicates-"));
+    try {
+      mkdirSync(join(root, "src"), { recursive: true });
+      await Bun.write(join(root, "src", "index.ts"), "export const entry = true;\n");
+      runGit(root, ["init"]);
+      commitAll(root, "base");
+
+      const shape = "export type Shape = { id: string; name: string };\n";
+      await Bun.write(join(root, "src", "shape-a.ts"), shape);
+      await Bun.write(join(root, "src", "shape-b.ts"), shape);
+      await Bun.write(join(root, "src", "shape-c.ts"), shape);
+
+      const result = await scanProject({
+        target: join(root, "src"),
+        newSinceRef: "HEAD",
+        detectorSelection: { kind: "only", ids: ["duplicateSymbol"] },
+      });
+
+      expect(result.summary).toEqual({
+        totalFindings: 1,
+        byFlag: { duplicateSymbol: 1 },
+        topFiles: [
+          { file: "shape-a.ts", count: 1 },
+          { file: "shape-b.ts", count: 1 },
+          { file: "shape-c.ts", count: 1 },
+        ],
+      });
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+});
+
 describe("scanProject detector selection", () => {
   const passThroughFixture = join(fixturesRoot, "pass-through-method");
   const uniqueImplementationFixture = join(fixturesRoot, "unique-implementation");

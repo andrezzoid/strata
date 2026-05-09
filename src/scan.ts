@@ -11,6 +11,8 @@ export type ScanProjectOptions = {
   target?: string;
   /** Git ref for diff-scoped output; full project analysis still runs. */
   diffRef?: string | null;
+  /** Git ref for introduced-only output; compares stable finding fingerprints after both scans. */
+  newSinceRef?: string | null;
   /** Detector subset to run. Defaults to all detectors. */
   detectorSelection?: DetectorSelection;
 };
@@ -27,13 +29,30 @@ export type ScanProjectAtGitRefOptions = {
 /**
  * Scans a TypeScript project for PoSD-style complexity red-flag candidates.
  *
- * Cross-file detectors always receive the full project graph; `diffRef` only
- * filters emitted findings after analysis so graph-dependent answers stay valid.
+ * Cross-file detectors always receive the full project graph; `diffRef` and
+ * `newSinceRef` filter emitted findings after analysis so graph-dependent
+ * answers stay valid.
  * Returns a Promise because source contents are read through Bun's async file API.
  */
 export async function scanProject(options: ScanProjectOptions = {}): Promise<ScanResult> {
   const target = options.target ?? ".";
-  return scanFilesystemTarget(target, options.diffRef ?? null, options.detectorSelection);
+  if (options.diffRef && options.newSinceRef) {
+    throw new Error("cannot combine diffRef and newSinceRef");
+  }
+
+  const current = await scanFilesystemTarget(
+    target,
+    options.diffRef ?? null,
+    options.detectorSelection,
+  );
+  if (!options.newSinceRef) return current;
+
+  const base = await scanProjectAtGitRef({
+    target,
+    ref: options.newSinceRef,
+    detectorSelection: options.detectorSelection,
+  });
+  return filterIntroducedFindings(current, base);
 }
 
 /** Scans the requested target as it existed at a git ref, returning an empty result for new paths. */
@@ -42,7 +61,7 @@ export async function scanProjectAtGitRef(
 ): Promise<ScanResult> {
   const target = options.target ?? ".";
   return withBaseSnapshotTarget(target, options.ref, async (baseTarget) => {
-    if (!baseTarget) return emptyScanResult();
+    if (!baseTarget) return buildScanResult([]);
     return scanFilesystemTarget(baseTarget, null, options.detectorSelection);
   });
 }
@@ -88,15 +107,26 @@ async function scanFilesystemTarget(
     allFindings = allFindings.filter((finding) => findingTouchesChanged(finding, changedFiles));
   }
 
-  allFindings.sort(
+  return buildScanResult(allFindings);
+}
+
+function filterIntroducedFindings(current: ScanResult, base: ScanResult): ScanResult {
+  const baseFingerprints = new Set(base.findings.map((finding) => finding.fingerprint));
+  return buildScanResult(
+    current.findings.filter((finding) => !baseFingerprints.has(finding.fingerprint)),
+  );
+}
+
+function buildScanResult(inputFindings: Finding[]): ScanResult {
+  const findings = [...inputFindings].sort(
     (a, b) => a.flag.localeCompare(b.flag) || a.file.localeCompare(b.file) || a.line - b.line,
   );
 
   const byFlag: Record<string, number> = {};
-  for (const finding of allFindings) byFlag[finding.flag] = (byFlag[finding.flag] ?? 0) + 1;
+  for (const finding of findings) byFlag[finding.flag] = (byFlag[finding.flag] ?? 0) + 1;
 
   const fileCounts: Record<string, number> = {};
-  for (const finding of allFindings) {
+  for (const finding of findings) {
     if (finding.flag === "duplicateSymbol" && Array.isArray(finding.metadata.occurrences)) {
       for (const occurrence of finding.metadata.occurrences as { file: string }[]) {
         fileCounts[occurrence.file] = (fileCounts[occurrence.file] ?? 0) + 1;
@@ -112,11 +142,7 @@ async function scanFilesystemTarget(
     .slice(0, 10);
 
   return {
-    summary: { totalFindings: allFindings.length, byFlag, topFiles },
-    findings: allFindings,
+    summary: { totalFindings: findings.length, byFlag, topFiles },
+    findings,
   };
-}
-
-function emptyScanResult(): ScanResult {
-  return { summary: { totalFindings: 0, byFlag: {}, topFiles: [] }, findings: [] };
 }
