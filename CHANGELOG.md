@@ -9,6 +9,7 @@ All notable changes to `strata` will be documented here.
 - Adds `--fail-on-findings` so CI can fail deliberately when candidates are emitted while default scans remain report-only.
 - Adds detector subset filtering with `--only` and `--exclude` so CI jobs and agents can focus on selected candidate families.
 - Adds stable finding fingerprints in JSON and SARIF output so CI systems, agents, and future baselines can match candidates across harmless line shifts.
+- Adds introduced-only filtering with `--new-since <git-ref>` so PR and CI review can focus on newly introduced candidate identities instead of inherited design debt in changed files.
 - Adds Lefthook pre-commit hooks for staged formatting and linting.
 - Adds focused unit coverage for scanner core utilities and detectors.
 - Adds scan-root `tsconfig.json` `baseUrl`/`paths` resolution for cross-file `orphanFile` and `uniqueImplementation` analysis.

@@ -28,6 +28,7 @@ strata --help
 ```bash
 strata [PATH]
 strata [PATH] --diff <git-ref>
+strata [PATH] --new-since <git-ref>
 strata [PATH] --format json
 strata [PATH] --format text
 strata [PATH] --format sarif
@@ -42,6 +43,7 @@ Defaults:
 - `--format` defaults to `json`.
 - `--format sarif` emits SARIF 2.1.0 for GitHub code scanning and other CI consumers.
 - `--diff` analyzes the full project graph, then filters findings to changed files so cross-file detectors keep correct context.
+- `--new-since` scans the current target and the base ref, then reports only current candidates whose stable `fingerprint` was absent from the base scan.
 - `--only` and `--exclude` accept comma-separated detector IDs from the table below. They filter which detectors run, not how findings are judged; every emitted finding remains a review candidate.
 - `--fail-on-findings` exits non-zero when candidates are emitted, which is intended for CI gates; default scans remain report-only.
 
@@ -91,11 +93,19 @@ Diff-scoped SARIF keeps full-project graph analysis, then reports only findings 
 strata . --diff origin/main --format sarif > strata.sarif
 ```
 
+Introduced-only SARIF answers a different PR-review question: which candidate identities did this change create?
+
+```bash
+strata . --new-since origin/main --format sarif > strata.sarif
+```
+
+Use `--new-since` for CI annotations or gates that should focus on newly introduced review candidates rather than inherited design debt in files the PR happened to edit. "New" means a new finding fingerprint identity; if an existing same-fingerprint candidate merely worsens its metadata, such as a wide module gaining another export, it is not reported as introduced by this mode.
+
 Focus CI annotations or gates on detector families your team is ready to review:
 
 ```bash
-strata . --diff origin/main --only passThroughMethod,duplicateSymbol --format sarif > strata.sarif
-strata . --diff origin/main --exclude orphanFile --fail-on-findings
+strata . --new-since origin/main --only passThroughMethod,duplicateSymbol --format sarif > strata.sarif
+strata . --new-since origin/main --exclude orphanFile --fail-on-findings
 ```
 
 Example GitHub Actions upload step:
