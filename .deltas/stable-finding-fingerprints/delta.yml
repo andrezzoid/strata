@@ -149,7 +149,7 @@ tasks:
     description: >
       Run the full verification gate and review the fingerprint boundary for
       avoidable complexity before declaring the delta complete.
-    status: pending
+    status: done
     context: |
       This is verification, not a place to expand fingerprint semantics. If the
       gate finds a bug, route through Apply on the relevant task; if it finds a
@@ -260,3 +260,23 @@ log:
       consumers. Verification passed: `bun run format:check`, `bun run lint`,
       `bun run typecheck`, and `bun test test/core.test.ts test/detectors.test.ts
       test/cli.test.ts` (61 tests / 138 assertions).
+  - id: log-007
+    timestamp: 2026-05-09T09:41Z
+    command: apply
+    task: verify-stable-fingerprints
+    summary: >
+      Ran the full verification gate and fingerprint-boundary complexity review.
+      Initial `bun run scan:ci` failed with one `duplicateSymbol` finding because
+      `shortHash` existed in both `duplicate-symbol.ts` and `finding.ts`, exactly
+      violating the one hashing/canonicalization boundary this task checks. Fixed
+      the design gap by exporting `stableHash()` from `src/finding.ts` and using
+      it for duplicate-symbol group hashes, leaving canonicalization and finding
+      fingerprint hashing in one module. Final gate passed: `bun run
+      format:check`, `bun run lint`, `bun run typecheck`, `bun run test` (78
+      tests / 175 assertions), `bun run test:coverage` (90.72% source line
+      coverage against the 85% gate), `bun run package:check` (28 package
+      entries), and `bun run scan:ci` (0 findings). Diff-scoped complexity scan
+      `bun run scan -- . --diff origin/main --format json` reported 0 findings.
+      Manual review confirmed SARIF reads only `finding.fingerprint`, JSON stays
+      direct serialization, detectors own only semantic `identity` parts, and
+      hashing/canonicalization live in `src/finding.ts`.

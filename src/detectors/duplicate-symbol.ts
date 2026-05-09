@@ -1,5 +1,5 @@
 import type { Ctx, Node } from "../ast.ts";
-import { createFinding } from "../finding.ts";
+import { createFinding, stableHash } from "../finding.ts";
 import { isNonReviewablePath } from "../skip-patterns.ts";
 import type { Finding } from "../types.ts";
 
@@ -35,13 +35,6 @@ function previewSource(source: string, start: number, end: number): string {
     snippet = snippet.slice(0, PREVIEW_MAX_CHARS).replace(/\s+\S*$/, "") + " …";
   }
   return snippet;
-}
-
-// djb2: stable non-cryptographic grouping key for messages and metadata.
-function shortHash(value: string): string {
-  let hash = 5381;
-  for (let i = 0; i < value.length; i++) hash = ((hash << 5) + hash + value.charCodeAt(i)) | 0;
-  return (hash >>> 0).toString(36);
 }
 
 function fingerprintConstValue(node: Node, name: string): string | null {
@@ -559,7 +552,7 @@ export function detectDuplicateSymbol(ctxs: Ctx[]): Finding[] {
 
     const distinct = new Set(group.map((declaration) => declaration.file));
     const kind = group[0].kind;
-    const fingerprintHash = shortHash(group[0].fingerprint);
+    const fingerprintHash = stableHash(group[0].fingerprint);
     const sorted = [...group].sort((a, b) => a.file.localeCompare(b.file) || a.start - b.start);
     const canonical = sorted[0];
     const canonicalSource = sourceByFile.get(canonical.file) ?? "";

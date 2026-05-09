@@ -25,7 +25,7 @@ const FINGERPRINT_VERSION = "strata:v1";
  * JSON/SARIF consumers see one consistent identity format.
  */
 export function createFinding(input: FindingInput): Finding {
-  const fingerprint = `${FINGERPRINT_VERSION}:${shortHash(
+  const fingerprint = `${FINGERPRINT_VERSION}:${stableHash(
     canonicalize({ flag: input.flag, file: input.file, identity: input.identity }),
   )}`;
 
@@ -68,8 +68,8 @@ function canonicalize(value: IdentityValue): string {
   return JSON.stringify(value);
 }
 
-// djb2 is enough here: fingerprints need deterministic matching, not secrecy.
-function shortHash(value: string): string {
+/** Stable non-cryptographic hash for compact review-facing identifiers. */
+export function stableHash(value: string): string {
   let hash = 5381;
   for (let i = 0; i < value.length; i++) hash = ((hash << 5) + hash + value.charCodeAt(i)) | 0;
   return (hash >>> 0).toString(36);
