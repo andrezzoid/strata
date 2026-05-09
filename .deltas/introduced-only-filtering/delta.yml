@@ -131,7 +131,7 @@ tasks:
     description: >
       Run the full verification gate and review the introduced-only boundary for
       avoidable complexity before declaring the delta complete.
-    status: pending
+    status: done
     context: |
       This is verification, not a place to add changed-line or worsened-existing
       semantics. If the gate exposes a bug, route back through Apply on the
@@ -241,3 +241,18 @@ log:
       proposition of focusing review on newly introduced candidate identities
       instead of inherited design debt. Verification passed: `bun run
       format:check`.
+  - id: log-007
+    timestamp: 2026-05-09T15:53Z
+    command: apply
+    task: verify-new-since-filtering
+    summary: >
+      Ran the full verification gate for introduced-only filtering. Passed: `bun
+      run format:check`; `bun run lint`; `bun run typecheck`; `bun run test`
+      (91 pass, 239 expect calls); `bun run test:coverage` (91 pass, 239
+      expect calls, 90.72% line coverage against the 85% threshold); `bun run
+      package:check` (npm dry-run produced package contents, with npm's existing
+      unknown `token` env warning); and `bun run scan:ci` (0 findings). Manual
+      complexity review passed: git snapshot ownership remains in `project.ts`,
+      scan/filter semantics remain behind `scanProject()` in `scan.ts`, the CLI
+      stays thin, and detector/formatter modules do not know about base snapshots
+      or introduced-only filtering.
