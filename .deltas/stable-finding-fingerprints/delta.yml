@@ -280,3 +280,24 @@ log:
       Manual review confirmed SARIF reads only `finding.fingerprint`, JSON stays
       direct serialization, detectors own only semantic `identity` parts, and
       hashing/canonicalization live in `src/finding.ts`.
+  - id: log-008
+    timestamp: 2026-05-09T09:42Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass for 4 tasks and 6
+      integrated criteria. Integrated CLI evidence: a fixture scan asserted 4
+      JSON findings and 4 SARIF results, with every JSON `finding.fingerprint`
+      and SARIF `partialFingerprints.primaryLocationLineHash` present and
+      starting with `strata:v1:`. Stability evidence: detector tests cover
+      harmless leading-comment line shifts for module-level, declaration-level,
+      pass-through, catch, TypeScript escape-hatch, and duplicate-symbol
+      findings, plus same-file collision cases for repeated suppression comments
+      and empty catches. Regression evidence: full gate passed with `bun run
+      format:check`, `bun run lint`, `bun run typecheck`, `bun run test` (78
+      tests / 175 assertions), `bun run test:coverage` (90.72% source line
+      coverage >= 85%), `bun run package:check` (28 package entries), and `bun
+      run scan:ci` (0 findings). Complexity evidence: diff-scoped scan reported
+      0 findings, SARIF consumes only `finding.fingerprint`, JSON remains direct
+      serialization, detectors own semantic anchors only, and hashing plus
+      canonicalization are centralized in `src/finding.ts`. No bugs, design gaps,
+      or context gaps remain. Delta is complete.
