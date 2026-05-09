@@ -1,5 +1,6 @@
 import type { Ctx, Node } from "../ast.ts";
 import { walk } from "../ast.ts";
+import { createFinding } from "../finding.ts";
 import type { Finding } from "../types.ts";
 
 // Param whose every body reference is in argument position of a call. The
@@ -9,9 +10,14 @@ export function detectPassThroughVariable({ file, ast, lineOf }: Ctx): Finding[]
   const findings: Finding[] = [];
   walk(ast, (node) => {
     let fn: Node | null = null;
-    if (node.type === "FunctionDeclaration") fn = node;
-    else if (node.type === "MethodDefinition") fn = node.value;
-    else return;
+    let ownerName = "<anonymous>";
+    if (node.type === "FunctionDeclaration") {
+      fn = node;
+      ownerName = node.id?.name ?? ownerName;
+    } else if (node.type === "MethodDefinition") {
+      fn = node.value;
+      ownerName = node.key?.name ?? node.key?.value ?? ownerName;
+    } else return;
     if (!fn?.body?.body) return;
     if ((fn.params?.length ?? 0) < 3) return;
     if (fn.body.body.length < 2) return;
@@ -38,14 +44,16 @@ export function detectPassThroughVariable({ file, ast, lineOf }: Ctx): Finding[]
 
     if (passThroughParams.length < 3) return;
 
-    findings.push({
-      flag: "passThroughVariable",
-      severity: "candidate",
-      file,
-      line: lineOf(node.start),
-      message: `${passThroughParams.length} pass-through params (${passThroughParams.join(", ")}) — plumbing layer with no use of forwarded values`,
-      metadata: { passThroughParams },
-    });
+    findings.push(
+      createFinding({
+        flag: "passThroughVariable",
+        file,
+        line: lineOf(node.start),
+        message: `${passThroughParams.length} pass-through params (${passThroughParams.join(", ")}) — plumbing layer with no use of forwarded values`,
+        metadata: { passThroughParams },
+        identity: [ownerName, passThroughParams],
+      }),
+    );
   });
   return findings;
 }

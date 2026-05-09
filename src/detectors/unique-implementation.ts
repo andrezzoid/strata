@@ -1,4 +1,5 @@
 import type { Ctx } from "../ast.ts";
+import { createFinding } from "../finding.ts";
 import { isTestOnlyPath } from "../skip-patterns.ts";
 import {
   buildFileScope,
@@ -119,20 +120,22 @@ export function detectUniqueImplementation(
         ? "no subclasses — abstract class is dead"
         : `only one ${declaration.kind === "interface" ? "implementer" : "subclass"}: ${implementers[0].implementer} at ${implementers[0].file}:${implementers[0].line}`;
 
-    findings.push({
-      flag: "uniqueImplementation",
-      severity: "candidate",
-      file: declaration.file,
-      line: declaration.line,
-      message: `${kindWord} '${declaration.name}' has ${status} — speculative abstraction (no polymorphism payoff)`,
-      metadata: {
-        kind: declaration.kind,
-        name: declaration.name,
-        memberCount: declaration.methodCount,
-        implementerCount: implementers.length,
-        implementers,
-      },
-    });
+    findings.push(
+      createFinding({
+        flag: "uniqueImplementation",
+        file: declaration.file,
+        line: declaration.line,
+        message: `${kindWord} '${declaration.name}' has ${status} — speculative abstraction (no polymorphism payoff)`,
+        metadata: {
+          kind: declaration.kind,
+          name: declaration.name,
+          memberCount: declaration.methodCount,
+          implementerCount: implementers.length,
+          implementers,
+        },
+        identity: [declaration.kind, declaration.name],
+      }),
+    );
   }
   return findings;
 }

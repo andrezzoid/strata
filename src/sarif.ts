@@ -168,7 +168,7 @@ function sarifResult(finding: Finding, ruleIndexById: Map<string, number>): Sari
       },
     ],
     partialFingerprints: {
-      primaryLocationLineHash: `${finding.flag}:${finding.file}:${finding.line}:${finding.message}`,
+      primaryLocationLineHash: finding.fingerprint,
     },
   };
 }

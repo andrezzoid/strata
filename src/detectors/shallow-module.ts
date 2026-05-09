@@ -1,4 +1,5 @@
 import type { Ctx } from "../ast.ts";
+import { createFinding } from "../finding.ts";
 import type { Finding } from "../types.ts";
 import { countModuleSurface } from "./module-surface.ts";
 
@@ -25,13 +26,13 @@ export function detectShallowModule({ file, source, ast }: Ctx): Finding[] {
   if (surface / body <= SHALLOW_RATIO) return [];
 
   return [
-    {
+    createFinding({
       flag: "shallowModule",
-      severity: "candidate",
       file,
       line: 1,
       message: `${surface} surface elements / ${body} body lines — interface heavy relative to implementation`,
       metadata: { surface, bodyLines: body },
-    },
+      identity: ["module-surface"],
+    }),
   ];
 }

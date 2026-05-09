@@ -1,5 +1,6 @@
 import type { Ctx, Node } from "../ast.ts";
 import { walk } from "../ast.ts";
+import { createFinding } from "../finding.ts";
 import type { Finding } from "../types.ts";
 
 const WIDE_SIGNATURE_MAX = 4;
@@ -32,14 +33,16 @@ export function detectWideSignature({ file, ast, lineOf }: Ctx): Finding[] {
     }
 
     if (required <= WIDE_SIGNATURE_MAX) return;
-    findings.push({
-      flag: "wideSignature",
-      severity: "candidate",
-      file,
-      line: lineOf(node.start),
-      message: `${nameForMsg} takes ${required} required parameters — wide surface, consider an options object or splitting`,
-      metadata: { name: nameForMsg, requiredParams: required },
-    });
+    findings.push(
+      createFinding({
+        flag: "wideSignature",
+        file,
+        line: lineOf(node.start),
+        message: `${nameForMsg} takes ${required} required parameters — wide surface, consider an options object or splitting`,
+        metadata: { name: nameForMsg, requiredParams: required },
+        identity: [nameForMsg, required],
+      }),
+    );
   });
   return findings;
 }

@@ -1,4 +1,5 @@
 import type { Ctx, Node } from "../ast.ts";
+import { createFinding } from "../finding.ts";
 import { isNonReviewablePath } from "../skip-patterns.ts";
 import type { Finding } from "../types.ts";
 
@@ -581,22 +582,24 @@ export function detectDuplicateSymbol(ctxs: Ctx[]): Finding[] {
       `(e.g. ${sampleNames}${moreNames}) — agent likely re-built an existing one ` +
       `[group ${fingerprintHash}]`;
 
-    findings.push({
-      flag: "duplicateSymbol",
-      severity: "candidate",
-      file: canonical.file,
-      line: canonical.line,
-      message,
-      metadata: {
-        symbolKind: kind,
-        fingerprintHash,
-        distinctFiles: distinct.size,
-        totalDeclarations: group.length,
-        preview,
-        previewFrom: `${canonical.file}:${canonical.line}`,
-        occurrences,
-      },
-    });
+    findings.push(
+      createFinding({
+        flag: "duplicateSymbol",
+        file: canonical.file,
+        line: canonical.line,
+        message,
+        metadata: {
+          symbolKind: kind,
+          fingerprintHash,
+          distinctFiles: distinct.size,
+          totalDeclarations: group.length,
+          preview,
+          previewFrom: `${canonical.file}:${canonical.line}`,
+          occurrences,
+        },
+        identity: [kind, group[0].fingerprint],
+      }),
+    );
   }
   return findings;
 }

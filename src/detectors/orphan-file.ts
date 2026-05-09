@@ -1,4 +1,5 @@
 import type { Ctx } from "../ast.ts";
+import { createFinding } from "../finding.ts";
 import { isNonReviewablePath } from "../skip-patterns.ts";
 import { createRelativeImportResolver, type ImportResolver } from "../scope.ts";
 import type { Finding } from "../types.ts";
@@ -38,15 +39,17 @@ export function detectOrphanFile(
   const findings: Finding[] = [];
   for (const ctx of eligibleFiles) {
     if ((incoming.get(ctx.file) ?? 0) > 0) continue;
-    findings.push({
-      flag: "orphanFile",
-      severity: "candidate",
-      file: ctx.file,
-      line: 1,
-      message:
-        "file is not imported by any other file — possible dead code or forgotten exploration",
-      metadata: {},
-    });
+    findings.push(
+      createFinding({
+        flag: "orphanFile",
+        file: ctx.file,
+        line: 1,
+        message:
+          "file is not imported by any other file — possible dead code or forgotten exploration",
+        metadata: {},
+        identity: ["orphan"],
+      }),
+    );
   }
   return findings;
 }

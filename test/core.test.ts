@@ -98,6 +98,7 @@ describe("findingTouchesChanged", () => {
   const finding: Finding = {
     flag: "uniqueImplementation",
     severity: "candidate",
+    fingerprint: "strata:v1:changed-file-sample",
     file: "src/main.ts",
     line: 12,
     message: "candidate",
@@ -129,6 +130,7 @@ describe("formatResult", () => {
       {
         flag: "duplicateSymbol",
         severity: "candidate",
+        fingerprint: "strata:v1:duplicate-shape-sample",
         file: "src/a.ts",
         line: 3,
         message: "Duplicate shape",
@@ -183,7 +185,7 @@ describe("formatResult", () => {
           },
         ],
         partialFingerprints: {
-          primaryLocationLineHash: "duplicateSymbol:src/a.ts:3:Duplicate shape",
+          primaryLocationLineHash: "strata:v1:duplicate-shape-sample",
         },
       },
     ]);

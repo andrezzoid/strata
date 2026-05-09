@@ -1,5 +1,6 @@
 import type { Ctx, Node } from "../ast.ts";
 import { walk } from "../ast.ts";
+import { createFinding } from "../finding.ts";
 import type { Finding } from "../types.ts";
 
 const GENERIC_SUFFIXES = [
@@ -32,14 +33,16 @@ export function detectGenericNaming({ file, ast, lineOf }: Ctx): Finding[] {
     }
     if (!id?.name) return;
     if (!genericSuffix.test(id.name)) return;
-    findings.push({
-      flag: "genericNaming",
-      severity: "candidate",
-      file,
-      line: lineOf(node.start),
-      message: `name '${id.name}' uses a generic suffix (Manager/Helper/Utils/...)`,
-      metadata: { name: id.name },
-    });
+    findings.push(
+      createFinding({
+        flag: "genericNaming",
+        file,
+        line: lineOf(node.start),
+        message: `name '${id.name}' uses a generic suffix (Manager/Helper/Utils/...)`,
+        metadata: { name: id.name },
+        identity: [id.name],
+      }),
+    );
   });
   return findings;
 }

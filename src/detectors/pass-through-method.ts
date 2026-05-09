@@ -1,5 +1,6 @@
 import type { Ctx, Node } from "../ast.ts";
 import { walk } from "../ast.ts";
+import { createFinding } from "../finding.ts";
 import type { Finding } from "../types.ts";
 
 // PoSD Ch. 7: a class method delegating to instance state with no logic. Free
@@ -9,6 +10,7 @@ export function detectPassThroughMethod({ file, ast, lineOf }: Ctx): Finding[] {
   walk(ast, (node) => {
     if (node.type !== "MethodDefinition") return;
     if (node.kind === "constructor") return;
+    const methodName = node.key?.name ?? node.key?.value ?? "<anonymous>";
 
     const fn = node.value;
     if (!fn?.body?.body || fn.body.body.length !== 1) return;
@@ -44,14 +46,25 @@ export function detectPassThroughMethod({ file, ast, lineOf }: Ctx): Finding[] {
       if (arg.type !== "Identifier" || arg.name !== paramNames[i]) return;
     }
 
-    findings.push({
-      flag: "passThroughMethod",
-      severity: "candidate",
-      file,
-      line: lineOf(node.start),
-      message: "class method delegates to instance state with same args — layer without logic",
-      metadata: {},
-    });
+    findings.push(
+      createFinding({
+        flag: "passThroughMethod",
+        file,
+        line: lineOf(node.start),
+        message: "class method delegates to instance state with same args — layer without logic",
+        metadata: {},
+        identity: [methodName, memberExpressionIdentity(call.callee), paramNames],
+      }),
+    );
   });
   return findings;
+}
+
+function memberExpressionIdentity(node: Node): string {
+  if (node.type !== "MemberExpression") return "<?>";
+  const property = node.property?.name ?? node.property?.value ?? "?";
+  if (node.object?.type === "ThisExpression") return `this.${property}`;
+  if (node.object?.type === "MemberExpression")
+    return `${memberExpressionIdentity(node.object)}.${property}`;
+  return `?.${property}`;
 }

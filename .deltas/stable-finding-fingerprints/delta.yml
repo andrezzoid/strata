@@ -1,0 +1,229 @@
+goal: >
+  Add stable finding fingerprints to JSON and SARIF output so CI systems,
+  agents, and future baselines can recognize the same candidate across harmless
+  line shifts without weakening strata's candidate-not-verdict contract.
+
+acceptance:
+  - JSON output includes a deterministic fingerprint for each finding.
+  - SARIF output exposes the same finding identity through GitHub-compatible partial fingerprints.
+  - Fingerprints remain stable across harmless line shifts when detector-owned semantic anchors are available.
+  - Distinct findings from the same detector in the same file do not collapse to the same fingerprint.
+  - Existing detector semantics, finding order, JSON fields, text output, `--diff`, and `--fail-on-findings` behavior remain compatible.
+  - README, CHANGELOG, or BACKLOG are updated if the user-visible output contract changes.
+
+context: |
+  `Finding` is the public JSON shape; JSON output is a direct `JSON.stringify(result)`, while text output ignores unknown fields.
+  SARIF already emits `partialFingerprints.primaryLocationLineHash`, but the value is `flag:file:line:message`, so harmless line shifts change alert identity.
+  GitHub's SARIF docs say uploaded third-party results should populate `partialFingerprints`; GitHub code scanning only uses `primaryLocationLineHash`.
+  Recommended design: detectors construct findings through a small helper that sets fixed `candidate` severity and hashes detector-owned identity parts into a versioned `strata:v1:<hash>` fingerprint.
+  Formatters should consume `finding.fingerprint`; SARIF should put that same value in `primaryLocationLineHash` even though the SARIF property name says line hash.
+  Adding `fingerprint` to JSON is an intentional additive output-contract change; text output, detector order, detector semantics, `--diff`, and `--fail-on-findings` should stay unchanged.
+
+refs:
+  - BACKLOG.md
+  - README.md
+  - CHANGELOG.md
+  - src/types.ts
+  - src/format.ts
+  - src/sarif.ts
+  - src/scan.ts
+  - src/ast.ts
+  - src/detectors/registry.ts
+  - src/detectors/shallow-module.ts
+  - src/detectors/wide-module.ts
+  - src/detectors/wide-signature.ts
+  - src/detectors/pass-through-method.ts
+  - src/detectors/pass-through-variable.ts
+  - src/detectors/generic-naming.ts
+  - src/detectors/catch-handling.ts
+  - src/detectors/ts-escape-hatches.ts
+  - src/detectors/duplicate-symbol.ts
+  - src/detectors/unique-implementation.ts
+  - src/detectors/orphan-file.ts
+  - test/core.test.ts
+  - test/detectors.test.ts
+  - test/cli.test.ts
+  - https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning
+
+open_questions: []
+
+followups:
+  - Baseline and suppression support remain separate backlog items that can consume `Finding.fingerprint` after this identity contract ships.
+  - This first feature should promise stability across harmless line shifts, not across file renames, detector semantic changes, or intentional code reshaping.
+
+notes:
+  - >
+    Detector anchor inventory: module-level detectors (`shallowModule`,
+    `wideModule`, `orphanFile`) have one candidate per detector/file, so
+    `flag + file` is stable enough. Declaration detectors (`genericNaming`,
+    `wideSignature`, `uniqueImplementation`) should include names and nearby
+    semantic kind/context so two findings in one file do not collide.
+  - >
+    Pass-through detectors need richer anchors than current metadata provides:
+    method/function name plus class/target or forwarded parameter names. Catch
+    and TS escape-hatch detectors have weak names, so use detector-owned local
+    structural snippets or nearest semantic context, with line only as a last
+    deterministic discriminator.
+  - >
+    `duplicateSymbol` already owns structural fingerprints and a short group
+    hash internally. Its stable finding fingerprint should be based on the
+    detector's structural group identity rather than the current canonical
+    occurrence line.
+  - >
+    Design A considered: derive fingerprints centrally from existing finding
+    fields/metadata at scan or format time. It is the smallest diff but leaks
+    detector-specific anchor knowledge into a central switch and would likely
+    degrade to `file:line` for weak-metadata detectors.
+  - >
+    Design B chosen: detector-owned identity parts plus a central helper for
+    canonicalization, versioning, hashing, and fixed severity. This keeps the
+    public finder interface simple (`Finding.fingerprint`) while leaving each
+    detector responsible for the semantic anchor it understands.
+
+tasks:
+  - id: add-fingerprint-contract
+    description: >
+      Add the public finding fingerprint contract and wire JSON/SARIF output to
+      one detector-owned identity value per finding.
+    status: done
+    context: |
+      Write failing tests first around JSON output and SARIF partial fingerprints.
+      Prefer a small `createFinding`-style helper that owns fixed severity,
+      canonical identity serialization, version prefixing, and hashing.
+      Do not derive fingerprints in `format.ts` or `sarif.ts`; formatters should
+      consume `finding.fingerprint` without knowing detector anchor rules.
+      Include detector-owned identity parts now so the required `Finding` shape
+      can typecheck without temporary optional compatibility code.
+    acceptance:
+      - `Finding` has a required deterministic `fingerprint` field with a versioned `strata:v1:` prefix.
+      - Detector implementations construct findings through the shared helper or an equivalent single identity boundary.
+      - JSON output includes `fingerprint` on every finding while preserving existing fields and ordering.
+      - SARIF `partialFingerprints.primaryLocationLineHash` equals the finding fingerprint and no longer embeds raw line numbers.
+      - Existing text output, `--diff`, detector filtering, and `--fail-on-findings` behavior remain unchanged.
+      - `bun test test/core.test.ts test/detectors.test.ts test/cli.test.ts` and `bun run typecheck` pass.
+    depends_on: []
+
+  - id: prove-anchor-stability
+    description: >
+      Add behavior tests that prove fingerprints survive harmless line shifts and
+      stay distinct for separate findings from the same detector in one file,
+      refining detector anchors where the tests expose weak identity.
+    status: pending
+    context: |
+      Follow TDD: first create paired-source tests that fail under the current
+      line-based SARIF identity. Cover representative detector families rather
+      than snapshotting every detector output field.
+      Stable anchors may use names, semantic kinds, normalized structural values,
+      grouped duplicate-symbol fingerprints, and occurrence ordinals scoped to a
+      detector-owned semantic context; avoid line/offset unless no semantic anchor exists.
+    acceptance:
+      - Tests prove unchanged fingerprints after adding harmless leading blank/comment lines for module-level, declaration-level, pass-through, escape-hatch/catch, and duplicate-symbol findings.
+      - Tests prove two same-detector findings in the same file do not share a fingerprint.
+      - `duplicateSymbol` fingerprint identity is based on the detector's structural group, not the canonical occurrence line.
+      - Stability tests assert behavior-level identity, not private helper internals or brittle full-output snapshots.
+      - `bun test test/core.test.ts test/detectors.test.ts test/cli.test.ts` and `bun run typecheck` pass.
+    depends_on:
+      - add-fingerprint-contract
+
+  - id: document-fingerprint-output
+    description: >
+      Update user-facing docs and backlog/release notes for the new stable
+      finding identity contract.
+    status: pending
+    context: |
+      Keep the contract narrow: fingerprints are stable identifiers for matching
+      candidate findings across harmless line shifts, not judgments and not a
+      promise across file renames or detector semantic changes.
+      Remove or narrow the completed backlog item; baseline and suppression stay
+      deferred consumers of the fingerprint field.
+    acceptance:
+      - README JSON example and output notes document the `fingerprint` field and its intended matching use.
+      - README SARIF section states SARIF partial fingerprints use the same finding identity.
+      - CHANGELOG records stable finding fingerprints for the unreleased CI-focused version.
+      - BACKLOG removes the completed stable-fingerprint item while keeping baseline and suppression followups.
+      - Documentation preserves the candidate-not-verdict framing.
+    depends_on:
+      - prove-anchor-stability
+
+  - id: verify-stable-fingerprints
+    description: >
+      Run the full verification gate and review the fingerprint boundary for
+      avoidable complexity before declaring the delta complete.
+    status: pending
+    context: |
+      This is verification, not a place to expand fingerprint semantics. If the
+      gate finds a bug, route through Apply on the relevant task; if it finds a
+      design gap, replan with a new pending task.
+      Complexity review should check that SARIF/JSON formatting did not absorb
+      detector-specific anchor knowledge and detectors did not duplicate hashing
+      mechanics.
+    acceptance:
+      - `bun run format:check` passes.
+      - `bun run lint` passes.
+      - `bun run typecheck` passes.
+      - `bun run test` passes.
+      - `bun run test:coverage` passes.
+      - `bun run package:check` passes.
+      - `bun run scan:ci` passes.
+      - Manual complexity review finds one hashing/canonicalization boundary and detector-owned semantic anchors without formatter leakage.
+    depends_on:
+      - document-fingerprint-output
+
+log:
+  - id: log-001
+    timestamp: 2026-05-09T05:56Z
+    command: explore
+    summary: >
+      Created a new stable-finding-fingerprints delta from the BACKLOG item after
+      checking existing deltas. Related SARIF work is complete but materially
+      narrower: it added SARIF output with a line-hash partial fingerprint,
+      while this feature owns stable JSON/SARIF finding identity across harmless
+      line shifts.
+  - id: log-002
+    timestamp: 2026-05-09T06:00Z
+    command: explore
+    summary: >
+      Explored the current finding model, formatters, detectors, tests, README,
+      backlog, and GitHub SARIF guidance. Findings: `src/types.ts` has no
+      fingerprint field; JSON output is direct pretty serialization of
+      `ScanResult`; SARIF currently uses `flag:file:line:message` as
+      `primaryLocationLineHash`; GitHub code scanning expects partial
+      fingerprints and only uses `primaryLocationLineHash`. Compared a central
+      formatter/scan-derived fingerprint against detector-owned identity parts
+      plus a shared canonical hash helper. Chose detector-owned identity parts
+      because it preserves the backlog's semantic-anchor intent and keeps future
+      baseline/suppression consumers on one public `Finding.fingerprint` value.
+      Open questions were resolved into context and followups; this delta is
+      ready for Plan.
+  - id: log-003
+    timestamp: 2026-05-09T06:26Z
+    command: plan
+    summary: >
+      Planned stable fingerprints as four verifiable slices. First establish the
+      public `Finding.fingerprint` contract, shared identity helper, detector
+      migration, and JSON/SARIF consumption in one core task so no temporary
+      optional fingerprint state leaks into the output model. Then add focused
+      line-shift and same-file collision tests to prove detector anchors are
+      semantic enough for the backlog goal. Documentation follows after behavior
+      is proven, and final verification runs the full local gate plus a
+      complexity review of the identity boundary. Baseline before planning
+      passed: `bun run typecheck`, and `bun test test/core.test.ts
+      test/detectors.test.ts test/cli.test.ts` reported 59 tests / 128
+      assertions.
+  - id: log-004
+    timestamp: 2026-05-09T09:34Z
+    command: apply
+    task: add-fingerprint-contract
+    summary: >
+      Added the public `Finding.fingerprint` contract and a `createFinding()`
+      construction boundary that fixes severity, canonicalizes detector-owned
+      identity parts, and emits versioned `strata:v1:<hash>` fingerprints. All
+      detectors now construct findings through that boundary, JSON includes the
+      required field through the existing `ScanResult` serialization, and SARIF
+      `partialFingerprints.primaryLocationLineHash` consumes the same
+      `finding.fingerprint` instead of `flag:file:line:message`. TDD evidence:
+      `bun test test/core.test.ts` first failed on the old SARIF line hash and
+      `bun run typecheck` first failed because `Finding` lacked `fingerprint`.
+      Task verification passed after implementation: `bun run format:check`,
+      `bun run lint`, `bun run typecheck`, and `bun test test/core.test.ts
+      test/detectors.test.ts test/cli.test.ts` (59 tests / 128 assertions).

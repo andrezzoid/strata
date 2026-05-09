@@ -7,6 +7,8 @@ export type Finding = {
   flag: string;
   /** Fixed at candidate to preserve the scanner's no-verdict contract. */
   severity: Severity;
+  /** Versioned identity for matching the same candidate across harmless line shifts. */
+  fingerprint: string;
   /** Project-relative path that anchors the finding. */
   file: string;
   /** One-based source line. */
