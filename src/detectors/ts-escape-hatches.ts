@@ -1,11 +1,12 @@
 import type { Ctx } from "../ast.ts";
 import { walk } from "../ast.ts";
-import { createFinding } from "../finding.ts";
+import { createFinding, createIdentityTracker } from "../finding.ts";
 import type { Finding } from "../types.ts";
 
 /** Flags TypeScript suppression comments and casts that bypass static checks. */
 export function detectTsEscapeHatches({ file, source, ast, comments, lineOf }: Ctx): Finding[] {
   const findings: Finding[] = [];
+  const identityFor = createIdentityTracker();
   walk(ast, (node) => {
     if (node.type !== "TSAsExpression") return;
     if (node.typeAnnotation?.type !== "TSAnyKeyword") return;
@@ -16,7 +17,7 @@ export function detectTsEscapeHatches({ file, source, ast, comments, lineOf }: C
         line: lineOf(node.start),
         message: "TS escape hatch (`as any`)",
         metadata: { kind: "asAny" },
-        identity: ["asAny", source.slice(node.start, node.end)],
+        identity: identityFor(["asAny", source.slice(node.start, node.end)]),
       }),
     );
   });
@@ -30,7 +31,7 @@ export function detectTsEscapeHatches({ file, source, ast, comments, lineOf }: C
         line: lineOf(comment.start),
         message: "TS escape hatch (`@ts-ignore` / `@ts-expect-error`)",
         metadata: { kind: value.split(/\s/)[0] },
-        identity: ["ts-comment", value],
+        identity: identityFor(["ts-comment", value]),
       }),
     );
   }

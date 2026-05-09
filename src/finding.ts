@@ -8,9 +8,11 @@ type IdentityValue =
   | readonly IdentityValue[]
   | { readonly [key: string]: IdentityValue };
 
+type FindingIdentity = readonly IdentityValue[];
+
 type FindingInput = Omit<Finding, "severity" | "fingerprint"> & {
   /** Detector-owned semantic parts that distinguish this candidate without using line numbers. */
-  identity: readonly IdentityValue[];
+  identity: FindingIdentity;
 };
 
 const FINGERPRINT_VERSION = "strata:v1";
@@ -35,6 +37,22 @@ export function createFinding(input: FindingInput): Finding {
     line: input.line,
     message: input.message,
     metadata: input.metadata,
+  };
+}
+
+/**
+ * Tracks repeated identical anchors inside one detector pass without falling back to line numbers.
+ *
+ * Detectors should pass their semantic anchor first; this helper appends a stable
+ * occurrence ordinal only when that same anchor appears again in the same file scan.
+ */
+export function createIdentityTracker(): (identity: FindingIdentity) => FindingIdentity {
+  const counts = new Map<string, number>();
+  return (identity) => {
+    const key = canonicalize(identity);
+    const occurrence = (counts.get(key) ?? 0) + 1;
+    counts.set(key, occurrence);
+    return occurrence === 1 ? identity : [...identity, occurrence];
   };
 }
 

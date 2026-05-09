@@ -108,7 +108,7 @@ tasks:
       Add behavior tests that prove fingerprints survive harmless line shifts and
       stay distinct for separate findings from the same detector in one file,
       refining detector anchors where the tests expose weak identity.
-    status: pending
+    status: done
     context: |
       Follow TDD: first create paired-source tests that fail under the current
       line-based SARIF identity. Cover representative detector families rather
@@ -227,3 +227,21 @@ log:
       Task verification passed after implementation: `bun run format:check`,
       `bun run lint`, `bun run typecheck`, and `bun test test/core.test.ts
       test/detectors.test.ts test/cli.test.ts` (59 tests / 128 assertions).
+  - id: log-005
+    timestamp: 2026-05-09T09:37Z
+    command: apply
+    task: prove-anchor-stability
+    summary: >
+      Added behavior-level fingerprint tests covering representative line-shift
+      stability for module-level, declaration-level, pass-through, catch,
+      TypeScript escape-hatch, and duplicate-symbol findings. Added same-file
+      collision coverage for repeated `tsEscapeHatch` comments and repeated
+      `emptyCatch` findings. TDD evidence: `bun test test/detectors.test.ts`
+      first failed because identical `@ts-ignore` comments shared a fingerprint,
+      then failed again after adding the identical empty-catch case. Fixed by
+      adding `createIdentityTracker()` to the fingerprint boundary; detectors
+      still own semantic anchors, while the shared boundary appends a stable
+      occurrence ordinal only for repeated identical anchors without using line
+      numbers. Task verification passed: `bun run format:check`, `bun run lint`,
+      `bun run typecheck`, and `bun test test/core.test.ts test/detectors.test.ts
+      test/cli.test.ts` (61 tests / 138 assertions).

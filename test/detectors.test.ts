@@ -37,6 +37,96 @@ function runCross(detect: CrossDetector, sources: Record<string, string>) {
   return detect(Object.entries(sources).map(([file, source]) => parseInline(file, source)));
 }
 
+function withHarmlessLeadingComment(source: string): string {
+  return `// harmless file header\n${source}`;
+}
+
+function expectSingleFingerprintStable(
+  detect: SingleDetector,
+  source: string,
+  file = "src/case.ts",
+) {
+  const baseFinding = runSingle(detect, source, file)[0];
+  const shiftedFinding = runSingle(detect, withHarmlessLeadingComment(source), file)[0];
+
+  expect(baseFinding.fingerprint).toBe(shiftedFinding.fingerprint);
+}
+
+function expectCrossFingerprintStable(detect: CrossDetector, sources: Record<string, string>) {
+  const baseFinding = runCross(detect, sources)[0];
+  const shiftedSources = Object.fromEntries(
+    Object.entries(sources).map(([file, source]) => [file, withHarmlessLeadingComment(source)]),
+  );
+  const shiftedFinding = runCross(detect, shiftedSources)[0];
+
+  expect(baseFinding.fingerprint).toBe(shiftedFinding.fingerprint);
+}
+
+describe("finding fingerprints", () => {
+  it("keeps representative detector fingerprints stable across harmless line shifts", () => {
+    expectSingleFingerprintStable(
+      detectShallowModule,
+      `
+      export const one = 1;
+      export const two = 2;
+      export const three = 3;
+      `,
+    );
+    expectSingleFingerprintStable(
+      detectWideSignature,
+      "function connect(a: A, b: B, c: C, d: D, e: E) {}\n",
+    );
+    expectSingleFingerprintStable(
+      detectPassThroughMethod,
+      `
+      class UserService {
+        repo: any;
+        getUser(id: string) {
+          return this.repo.getUser(id);
+        }
+      }
+      `,
+    );
+    expectSingleFingerprintStable(
+      detectEmptyCatch,
+      `
+      try {
+        work();
+      } catch (error) {}
+      `,
+    );
+    expectSingleFingerprintStable(detectTsEscapeHatches, "const value = input as any;\n");
+    expectCrossFingerprintStable(detectDuplicateSymbol, {
+      "src/a.ts": "export const API_URL = 'https://api.example';",
+      "src/b.ts": "export const API_URL = 'https://api.example';",
+    });
+  });
+
+  it("keeps same-detector findings in one file distinct", () => {
+    const escapeFindings = runSingle(
+      detectTsEscapeHatches,
+      `
+      // @ts-ignore legacy API
+      callOne();
+      // @ts-ignore legacy API
+      callTwo();
+      `,
+    );
+    const catchFindings = runSingle(
+      detectEmptyCatch,
+      `
+      try { one(); } catch (error) {}
+      try { two(); } catch (error) {}
+      `,
+    );
+
+    expect(escapeFindings).toHaveLength(2);
+    expect(new Set(escapeFindings.map((finding) => finding.fingerprint)).size).toBe(2);
+    expect(catchFindings).toHaveLength(2);
+    expect(new Set(catchFindings.map((finding) => finding.fingerprint)).size).toBe(2);
+  });
+});
+
 describe("detectPassThroughMethod", () => {
   it("flags class methods that only delegate to instance state with the same args", () => {
     const findings = runSingle(
