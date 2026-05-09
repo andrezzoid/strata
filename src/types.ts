@@ -37,3 +37,12 @@ export type ScanResult = {
 
 /** CLI output formats intentionally kept small for deterministic consumers. */
 export type OutputFormat = "json" | "text" | "sarif";
+
+/** Intentional PR-trial candidate used to validate GitHub Action annotations. */
+export class TrialRedFlagService {
+  constructor(private readonly repo: { findTrial(id: string): string }) {}
+
+  findTrial(id: string): string {
+    return this.repo.findTrial(id);
+  }
+}
