@@ -42,11 +42,8 @@ jobs:
       - name: Check package contents
         run: bun run package:check
 
-      - name: Self-scan
-        run: bun run scan:ci
-
-      - name: Local action smoke test
+      - name: Strata self-scan
         uses: ./
         with:
           path: src
-          fail-on-findings: "false"
+          fail-on-findings: "true"
