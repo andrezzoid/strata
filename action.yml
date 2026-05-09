@@ -1,0 +1,46 @@
+name: strata
+description: Scan TypeScript pull requests for PoSD-style complexity red-flag candidates.
+
+inputs:
+  path:
+    description: File or directory to scan, relative to the workflow workspace.
+    required: false
+    default: "."
+  base-ref:
+    description: Git branch or ref to compare against. Defaults to the pull request base branch when GitHub provides one.
+    required: false
+    default: ""
+  only:
+    description: Comma-separated detector IDs to run. Cannot be combined with exclude.
+    required: false
+    default: ""
+  exclude:
+    description: Comma-separated detector IDs to skip. Cannot be combined with only.
+    required: false
+    default: ""
+  fail-on-findings:
+    description: Exit non-zero after annotations and summary are written when candidates are found.
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: "1.3.13"
+
+    - name: Install strata action dependencies
+      shell: bash
+      run: bun install --cwd "$GITHUB_ACTION_PATH" --frozen-lockfile
+
+    - name: Run strata
+      shell: bash
+      run: bun "$GITHUB_ACTION_PATH/action/strata-action.ts"
+      env:
+        STRATA_INPUT_PATH: ${{ inputs.path }}
+        STRATA_INPUT_BASE_REF: ${{ inputs.base-ref }}
+        STRATA_INPUT_ONLY: ${{ inputs.only }}
+        STRATA_INPUT_EXCLUDE: ${{ inputs.exclude }}
+        STRATA_INPUT_FAIL_ON_FINDINGS: ${{ inputs.fail-on-findings }}

@@ -80,6 +80,57 @@ Project resolution:
 
 Findings are sorted by `(flag, file, line)` for deterministic review and diffing. Each finding has a versioned `fingerprint` so CI systems, agents, and future baselines can match the same candidate across harmless line shifts. Fingerprints are stable identifiers for review workflow state; they are not judgments and are not promised across file renames or detector semantic changes.
 
+### GitHub Action For PRs
+
+Recommended non-blocking pull request workflow:
+
+```yaml
+name: strata
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  complexity-candidates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: andrezzoid/strata@v0.1.1
+```
+
+The action emits native GitHub warning annotations plus a job summary. It does not need write permissions because it uses workflow commands and `GITHUB_STEP_SUMMARY`, not PR comments.
+
+Defaults:
+
+- `path` defaults to `.`.
+- On pull requests, the action fetches the base branch and runs introduced-only scanning with `--new-since origin/<base>`.
+- Outside pull request contexts, no base ref is available, so the action runs a normal scan.
+- Findings do not fail the job unless `fail-on-findings` is enabled.
+
+Inputs:
+
+| Input              | Default | Description                                                |
+| ------------------ | ------- | ---------------------------------------------------------- |
+| `path`             | `.`     | File or directory to scan.                                 |
+| `base-ref`         | PR base | Git branch or ref for introduced-only comparison.          |
+| `only`             |         | Comma-separated detector IDs to run.                       |
+| `exclude`          |         | Comma-separated detector IDs to skip.                      |
+| `fail-on-findings` | `false` | Set to `true` to fail after annotations and summary write. |
+
+Blocking gate example:
+
+```yaml
+- uses: andrezzoid/strata@v0.1.1
+  with:
+    only: passThroughMethod,duplicateSymbol
+    fail-on-findings: "true"
+```
+
+SARIF upload and Reviewdog are optional advanced integrations. Prefer the action above first; use SARIF when your team already relies on GitHub code scanning, or feed JSON/SARIF into Reviewdog if you want richer check-run behavior from your existing Reviewdog setup.
+
 ### SARIF For CI
 
 Generate a SARIF log for GitHub code scanning:

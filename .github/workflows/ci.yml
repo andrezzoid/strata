@@ -44,3 +44,9 @@ jobs:
 
       - name: Self-scan
         run: bun run scan:ci
+
+      - name: Local action smoke test
+        uses: ./
+        with:
+          path: src
+          fail-on-findings: "false"

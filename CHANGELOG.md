@@ -5,6 +5,7 @@ All notable changes to `strata` will be documented here.
 ## 0.1.1 - Unreleased
 
 - Focuses the release on CI usage: local scripts and GitHub Actions now cover formatting, linting, typechecking, tests, coverage, package dry-run validation, and source self-scan gating.
+- Adds a root GitHub Action that runs strata in pull request workflows, emits native annotations, writes a job summary, and can optionally fail after feedback is produced.
 - Adds SARIF 2.1.0 output through `--format sarif` and `bun run scan:sarif` for GitHub code scanning upload workflows.
 - Adds `--fail-on-findings` so CI can fail deliberately when candidates are emitted while default scans remain report-only.
 - Adds detector subset filtering with `--only` and `--exclude` so CI jobs and agents can focus on selected candidate families.

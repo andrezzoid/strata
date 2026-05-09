@@ -1,0 +1,190 @@
+goal: >
+  Ship a GitHub Action CI adoption pack that lets teams add strata to pull
+  request workflows with minimal YAML and get useful native PR feedback without
+  changing detector semantics. The action owns GitHub integration details while
+  the CLI remains the source of scan behavior.
+
+acceptance:
+  - A repository can use strata through a checked-in GitHub Action with minimal workflow glue.
+  - The action defaults to PR-friendly introduced-only scanning against the pull request base when that context is available.
+  - Action inputs expose the useful existing CLI levers: path, detector inclusion/exclusion, and whether findings fail the job.
+  - Native GitHub Actions annotations are emitted for findings without requiring write permissions or a third-party reporter.
+  - The job summary explains total candidates, detector counts, top files, and the candidate-not-verdict contract.
+  - SARIF upload remains optional and documented as an advanced code-scanning path rather than the default action behavior.
+  - README, CHANGELOG, and BACKLOG describe the CI adoption path and remove or narrow completed backlog items.
+  - Verification covers action command construction, annotation formatting, summary formatting, and the existing CLI gates.
+
+context: |
+  Existing primitives are enough for the first useful team CI workflow: `--new-since`, `--format json`, `--format sarif`, `--only`, `--exclude`, stable fingerprints, and `--fail-on-findings` already exist.
+  No `action.yml` exists today; the current GitHub workflow only validates this repository's own checks.
+  Design A chosen: a repo-root composite GitHub Action that sets up Bun, runs the published strata CLI as JSON, then invokes a small Bun-owned action reporter for annotations and `GITHUB_STEP_SUMMARY` output.
+  Design B rejected for now: a bundled JavaScript action using `@actions/core`. It fits Marketplace convention but adds Node build/dependency surface while still needing Bun for strata itself.
+  Design C rejected: add a core CLI `--format github` mode. That would leak GitHub Actions environment concerns into the scanner core instead of keeping integration knowledge in the action.
+  These three backlog ideas belong in one delta because the user outcome is one thing: drop in the action and get low-noise PR feedback. Splitting wrapper, annotations, and docs would produce shallow intermediate deltas.
+  Repository organization decision: keep this as a single-package repo with root `action.yml`, an `action/` implementation directory, and action-focused tests under `test/`. A monorepo would add package/release/workspace surface before there are independently versioned packages.
+  Monorepo trigger for later: split only if the GitHub Action becomes a separately built/distributed package, needs a different dependency/runtime lifecycle, or if standalone binaries/tooling create real package boundaries.
+
+refs:
+  - BACKLOG.md
+  - README.md
+  - CHANGELOG.md
+  - package.json
+  - src/cli.ts
+  - src/scan.ts
+  - src/types.ts
+  - .github/workflows/ci.yml
+  - action.yml
+  - action/strata-action.ts
+
+open_questions: []
+
+followups:
+  - Treat `--worsened-since`, `--regressed-since`, stored baselines, and suppressions as separate scanner-semantics deltas.
+  - Add line-scoped PR reporting only if introduced-only annotations are still too noisy in real team PRs.
+  - Consider Marketplace polish, release-tag automation, and SARIF upload convenience after the first action contract is proven.
+
+tasks:
+  - id: add-action-runner
+    description: >
+      Add a Bun-owned action runner that turns GitHub Action inputs into one
+      strata scan, emits native annotations, writes the job summary, and applies
+      action-level fail-on-findings behavior after feedback has been produced.
+    status: done
+    context: |
+      Keep GitHub Actions knowledge in `action/`, not in `src/scan.ts` or the CLI formatter surface.
+      The runner should execute the existing CLI as JSON so scanner behavior stays centralized.
+      If `GITHUB_BASE_REF` or an explicit base ref is present, fetch that ref and pass `--new-since`; otherwise run a normal scan.
+      Unit-test pure pieces such as input normalization, scan argument construction, annotation lines, and summary Markdown before relying on workflow execution.
+    acceptance:
+      - `action/strata-action.ts` or equivalent can be invoked by the action to run strata from the consumer workspace.
+      - Action inputs normalize to the expected CLI arguments for path, only, exclude, fail-on-findings, and PR base-ref cases.
+      - PR base refs are fetched before `--new-since` is used, so default checkout depth does not make introduced-only scans fail spuriously.
+      - Annotation output uses GitHub workflow-command syntax with file, line, title/message data and escapes values safely.
+      - Job summary Markdown includes total candidates, detector counts, top files, and candidate-not-verdict framing.
+      - Findings are annotated and summarized before the runner exits non-zero for fail-on-findings.
+      - New tests cover command construction, annotation rendering, summary rendering, and fail/no-fail outcomes.
+    depends_on: []
+
+  - id: wire-composite-action
+    description: >
+      Add the root `action.yml` composite action that sets up Bun, installs this
+      action's dependencies, and delegates to the action runner with a small,
+      stable input surface.
+    status: done
+    context: |
+      Root `action.yml` keeps `uses: andrezzoid/strata@vX` simple and avoids package/workspace churn.
+      Inputs should stay minimal: `path`, `base-ref`, `only`, `exclude`, and `fail-on-findings` are enough for the first team CI workflow.
+      Do not add policy-like thresholds, suppression inputs, or SARIF upload behavior in this first action.
+    acceptance:
+      - `action.yml` exists at the repository root with name, description, documented inputs, and a composite run definition.
+      - The composite action installs or prepares dependencies from `$GITHUB_ACTION_PATH` and runs the action runner from the consumer workspace.
+      - The action input names map directly to the runner environment without duplicating scan semantics in YAML.
+      - The repository CI includes a lightweight local-action smoke path or equivalent verification that the action metadata stays valid.
+      - Existing `bun run test`, `bun run typecheck`, and package validation still pass.
+    depends_on:
+      - add-action-runner
+
+  - id: document-action-adoption
+    description: >
+      Update release-facing docs and backlog so teams can copy a recommended
+      GitHub Actions workflow, understand non-blocking versus blocking modes,
+      and see SARIF/Reviewdog as optional advanced paths.
+    status: done
+    context: |
+      Lead with the low-friction PR workflow: checkout, `uses: andrezzoid/strata@vX`, no write permissions.
+      Show blocking gates as an opt-in by setting `fail-on-findings`.
+      Keep docs explicit that findings are review candidates, not automated design verdicts.
+    acceptance:
+      - README contains a minimal recommended GitHub Actions workflow using the action.
+      - README documents action inputs and the default PR introduced-only behavior.
+      - README keeps SARIF upload optional for code-scanning users and mentions richer reporters only as recipes, not defaults.
+      - CHANGELOG records the GitHub Action, annotations, and summary as the next release focus.
+      - BACKLOG removes or narrows completed GitHub Action/annotation items while preserving line-scoped reporting as conditional future work.
+      - `bun run format:check` passes after documentation changes.
+    depends_on:
+      - wire-composite-action
+
+log:
+  - id: log-001
+    timestamp: 2026-05-09T17:13:08Z
+    command: explore
+    summary: >
+      Explored the CI adoption pack against existing repo state and backlog.
+      Existing completed deltas provide prerequisites, but none own the new user
+      outcome of a drop-in GitHub Action with native PR feedback. Recommended a
+      single new delta containing the action wrapper, annotations/job summary,
+      and adoption docs, with scanner-semantic work left as followups.
+
+  - id: log-002
+    timestamp: 2026-05-09T17:15:17Z
+    command: explore
+    summary: >
+      Evaluated repo organization for the action. Recommended staying a
+      single-package repository with root `action.yml` and an `action/` support
+      directory. Rejected a monorepo for now because the action is an integration
+      surface over the same CLI, not an independently versioned product.
+
+  - id: log-003
+    timestamp: 2026-05-09T17:19:04Z
+    command: plan
+    summary: >
+      Planned the action work as three dependent slices: a tested Bun action
+      runner that owns GitHub feedback behavior, a root composite action that
+      exposes the small user-facing surface, and adoption documentation/backlog
+      cleanup. Verified the foundation before planning with `bun run test`:
+      93 tests passed.
+
+  - id: log-004
+    timestamp: 2026-05-09T17:22:08Z
+    command: apply
+    task: add-action-runner
+    summary: >
+      Added `action/strata-action.ts` with action input normalization,
+      fetch-aware `--new-since` argument planning, GitHub warning annotation
+      rendering, job summary rendering, and action-level fail-on-findings exit
+      behavior. Added `test/action.test.ts` for command construction,
+      annotation escaping, summary content, and failure semantics. Verification:
+      `bun test test/action.test.ts` passed 6 tests / 14 assertions;
+      `bun run format:check`, `bun run typecheck`, and `bun run lint` passed.
+
+  - id: log-005
+    timestamp: 2026-05-09T17:23:08Z
+    command: apply
+    task: wire-composite-action
+    summary: >
+      Added root `action.yml` as a composite action with minimal inputs and
+      steps to set up Bun, install dependencies from `$GITHUB_ACTION_PATH`, and
+      run the action runner from the consumer workspace. Added a CI local-action
+      smoke step and metadata coverage in `test/action.test.ts`. Verification:
+      `bun test test/action.test.ts` passed 7 tests / 21 assertions;
+      `bun run format:check`, `bun run typecheck`, `bun run lint`, and
+      `bun run package:check` passed.
+
+  - id: log-006
+    timestamp: 2026-05-09T17:23:54Z
+    command: apply
+    task: document-action-adoption
+    summary: >
+      Documented the recommended non-blocking PR workflow, action defaults,
+      action inputs, optional blocking gate, and SARIF/Reviewdog as advanced
+      integrations rather than defaults. Updated CHANGELOG with the action
+      release note and removed completed GitHub Action/native annotation items
+      from BACKLOG while preserving line-scoped reporting as future work.
+      Verification: `bun run format:check` passed and `bun test
+      test/action.test.ts` passed 7 tests / 21 assertions.
+
+  - id: log-007
+    timestamp: 2026-05-09T17:25:38Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Full verification:
+      `bun run format:check` passed; `bun run lint` passed with 0 warnings / 0
+      errors; `bun run typecheck` passed; `bun run test` passed 100 tests / 268
+      assertions; `bun run test:coverage` passed with 90.72% line coverage
+      against the 85% threshold; `bun run package:check` passed; `bun run
+      scan:ci` reported 0 findings. Direct action smoke with
+      `test/fixtures/pass-through-method` emitted GitHub warning annotations and
+      a job summary. Complexity check of `action/` with `orphanFile` excluded
+      reported 0 findings; the raw `orphanFile` candidate is expected because
+      `action/strata-action.ts` is reached from `action.yml`, not a TypeScript
+      import graph. Delta is complete.
