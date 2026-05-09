@@ -85,6 +85,28 @@ async function createIntroducedPassThroughRepo(addIntroducedFinding: boolean): P
   return root;
 }
 
+async function createTouchedPassThroughRepo(): Promise<string> {
+  const root = mkdtempSync(join(tmpdir(), "strata-cli-touched-since-"));
+  mkdirSync(join(root, "src"), { recursive: true });
+  await Bun.write(join(root, "src", "index.ts"), "export const entry = true;\n");
+  await Bun.write(
+    join(root, "src", "touched.ts"),
+    "export class TouchedService { constructor(private repo: any) {} getTouched(id: string) { return this.repo.getTouched(id); } }\n",
+  );
+  await Bun.write(
+    join(root, "src", "untouched.ts"),
+    "export class UntouchedService { constructor(private repo: any) {} getUntouched(id: string) { return this.repo.getUntouched(id); } }\n",
+  );
+  runGit(root, ["init"]);
+  commitAll(root, "base");
+
+  await Bun.write(
+    join(root, "src", "touched.ts"),
+    "export class TouchedService { constructor(private repo: any) {} getTouched(id: string) { return this.repo.getTouched(id); } }\nexport const touched = true;\n",
+  );
+  return root;
+}
+
 describe("CLI", () => {
   it("prints JSON by default", () => {
     const result = runStrata([passThroughFixture]);
@@ -257,6 +279,29 @@ describe("CLI", () => {
     }
   });
 
+  it("prints JSON findings in files touched since a git ref", async () => {
+    const root = await createTouchedPassThroughRepo();
+    try {
+      const result = runStrata([
+        join(root, "src"),
+        "--touched-since",
+        "HEAD",
+        "--only",
+        "passThroughMethod",
+      ]);
+
+      expect(result.status).toBe(0);
+      const parsed = JSON.parse(result.stdout);
+      expect(
+        parsed.findings.map(
+          (finding: { flag: string; file: string }) => `${finding.flag}:${finding.file}`,
+        ),
+      ).toEqual(["passThroughMethod:touched.ts"]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it("fails on findings after introduced-only filtering", async () => {
     const root = await createIntroducedPassThroughRepo(true);
     try {
@@ -316,11 +361,24 @@ describe("CLI", () => {
     expect(result.stderr).toContain("--new-since <git-ref>");
   });
 
-  it("rejects combining diff and new-since filtering", () => {
-    const result = runStrata([passThroughFixture, "--diff", "HEAD", "--new-since", "HEAD"]);
+  it("rejects missing touched-since refs", () => {
+    const result = runStrata([passThroughFixture, "--touched-since"]);
 
     expect(result.status).toBe(2);
-    expect(result.stderr).toContain("cannot combine --diff and --new-since");
+    expect(result.stderr).toContain("--touched-since <git-ref>");
+  });
+
+  it("rejects combining touched-since and new-since filtering", () => {
+    const result = runStrata([
+      passThroughFixture,
+      "--touched-since",
+      "HEAD",
+      "--new-since",
+      "HEAD",
+    ]);
+
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("cannot combine --touched-since and --new-since");
   });
 
   it("rejects unknown detector names", () => {
@@ -364,6 +422,7 @@ describe("CLI", () => {
 
     expect(result.status).toBe(0);
     expect(result.stdout).toContain("strata [PATH]");
+    expect(result.stdout).toContain("--touched-since <git-ref>");
     expect(result.stdout).toContain("--new-since <git-ref>");
     expect(result.stdout).toContain("--only <detectors>");
     expect(result.stdout).toContain("--exclude <detectors>");

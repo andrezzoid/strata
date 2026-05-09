@@ -1,0 +1,228 @@
+goal: >
+  Replace the changed-file filtering CLI flag `--diff <git-ref>` with
+  `--touched-since <git-ref>` so the scan scope vocabulary matches the review
+  question it answers. No CLI alias or compatibility path is needed before the
+  tool has real users.
+
+acceptance:
+  - CLI accepts `--touched-since <git-ref>` for changed-file filtering.
+  - CLI no longer documents or accepts `--diff <git-ref>` as a user-facing flag.
+  - `--touched-since` preserves the current changed-file filtering behavior: full analysis still runs first, then findings are filtered to touched files.
+  - Scope modes are presented as mutually exclusive in docs and usage: touched files, new candidate identities, worsened existing candidates, or their future union.
+  - `--touched-since` remains mutually exclusive with `--new-since`.
+  - README, CHANGELOG, and BACKLOG reflect the renamed scope mode and remove the completed backlog item.
+  - AGENTS.md uses `--touched-since` when describing post-analysis touched-file filtering.
+  - Relevant CLI/core tests and the local verification gate pass.
+
+context: |
+  BACKLOG requests replacing `--diff <git-ref>` with `--touched-since <git-ref>` now, with no alias or compatibility path.
+  Existing `--diff` behavior is changed-file filtering, not hunk filtering: cross-file detectors analyze the full selected target before findings are filtered to files touched since a git ref.
+  `--new-since` already exists and answers a different question: candidate identities introduced since a ref. This delta should clarify scope vocabulary without changing detector semantics.
+  Design A considered: change only the CLI flag and keep internal `diffRef` names. It is the smallest code diff but preserves misleading vocabulary in the public scan API and comments.
+  Design B chosen: rename the current changed-file filtering option through the scan boundary to `touchedSinceRef`, while leaving lower-level git implementation names only where they describe raw git output. This keeps `scanProject()` as the deep API and avoids a CLI compatibility alias.
+  Design C rejected: introduce a generic scan-scope object now. It might fit future `--worsened-since`/`--regressed-since`, but it adds a wider abstraction before those modes exist.
+
+refs:
+  - BACKLOG.md
+  - README.md
+  - CHANGELOG.md
+  - src/cli.ts
+  - src/scan.ts
+  - src/project.ts
+  - test/cli.test.ts
+  - test/core.test.ts
+  - AGENTS.md
+  - .deltas/introduced-only-filtering/delta.yml
+
+open_questions: []
+
+followups:
+  - `--worsened-since` and `--regressed-since` remain separate backlog items; this delta should only rename the existing touched-file scope.
+
+tasks:
+  - id: rename-touched-scope
+    description: >
+      Replace the user-facing changed-file filtering flag with
+      `--touched-since <git-ref>` and carry that name through the scan API while
+      preserving existing touched-file filtering semantics.
+    status: done
+    context: |
+      Write the failing CLI/core tests first: `--touched-since` should work where `--diff` worked, and `--diff` should become an unknown flag.
+      Keep `scanProject()` deep: callers pass `touchedSinceRef`, and filtering still happens after full detector analysis.
+      Do not add a CLI alias or compatibility branch for `--diff`.
+    acceptance:
+      - CLI usage includes `--touched-since <git-ref>` and omits `--diff <git-ref>`.
+      - CLI rejects `--diff` as an unknown flag.
+      - `--touched-since` produces the same changed-file-filtered findings as the old `--diff` behavior.
+      - `scanProject({ touchedSinceRef })` filters selected cross-project findings after full analysis.
+      - `--touched-since` and `--new-since` cannot be combined.
+      - Relevant CLI/core tests and `bun run typecheck` pass.
+    depends_on: []
+
+  - id: document-scope-vocabulary
+    description: >
+      Update user-facing docs, release notes, backlog, and agent guidance so the
+      scan scope modes use the new touched/new/worsened/regressed vocabulary.
+    status: done
+    context: |
+      README should present current modes as separate review questions: touched files and new candidate identities.
+      Mention worsened existing candidates and future union only as future scope modes, not shipped flags.
+      Remove the completed BACKLOG item instead of leaving duplicate stale work.
+    acceptance:
+      - README usage/defaults and SARIF examples use `--touched-since` instead of `--diff`.
+      - README presents scan scope modes as mutually exclusive review questions and keeps `--new-since` distinct from touched-file filtering.
+      - CHANGELOG records the flag rename for the unreleased release.
+      - BACKLOG removes the completed `--diff` to `--touched-since` item while preserving future `--worsened-since` and `--regressed-since` items.
+      - AGENTS.md references `--touched-since` when describing post-analysis filtering.
+      - `bun run format:check` passes.
+    depends_on:
+      - rename-touched-scope
+
+  - id: verify-touched-since-scope
+    description: >
+      Run the integrated verification gate and review the rename for avoidable
+      compatibility branches or scan-scope abstraction creep.
+    status: done
+    context: |
+      This is a rename of an existing behavior, not a place to implement worsened/regressed scope modes.
+      Complexity review should check that the CLI remains thin and no generic scope object was introduced prematurely.
+    acceptance:
+      - `bun run format:check` passes.
+      - `bun run lint` passes.
+      - `bun run typecheck` passes.
+      - `bun run test` passes.
+      - `bun run test:coverage` passes.
+      - `bun run package:check` passes.
+      - `bun run scan:ci` passes.
+      - Manual complexity review finds no `--diff` alias path and no speculative generic scan-scope machinery.
+    depends_on:
+      - document-scope-vocabulary
+
+log:
+  - id: log-001
+    timestamp: 2026-05-09T16:45Z
+    command: explore
+    summary: >
+      Created this delta from the first CLI & Output BACKLOG item after checking
+      existing deltas. The introduced-only filtering delta is related but
+      materially different and complete: it added `--new-since`, while this
+      change owns the changed-file filtering name and user-facing scope
+      vocabulary.
+  - id: log-002
+    timestamp: 2026-05-09T16:46Z
+    command: explore
+    summary: >
+      Explored current `--diff` usage across CLI parsing, scan options, project
+      file collection, tests, README, CHANGELOG, and AGENTS.md. Confirmed the
+      behavior is touched-file output filtering after full analysis, while
+      `--new-since` is fingerprint identity comparison against a base snapshot.
+      Compared three approaches: CLI-only rename, scan-boundary rename, and a
+      generic scope object. Chose the scan-boundary rename because it removes the
+      misleading user-facing vocabulary without adding speculative scope
+      machinery or preserving a `--diff` alias. No open questions remain.
+  - id: log-003
+    timestamp: 2026-05-09T16:47Z
+    command: plan
+    summary: >
+      Planned the `--touched-since` work as three vertical slices. First rename
+      the behavior through the CLI and scan boundary with tests proving both the
+      new flag and removed `--diff` surface. Then update docs, changelog,
+      backlog, and agent guidance so scan scope modes use the touched/new/future
+      worsened/regressed vocabulary. Finally run the full verification gate and a
+      complexity review focused on avoiding compatibility branches and premature
+      generic scope abstractions. Baseline before planning passed: `bun test
+      test/cli.test.ts test/core.test.ts` reported 49 tests / 160 assertions, and
+      `bun run typecheck` passed.
+  - id: log-004
+    timestamp: 2026-05-09T16:49Z
+    command: apply
+    task: rename-touched-scope
+    summary: >
+      Replaced the user-facing changed-file filtering flag with
+      `--touched-since <git-ref>` and carried the name through the public
+      `scanProject()` option as `touchedSinceRef`. No `--diff` alias was added;
+      the old flag now follows the normal unknown-flag path. TDD evidence: the
+      updated CLI/core tests first failed because `--touched-since` was unknown,
+      `--diff` still worked, and `ScanProjectOptions` lacked `touchedSinceRef`.
+      Acceptance passed with `bun test test/cli.test.ts test/core.test.ts` (52
+      tests / 171 assertions), `bun run typecheck`, and `bun run format:check`.
+  - id: log-005
+    timestamp: 2026-05-09T16:50Z
+    command: apply
+    task: document-scope-vocabulary
+    summary: >
+      Updated README usage, defaults, and SARIF examples to use
+      `--touched-since <git-ref>` and describe scope modes as mutually exclusive
+      review questions: touched files, new candidate identities, future worsened
+      existing candidates, or their future union. CHANGELOG records the rename,
+      BACKLOG removes the completed item while keeping worsened/regressed
+      followups, and AGENTS.md now describes full-project analysis during
+      `--touched-since`. Verification passed: `bun run format:check`.
+  - id: log-006
+    timestamp: 2026-05-09T16:51Z
+    command: apply
+    task: verify-touched-since-scope
+    summary: >
+      Ran the integrated verification gate for the touched-scope rename. Passed:
+      `bun run format:check`; `bun run lint`; `bun run typecheck`; `bun run
+      test` (94 tests / 250 assertions); `bun run test:coverage` (94 tests / 250
+      assertions, 90.72% line coverage against the 85% threshold); `bun run
+      package:check` (28 package entries, with npm's existing unknown `token` env
+      warning); and `bun run scan:ci` (0 findings). Complexity scan `bun
+      src/cli.ts src --touched-since HEAD --format json` reported 0 findings.
+      Manual review passed: the CLI has no `--diff` parser branch or alias, the
+      scan API exposes `touchedSinceRef` directly, and no generic scan-scope
+      abstraction was introduced for future modes.
+  - id: log-007
+    timestamp: 2026-05-09T17:01Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass for 3 tasks and 8
+      integrated criteria. CLI evidence: usage exposes `--touched-since
+      <git-ref>` and omits `--diff <git-ref>`; `--diff` is rejected as an unknown
+      flag; `--touched-since` returns only findings in touched files; and
+      `--touched-since` plus `--new-since` is rejected. Core evidence:
+      `scanProject({ touchedSinceRef })` filters selected cross-project findings
+      after full analysis. Documentation evidence: README, CHANGELOG, BACKLOG,
+      and AGENTS.md use the touched/new/future-worsened/future-union vocabulary
+      and the completed backlog item is removed. Regression evidence: `bun run
+      format:check`, `bun run lint`, `bun run typecheck`, `bun run test` (94
+      tests / 250 assertions), `bun run test:coverage` (90.72% >= 85%), `bun run
+      package:check` (28 package entries), and `bun run scan:ci` all passed.
+      Complexity evidence: touched-since source scan reported 0 findings; manual
+      review found no `--diff` alias path and no speculative generic scope
+      abstraction. No bugs, design gaps, or context gaps remain. Delta is
+      complete.
+  - id: log-008
+    timestamp: 2026-05-09T17:01Z
+    command: verify
+    summary: >
+      User review found a cleanup bug in `rename-touched-scope`: CLI tests still
+      had explicit assertions about removed `--diff` behavior. Those assertions
+      were useful during the transition but keep the old flag alive as a test
+      concept. Routing back through Apply on `rename-touched-scope` to remove the
+      noise while preserving `--touched-since` coverage.
+  - id: log-009
+    timestamp: 2026-05-09T17:03Z
+    command: apply
+    task: rename-touched-scope
+    summary: >
+      Removed the remaining `--diff`-specific assertions from `test/cli.test.ts`:
+      the dedicated removed-flag test and the packaged-help negative assertion.
+      This keeps the suite focused on supported `--touched-since` behavior and
+      generic unknown-flag handling without preserving `--diff` as a named test
+      concept. Verification passed: grep found no `--diff` references in
+      `test/**/*.ts`; `bun test test/cli.test.ts` passed (27 tests / 81
+      assertions); `bun run typecheck`; `bun run format:check`; and `bun run
+      test` passed (93 tests / 247 assertions).
+  - id: log-010
+    timestamp: 2026-05-09T17:04Z
+    command: verify
+    summary: >
+      Re-verified after the test cleanup. The suite no longer contains any
+      `--diff` references under `test/**/*.ts`, while the supported
+      `--touched-since` behavior remains covered. Regression evidence: `bun test
+      test/cli.test.ts` passed with 27 tests / 81 assertions, `bun run typecheck`
+      passed, `bun run format:check` passed, and `bun run test` passed with 93
+      tests / 247 assertions. No bugs, design gaps, or context gaps remain.
+      Delta is complete.

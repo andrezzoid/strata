@@ -10,7 +10,7 @@ const DETECTOR_ID_SET = new Set<string>(DETECTOR_IDS);
 
 function printUsage(stream: { write(text: string): void }): void {
   stream.write(
-    "strata [PATH] [--diff <git-ref>|--new-since <git-ref>] [--format json|text|sarif] [--only <detectors>|--exclude <detectors>] [--fail-on-findings]\n" +
+    "strata [PATH] [--touched-since <git-ref>|--new-since <git-ref>] [--format json|text|sarif] [--only <detectors>|--exclude <detectors>] [--fail-on-findings]\n" +
       "  Scan TypeScript files for PoSD-style complexity smell candidates.\n",
   );
 }
@@ -50,7 +50,7 @@ function parseDetectorIds(flag: "--only" | "--exclude", value: string): Detector
  */
 export async function main(): Promise<void> {
   let target = "";
-  let diffRef: string | null = null;
+  let touchedSinceRef: string | null = null;
   let newSinceRef: string | null = null;
   let format: OutputFormat = "json";
   let failOnFindings = false;
@@ -60,10 +60,10 @@ export async function main(): Promise<void> {
   const args = process.argv.slice(2);
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    if (arg === "--diff") {
+    if (arg === "--touched-since") {
       const value = args[++i];
-      if (!value) usage(2);
-      diffRef = value;
+      if (!value || value.startsWith("-")) usageError("--touched-since requires a git ref");
+      touchedSinceRef = value;
     } else if (arg === "--new-since") {
       const value = args[++i];
       if (!value || value.startsWith("-")) usageError("--new-since requires a git ref");
@@ -102,13 +102,15 @@ export async function main(): Promise<void> {
   }
 
   target = target || ".";
-  if (diffRef && newSinceRef) usageError("cannot combine --diff and --new-since");
+  if (touchedSinceRef && newSinceRef) {
+    usageError("cannot combine --touched-since and --new-since");
+  }
   if (!statSync(target, { throwIfNoEntry: false })) {
     process.stderr.write(`no such path: ${target}\n`);
     process.exit(2);
   }
 
-  const result = await scanProject({ target, diffRef, newSinceRef, detectorSelection });
+  const result = await scanProject({ target, touchedSinceRef, newSinceRef, detectorSelection });
   process.stdout.write(formatResult(result, format));
   if (failOnFindings && result.summary.totalFindings > 0) process.exit(1);
 }

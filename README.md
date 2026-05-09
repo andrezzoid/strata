@@ -27,7 +27,7 @@ strata --help
 
 ```bash
 strata [PATH]
-strata [PATH] --diff <git-ref>
+strata [PATH] --touched-since <git-ref>
 strata [PATH] --new-since <git-ref>
 strata [PATH] --format json
 strata [PATH] --format text
@@ -42,7 +42,8 @@ Defaults:
 - `PATH` defaults to the current directory.
 - `--format` defaults to `json`.
 - `--format sarif` emits SARIF 2.1.0 for GitHub code scanning and other CI consumers.
-- `--diff` analyzes the full project graph, then filters findings to changed files so cross-file detectors keep correct context.
+- Scan scope modes are mutually exclusive review questions: touched files, new candidate identities, future worsened existing candidates, or their future union.
+- `--touched-since` analyzes the full project graph, then filters findings to files touched since the git ref so cross-file detectors keep correct context.
 - `--new-since` scans the current target and the base ref, then reports only current candidates whose stable `fingerprint` was absent from the base scan.
 - `--only` and `--exclude` accept comma-separated detector IDs from the table below. They filter which detectors run, not how findings are judged; every emitted finding remains a review candidate.
 - `--fail-on-findings` exits non-zero when candidates are emitted, which is intended for CI gates; default scans remain report-only.
@@ -87,10 +88,10 @@ Generate a SARIF log for GitHub code scanning:
 strata . --format sarif > strata.sarif
 ```
 
-Diff-scoped SARIF keeps full-project graph analysis, then reports only findings that touch changed files:
+Touched-file SARIF keeps full-project graph analysis, then reports only findings that touch files changed since a git ref:
 
 ```bash
-strata . --diff origin/main --format sarif > strata.sarif
+strata . --touched-since origin/main --format sarif > strata.sarif
 ```
 
 Introduced-only SARIF answers a different PR-review question: which candidate identities did this change create?

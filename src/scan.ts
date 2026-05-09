@@ -9,8 +9,8 @@ import type { Finding, ScanResult } from "./types.ts";
 export type ScanProjectOptions = {
   /** File or directory to scan. Defaults to the current working directory. */
   target?: string;
-  /** Git ref for diff-scoped output; full project analysis still runs. */
-  diffRef?: string | null;
+  /** Git ref for touched-file output; full project analysis still runs. */
+  touchedSinceRef?: string | null;
   /** Git ref for introduced-only output; compares stable finding fingerprints after both scans. */
   newSinceRef?: string | null;
   /** Detector subset to run. Defaults to all detectors. */
@@ -29,20 +29,20 @@ export type ScanProjectAtGitRefOptions = {
 /**
  * Scans a TypeScript project for PoSD-style complexity red-flag candidates.
  *
- * Cross-file detectors always receive the full project graph; `diffRef` and
- * `newSinceRef` filter emitted findings after analysis so graph-dependent
+ * Cross-file detectors always receive the full project graph; `touchedSinceRef`
+ * and `newSinceRef` filter emitted findings after analysis so graph-dependent
  * answers stay valid.
  * Returns a Promise because source contents are read through Bun's async file API.
  */
 export async function scanProject(options: ScanProjectOptions = {}): Promise<ScanResult> {
   const target = options.target ?? ".";
-  if (options.diffRef && options.newSinceRef) {
-    throw new Error("cannot combine diffRef and newSinceRef");
+  if (options.touchedSinceRef && options.newSinceRef) {
+    throw new Error("cannot combine touchedSinceRef and newSinceRef");
   }
 
   const current = await scanFilesystemTarget(
     target,
-    options.diffRef ?? null,
+    options.touchedSinceRef ?? null,
     options.detectorSelection,
   );
   if (!options.newSinceRef) return current;
@@ -68,14 +68,14 @@ export async function scanProjectAtGitRef(
 
 async function scanFilesystemTarget(
   target: string,
-  diffRef: string | null,
+  touchedSinceRef: string | null,
   detectorSelection: DetectorSelection | undefined,
 ): Promise<ScanResult> {
   if (!statSync(target, { throwIfNoEntry: false })) {
     throw new Error(`no such path: ${target}`);
   }
 
-  const { root, files, changedFiles } = collectScanFiles(target, diffRef);
+  const { root, files, changedFiles } = collectScanFiles(target, touchedSinceRef);
   const ctxs = await parseContexts(root, files);
   const imports = await createImportResolver(
     root,

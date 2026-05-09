@@ -577,7 +577,7 @@ describe("scanProject detector selection", () => {
     );
   });
 
-  it("filters selected cross-project findings after diff collection", async () => {
+  it("filters selected cross-project findings after touched-file collection", async () => {
     const root = mkdtempSync(join(tmpdir(), "strata-selection-diff-"));
     try {
       mkdirSync(join(root, "src"), { recursive: true });
@@ -600,7 +600,7 @@ describe("scanProject detector selection", () => {
 
       const result = await scanProject({
         target: root,
-        diffRef: "HEAD",
+        touchedSinceRef: "HEAD",
         detectorSelection: { kind: "only", ids: ["orphanFile"] },
       });
 

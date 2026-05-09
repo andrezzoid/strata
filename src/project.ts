@@ -10,12 +10,12 @@ export type ScanFileSet = {
   root: string;
   /** Project-relative TS/TSX files to parse. */
   files: string[];
-  /** Changed TS/TSX files for --diff filtering, or null for full output. */
+  /** Touched TS/TSX files for scoped output, or null for full output. */
   changedFiles: Set<string> | null;
 };
 
 /** Resolves a target path into parse inputs while keeping cross-file detectors graph-correct. */
-export function collectScanFiles(target: string, diffRef: string | null): ScanFileSet {
+export function collectScanFiles(target: string, touchedSinceRef: string | null): ScanFileSet {
   const targetAbs = resolve(target);
   const targetStat = statSync(targetAbs);
   const root = targetStat.isDirectory() ? targetAbs : resolve(targetAbs, "..");
@@ -27,7 +27,7 @@ export function collectScanFiles(target: string, diffRef: string | null): ScanFi
   return {
     root,
     files: collectAllProjectFiles(targetAbs),
-    changedFiles: diffRef ? collectChangedFiles(targetAbs, diffRef) : null,
+    changedFiles: touchedSinceRef ? collectChangedFiles(targetAbs, touchedSinceRef) : null,
   };
 }
 
@@ -120,11 +120,11 @@ export function collectAllProjectFiles(target: string): string[] {
   return out.sort();
 }
 
-/** Returns files changed since diffRef, including committed diff, worktree changes, and untracked files. */
-export function collectChangedFiles(target: string, diffRef: string): Set<string> {
+/** Returns TS/TSX files touched since a git ref, including worktree and untracked files. */
+export function collectChangedFiles(target: string, touchedSinceRef: string): Set<string> {
   const lines = new Set<string>();
   const committed = tryGitOutput(
-    ["diff", "--name-only", "--diff-filter=ACMR", diffRef, "--", "*.ts", "*.tsx"],
+    ["diff", "--name-only", "--diff-filter=ACMR", touchedSinceRef, "--", "*.ts", "*.tsx"],
     target,
   );
   for (const line of committed.split("\n")) if (line) lines.add(toPosix(line));
@@ -186,7 +186,7 @@ function removeGitWorktree(repoRoot: string, snapshotRoot: string): void {
   });
 }
 
-/** True when a finding, or one of its related metadata locations, touches the --diff changed set. */
+/** True when a finding, or one of its related metadata locations, touches the scoped file set. */
 export function findingTouchesChanged(finding: Finding, changed: Set<string>): boolean {
   if (changed.has(finding.file)) return true;
   const occurrences = finding.metadata.occurrences as Array<{ file: string }> | undefined;

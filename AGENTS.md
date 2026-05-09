@@ -25,4 +25,4 @@ This project is grounded in John Ousterhout's _A Philosophy of Software Design_.
 - `scanProject()` should remain the deep core API: callers ask for a scan result, not a sequence of collection, parsing, detector, and formatting steps.
 - The CLI should stay thin: argument parsing, invocation, formatting, exit behavior.
 - Detector modules should be grouped by the knowledge they own, not one file per tiny helper.
-- Cross-file detectors may parse the full project even during `--diff`; filtering happens after analysis so graph-dependent answers stay correct.
+- Cross-file detectors may parse the full project even during `--touched-since`; filtering happens after analysis so graph-dependent answers stay correct.
