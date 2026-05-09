@@ -1,0 +1,196 @@
+goal: >
+  Add introduced-only scan filtering through `--new-since <git-ref>` so PR and CI
+  workflows can focus on red-flag candidates created by a change instead of
+  resurfacing inherited findings from files the change happened to touch.
+
+acceptance:
+  - CLI accepts `--new-since <git-ref>` as a distinct mode from current `--diff <git-ref>` changed-file filtering.
+  - `--new-since` scans the current target and the base ref with the same detector selection, then emits only current findings whose `fingerprint` is absent from the base result.
+  - Cross-file detectors still analyze the full selected target in both snapshots before filtering so graph-dependent findings stay correct.
+  - Missing or invalid base refs fail clearly instead of silently producing an empty or full introduced-only result.
+  - Temporary base snapshots are cleaned up after successful and failed scans.
+  - Current `--diff`, `--format json|text|sarif`, `--only`, `--exclude`, and `--fail-on-findings` behavior remains compatible.
+  - README and CHANGELOG explain the value: introduced-only filtering reports new candidate identities rather than inherited design debt.
+  - Tests cover newly introduced findings, inherited findings in changed files, detector selection, SARIF/JSON output, and `--fail-on-findings` after introduced-only filtering.
+
+context: |
+  Stable fingerprints are now complete: every `Finding` has a required `fingerprint`, detectors own semantic identity parts, and SARIF consumes the same identity through `primaryLocationLineHash`.
+  Current `--diff` means changed-file filtering: `collectChangedFiles()` gathers TS/TSX file names and `scanProject()` filters current findings with `findingTouchesChanged()` after full-project analysis.
+  `--new-since` should be identity-set filtering, not hunk parsing: scan current worktree, scan a base snapshot, then keep current findings whose fingerprint is not present in the base snapshot.
+  The smallest first implementation is a temporary detached git worktree for the base ref, because parsing, tsconfig alias resolution, and detector code already consume filesystem-backed scan roots.
+  Unlike current `--diff`, base snapshot failures should be visible; introduced-only filtering is unsafe if the baseline silently disappears.
+  Definition for this delta: "new" means a new finding identity. A same-fingerprint finding whose metadata worsens, such as an already-wide module gaining another export, is a related but separate "worsened existing candidate" problem.
+  Plan decision: `--diff` and `--new-since` should not be combined in the first implementation; they answer different review questions and composing them would make omissions hard to explain.
+
+refs:
+  - src/cli.ts
+  - src/scan.ts
+  - src/project.ts
+  - src/finding.ts
+  - src/types.ts
+  - src/ast.ts
+  - src/scope.ts
+  - test/core.test.ts
+  - test/cli.test.ts
+  - test/detectors.test.ts
+  - README.md
+  - CHANGELOG.md
+  - .deltas/stable-finding-fingerprints/delta.yml
+
+open_questions: []
+
+followups:
+  - Rename or clarify the old `--diff` surface separately, likely by adding `--changed-files-since <git-ref>` as the humane name and keeping `--diff` as an alias.
+  - Decide later whether PR workflows need "worsened existing candidate" reporting in addition to purely new finding identities.
+  - Changed-line filtering remains a UI-specific integration option if native annotations are too noisy after introduced-only filtering ships.
+
+tasks:
+  - id: add-base-snapshot-scan
+    description: >
+      Add the base-snapshot scanning boundary needed by introduced-only filtering,
+      using a temporary detached git worktree for the requested ref and cleaning it
+      up reliably.
+    status: done
+    context: |
+      Keep the public scan call deep: callers should ask for a scan result, not
+      orchestrate git checkout, parse, detector, and cleanup steps. The detached
+      worktree must live outside the scanned tree so it never becomes scan input.
+      A missing target path inside the base snapshot can mean "new file or
+      directory" and should yield an empty base result; an invalid git ref or
+      non-git target should fail clearly.
+    acceptance:
+      - Current snapshot scanning still includes unstaged, staged, and untracked target files.
+      - Base snapshot scanning reads the same target path relative to the repository root when it exists at the base ref.
+      - If that relative target path does not exist at the base ref, the base scan is treated as empty rather than crashing.
+      - Invalid refs or non-git targets produce a clear failure instead of silently returning an empty/full result.
+      - Temporary worktrees are removed after successful scans and after scan failures.
+      - Relevant core tests and `bun run typecheck` pass.
+    depends_on: []
+
+  - id: filter-introduced-findings
+    description: >
+      Wire `newSinceRef` scan semantics so current findings are filtered against
+      base findings by stable fingerprint while preserving summaries, ordering,
+      detector selection, and existing changed-file filtering behavior.
+    status: pending
+    context: |
+      Compare identity sets only: a finding is introduced when its current
+      `fingerprint` is absent from the base scan. Rebuild the summary from the
+      filtered current findings using the existing summary rules, including
+      duplicate-symbol occurrence counting. Do not change detector semantics.
+    acceptance:
+      - Existing findings in changed files are omitted when their fingerprints were present at the base ref.
+      - Newly introduced single-file findings are emitted when their fingerprints were absent at the base ref.
+      - Newly introduced cross-file findings are emitted after both snapshots receive full-project analysis.
+      - `detectorSelection` applies consistently to current and base scans before fingerprint comparison.
+      - Existing `diffRef` changed-file filtering behavior and tests remain unchanged.
+      - Relevant core tests and `bun run typecheck` pass.
+    depends_on:
+      - add-base-snapshot-scan
+
+  - id: expose-new-since-cli
+    description: >
+      Expose introduced-only filtering through the CLI with `--new-since <git-ref>`
+      and keep all output formats and failure behavior operating on the filtered
+      result.
+    status: pending
+    context: |
+      Keep CLI orchestration thin: parse the flag, reject confusing combinations,
+      delegate to `scanProject()`, format the returned result, and base
+      `--fail-on-findings` on the filtered summary. Do not rename `--diff` in this
+      delta; that is tracked as a followup.
+    acceptance:
+      - Usage text includes `--new-since <git-ref>`.
+      - CLI rejects missing `--new-since` values and rejects combining `--new-since` with `--diff`.
+      - JSON output includes only introduced findings for `--new-since`.
+      - SARIF output includes only introduced findings for `--new-since`.
+      - `--fail-on-findings` exits non-zero only when introduced findings remain after filtering.
+      - Relevant CLI tests and `bun run typecheck` pass.
+    depends_on:
+      - filter-introduced-findings
+
+  - id: document-new-since-value
+    description: >
+      Update user-facing docs and release notes to explain introduced-only
+      filtering, its difference from changed-file `--diff`, and its CI value.
+    status: pending
+    context: |
+      Preserve the candidate-not-verdict framing. The docs should make the review
+      question explicit: `--new-since` reports candidate identities introduced by
+      the change, while `--diff` reports candidates in changed files.
+    acceptance:
+      - README usage and CI sections document `--new-since <git-ref>`.
+      - README clearly contrasts `--new-since` with current `--diff` changed-file filtering.
+      - CHANGELOG captures the value proposition: focus CI/PR review on newly introduced candidates instead of inherited design debt.
+      - Documentation states that "new" means new finding fingerprint identity, not worsened metadata for an existing identity.
+      - `bun run format:check` passes.
+    depends_on:
+      - expose-new-since-cli
+
+  - id: verify-new-since-filtering
+    description: >
+      Run the full verification gate and review the introduced-only boundary for
+      avoidable complexity before declaring the delta complete.
+    status: pending
+    context: |
+      This is verification, not a place to add changed-line or worsened-existing
+      semantics. If the gate exposes a bug, route back through Apply on the
+      relevant task; if it exposes a larger design gap, replan.
+    acceptance:
+      - `bun run format:check` passes.
+      - `bun run lint` passes.
+      - `bun run typecheck` passes.
+      - `bun run test` passes.
+      - `bun run test:coverage` passes.
+      - `bun run package:check` passes.
+      - `bun run scan:ci` passes.
+      - Manual complexity review finds a clear scan/filter boundary without leaking git snapshot orchestration into detector or formatter modules.
+    depends_on:
+      - document-new-since-value
+
+log:
+  - id: log-001
+    timestamp: 2026-05-09T10:37Z
+    command: explore
+    summary: >
+      Explored introduced-only filtering after stable fingerprints landed at
+      `origin/main`. Confirmed `Finding.fingerprint` is now required and stable
+      across representative harmless line shifts, while current `--diff` still
+      only filters current scan output to changed files. Compared three designs:
+      temporary git worktree, in-memory git snapshot source provider, and
+      changed-line diff filtering. Chose the temporary-worktree design for the
+      first `--new-since` implementation because it reuses the existing deep
+      filesystem-backed `scanProject()` path, preserves tsconfig/import behavior,
+      and keeps the public semantic simple: current fingerprints minus base
+      fingerprints. Noted the important boundary that this reports new finding
+      identities, not necessarily worsened metadata on an already-existing
+      identity. No open questions block planning.
+  - id: log-002
+    timestamp: 2026-05-09T15:12Z
+    command: plan
+    summary: >
+      Planned introduced-only filtering as five vertical slices. First add the
+      base-snapshot scanning boundary because invalid refs, missing base target
+      paths, and cleanup are the main implementation risk. Then add fingerprint
+      comparison in scan semantics so current-minus-base findings rebuild normal
+      summaries while preserving detector selection and existing `--diff`
+      behavior. Then expose `--new-since` through the thin CLI, document the value
+      proposition and boundary against changed-file/worsened-existing semantics,
+      and finish with the full verification gate plus a complexity review.
+      Baseline before planning passed: `bun test test/core.test.ts
+      test/cli.test.ts` reported 36 tests / 96 assertions, and `bun run
+      typecheck` passed.
+  - id: log-003
+    timestamp: 2026-05-09T15:25Z
+    command: apply
+    task: add-base-snapshot-scan
+    summary: >
+      Added the base-ref scan boundary: `scanProjectAtGitRef()` now scans the
+      requested target as it existed at a committed ref through a temporary
+      detached worktree, while `withBaseSnapshotTarget()` owns target mapping,
+      invalid-ref/non-git failures, missing-base-target-as-empty behavior, and
+      cleanup on success or thrown snapshot work. Verified red first: the new
+      core tests initially failed on missing exports. Acceptance passed with
+      `bun test test/core.test.ts` (21 pass, 73 expect calls), `bun run
+      typecheck`, `bun run format:check`, and `bun run lint`. Complexity check
+      `bun src/cli.ts src --diff HEAD --format json` returned 0 findings.

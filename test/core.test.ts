@@ -6,8 +6,12 @@ import { describe, expect, it } from "bun:test";
 
 import { buildLineOf } from "../src/ast.ts";
 import { formatResult } from "../src/format.ts";
-import { collectAllProjectFiles, findingTouchesChanged } from "../src/project.ts";
-import { scanProject } from "../src/scan.ts";
+import {
+  collectAllProjectFiles,
+  findingTouchesChanged,
+  withBaseSnapshotTarget,
+} from "../src/project.ts";
+import { scanProject, scanProjectAtGitRef } from "../src/scan.ts";
 import { createImportResolver, normalizePath, resolveRelativeImport } from "../src/scope.ts";
 import type { Finding, ScanResult } from "../src/types.ts";
 
@@ -22,6 +26,37 @@ function runGit(cwd: string, args: string[]): void {
     stderr: "pipe",
   });
   expect(result.success, result.stderr?.toString()).toBe(true);
+}
+
+function gitOutput(cwd: string, args: string[]): string {
+  const result = Bun.spawnSync(["git", ...args], {
+    cwd,
+    stdin: "ignore",
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  expect(result.success, result.stderr?.toString()).toBe(true);
+  return result.stdout?.toString() ?? "";
+}
+
+function commitAll(cwd: string, message: string): void {
+  runGit(cwd, ["add", "."]);
+  runGit(cwd, [
+    "-c",
+    "user.name=strata-test",
+    "-c",
+    "user.email=strata-test@example.com",
+    "commit",
+    "-m",
+    message,
+  ]);
+}
+
+function worktreePaths(cwd: string): string[] {
+  return gitOutput(cwd, ["worktree", "list", "--porcelain"])
+    .split("\n")
+    .filter((line) => line.startsWith("worktree "))
+    .map((line) => line.slice("worktree ".length));
 }
 
 describe("buildLineOf", () => {
@@ -268,6 +303,114 @@ describe("scanProject import graph resolution", () => {
           .filter((finding) => finding.flag === "uniqueImplementation")
           .map((finding) => finding.metadata.name),
       ).toEqual(["Port"]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("scanProject base snapshots", () => {
+  it("scans the base ref target while current scans keep staged, unstaged, and untracked files", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-base-scan-"));
+    try {
+      mkdirSync(join(root, "src"), { recursive: true });
+      await Bun.write(join(root, "src", "index.ts"), "export const entry = true;\n");
+      await Bun.write(join(root, "src", "base-only.ts"), "export const baseOnly = true;\n");
+      runGit(root, ["init"]);
+      commitAll(root, "base");
+
+      await Bun.write(join(root, "src", "staged-only.ts"), "export const stagedOnly = true;\n");
+      runGit(root, ["add", "src/staged-only.ts"]);
+      await Bun.write(join(root, "src", "unstaged-only.ts"), "export const unstagedOnly = true;\n");
+      await Bun.write(
+        join(root, "src", "untracked-only.ts"),
+        "export const untrackedOnly = true;\n",
+      );
+
+      const current = await scanProject({
+        target: join(root, "src"),
+        detectorSelection: { kind: "only", ids: ["orphanFile"] },
+      });
+      const beforeWorktrees = worktreePaths(root);
+      const base = await scanProjectAtGitRef({
+        target: join(root, "src"),
+        ref: "HEAD",
+        detectorSelection: { kind: "only", ids: ["orphanFile"] },
+      });
+
+      expect(current.findings.map((finding) => finding.file).sort()).toEqual([
+        "base-only.ts",
+        "staged-only.ts",
+        "unstaged-only.ts",
+        "untracked-only.ts",
+      ]);
+      expect(base.findings.map((finding) => finding.file)).toEqual(["base-only.ts"]);
+      expect(worktreePaths(root)).toEqual(beforeWorktrees);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("treats targets missing at the base ref as an empty base scan", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-base-missing-target-"));
+    try {
+      await Bun.write(join(root, "index.ts"), "export const entry = true;\n");
+      runGit(root, ["init"]);
+      commitAll(root, "base");
+      mkdirSync(join(root, "new-src"), { recursive: true });
+      await Bun.write(join(root, "new-src", "new-file.ts"), "export const newFile = true;\n");
+
+      const result = await scanProjectAtGitRef({
+        target: join(root, "new-src"),
+        ref: "HEAD",
+        detectorSelection: { kind: "only", ids: ["orphanFile"] },
+      });
+
+      expect(result).toEqual({
+        summary: { totalFindings: 0, byFlag: {}, topFiles: [] },
+        findings: [],
+      });
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("fails clearly for invalid refs and non-git targets", async () => {
+    const gitRoot = mkdtempSync(join(tmpdir(), "strata-base-invalid-ref-"));
+    const nonGitRoot = mkdtempSync(join(tmpdir(), "strata-base-non-git-"));
+    try {
+      await Bun.write(join(gitRoot, "index.ts"), "export const entry = true;\n");
+      runGit(gitRoot, ["init"]);
+      commitAll(gitRoot, "base");
+      await Bun.write(join(nonGitRoot, "index.ts"), "export const entry = true;\n");
+
+      await expect(scanProjectAtGitRef({ target: gitRoot, ref: "missing-ref" })).rejects.toThrow(
+        "invalid git ref: missing-ref",
+      );
+      await expect(scanProjectAtGitRef({ target: nonGitRoot, ref: "HEAD" })).rejects.toThrow(
+        "target is not inside a git worktree",
+      );
+    } finally {
+      rmSync(gitRoot, { recursive: true, force: true });
+      rmSync(nonGitRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("cleans temporary worktrees when snapshot work fails", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-base-cleanup-"));
+    try {
+      await Bun.write(join(root, "index.ts"), "export const entry = true;\n");
+      runGit(root, ["init"]);
+      commitAll(root, "base");
+      const beforeWorktrees = worktreePaths(root);
+
+      await expect(
+        withBaseSnapshotTarget(root, "HEAD", async () => {
+          throw new Error("forced snapshot failure");
+        }),
+      ).rejects.toThrow("forced snapshot failure");
+
+      expect(worktreePaths(root)).toEqual(beforeWorktrees);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

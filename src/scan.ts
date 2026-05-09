@@ -2,7 +2,7 @@ import { statSync } from "node:fs";
 
 import { parseContexts } from "./ast.ts";
 import { selectDetectors, type DetectorSelection } from "./detectors/registry.ts";
-import { collectScanFiles, findingTouchesChanged } from "./project.ts";
+import { collectScanFiles, findingTouchesChanged, withBaseSnapshotTarget } from "./project.ts";
 import { createImportResolver } from "./scope.ts";
 import type { Finding, ScanResult } from "./types.ts";
 
@@ -11,6 +11,15 @@ export type ScanProjectOptions = {
   target?: string;
   /** Git ref for diff-scoped output; full project analysis still runs. */
   diffRef?: string | null;
+  /** Detector subset to run. Defaults to all detectors. */
+  detectorSelection?: DetectorSelection;
+};
+
+export type ScanProjectAtGitRefOptions = {
+  /** File or directory whose base-ref version should be scanned. Defaults to the current working directory. */
+  target?: string;
+  /** Commit-ish to use as the filesystem-backed baseline snapshot. */
+  ref: string;
   /** Detector subset to run. Defaults to all detectors. */
   detectorSelection?: DetectorSelection;
 };
@@ -24,17 +33,36 @@ export type ScanProjectOptions = {
  */
 export async function scanProject(options: ScanProjectOptions = {}): Promise<ScanResult> {
   const target = options.target ?? ".";
+  return scanFilesystemTarget(target, options.diffRef ?? null, options.detectorSelection);
+}
+
+/** Scans the requested target as it existed at a git ref, returning an empty result for new paths. */
+export async function scanProjectAtGitRef(
+  options: ScanProjectAtGitRefOptions,
+): Promise<ScanResult> {
+  const target = options.target ?? ".";
+  return withBaseSnapshotTarget(target, options.ref, async (baseTarget) => {
+    if (!baseTarget) return emptyScanResult();
+    return scanFilesystemTarget(baseTarget, null, options.detectorSelection);
+  });
+}
+
+async function scanFilesystemTarget(
+  target: string,
+  diffRef: string | null,
+  detectorSelection: DetectorSelection | undefined,
+): Promise<ScanResult> {
   if (!statSync(target, { throwIfNoEntry: false })) {
     throw new Error(`no such path: ${target}`);
   }
 
-  const { root, files, changedFiles } = collectScanFiles(target, options.diffRef ?? null);
+  const { root, files, changedFiles } = collectScanFiles(target, diffRef);
   const ctxs = await parseContexts(root, files);
   const imports = await createImportResolver(
     root,
     ctxs.map((ctx) => ctx.file),
   );
-  const detectors = selectDetectors(options.detectorSelection);
+  const detectors = selectDetectors(detectorSelection);
 
   let allFindings: Finding[] = [];
   for (const ctx of ctxs) {
@@ -87,4 +115,8 @@ export async function scanProject(options: ScanProjectOptions = {}): Promise<Sca
     summary: { totalFindings: allFindings.length, byFlag, topFiles },
     findings: allFindings,
   };
+}
+
+function emptyScanResult(): ScanResult {
+  return { summary: { totalFindings: 0, byFlag: {}, topFiles: [] }, findings: [] };
 }

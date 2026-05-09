@@ -1,5 +1,6 @@
-import { readdirSync, statSync } from "node:fs";
-import { join, relative, resolve } from "node:path";
+import { mkdtempSync, readdirSync, realpathSync, rmSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 
 import type { Finding } from "./types.ts";
 
@@ -28,6 +29,67 @@ export function collectScanFiles(target: string, diffRef: string | null): ScanFi
     files: collectAllProjectFiles(targetAbs),
     changedFiles: diffRef ? collectChangedFiles(targetAbs, diffRef) : null,
   };
+}
+
+/**
+ * Runs work against the same target path as it existed at a committed git ref.
+ *
+ * The callback receives `null` when the target was not present at the ref, which
+ * lets scan callers define "new path" as an empty baseline instead of an error.
+ * The temporary detached worktree is always outside the scanned tree and is
+ * removed before this function resolves or rejects.
+ */
+export async function withBaseSnapshotTarget<T>(
+  target: string,
+  ref: string,
+  readSnapshot: (snapshotTarget: string | null) => T | Promise<T>,
+): Promise<T> {
+  const targetPath = resolve(target);
+  const targetStat = statSync(targetPath, { throwIfNoEntry: false });
+  if (!targetStat) throw new Error(`no such path: ${target}`);
+  const targetAbs = realpathSync(targetPath);
+
+  const gitCwd = targetStat.isFile() ? dirname(targetAbs) : targetAbs;
+  const repoRoot = resolve(
+    gitOutputOrThrow(
+      ["rev-parse", "--show-toplevel"],
+      gitCwd,
+      `target is not inside a git worktree: ${target}`,
+    ),
+  );
+  const targetRelative = relative(repoRoot, targetAbs);
+  if (
+    targetRelative === ".." ||
+    targetRelative.startsWith(`..${sep}`) ||
+    isAbsolute(targetRelative)
+  ) {
+    throw new Error(`target is not inside git root: ${target}`);
+  }
+
+  const baseCommit = gitOutputOrThrow(
+    ["rev-parse", "--verify", `${ref}^{commit}`],
+    repoRoot,
+    `invalid git ref: ${ref}`,
+  );
+  const tempParent = mkdtempSync(join(tmpdir(), "strata-base-snapshot-"));
+  const snapshotRoot = join(tempParent, "worktree");
+  let worktreeAdded = false;
+
+  try {
+    gitOutputOrThrow(
+      ["worktree", "add", "--detach", snapshotRoot, baseCommit],
+      repoRoot,
+      `failed to create base snapshot for ${ref}`,
+    );
+    worktreeAdded = true;
+
+    const snapshotTarget = targetRelative ? join(snapshotRoot, targetRelative) : snapshotRoot;
+    const snapshotTargetStat = statSync(snapshotTarget, { throwIfNoEntry: false });
+    return await readSnapshot(snapshotTargetStat ? snapshotTarget : null);
+  } finally {
+    if (worktreeAdded) removeGitWorktree(repoRoot, snapshotRoot);
+    rmSync(tempParent, { recursive: true, force: true });
+  }
 }
 
 /** Collects TS/TSX files without shelling out, so scanning works outside Unix-like environments too. */
@@ -91,6 +153,37 @@ function tryGitOutput(args: string[], cwd: string): string {
     // A missing ref or non-git target means "no changed files" for this source.
     return "";
   }
+}
+
+function gitOutputOrThrow(args: string[], cwd: string, failureMessage: string): string {
+  const result = Bun.spawnSync(["git", ...args], {
+    cwd,
+    stdin: "ignore",
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  if (result.success) return (result.stdout?.toString() ?? "").trim();
+
+  const details = result.stderr?.toString().trim();
+  throw new Error(details ? `${failureMessage}: ${details}` : failureMessage);
+}
+
+function removeGitWorktree(repoRoot: string, snapshotRoot: string): void {
+  const result = Bun.spawnSync(["git", "worktree", "remove", "--force", snapshotRoot], {
+    cwd: repoRoot,
+    stdin: "ignore",
+    stdout: "ignore",
+    stderr: "ignore",
+  });
+  if (result.success) return;
+
+  rmSync(snapshotRoot, { recursive: true, force: true });
+  Bun.spawnSync(["git", "worktree", "prune"], {
+    cwd: repoRoot,
+    stdin: "ignore",
+    stdout: "ignore",
+    stderr: "ignore",
+  });
 }
 
 /** True when a finding, or one of its related metadata locations, touches the --diff changed set. */
