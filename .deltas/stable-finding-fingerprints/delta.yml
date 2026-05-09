@@ -129,7 +129,7 @@ tasks:
     description: >
       Update user-facing docs and backlog/release notes for the new stable
       finding identity contract.
-    status: pending
+    status: done
     context: |
       Keep the contract narrow: fingerprints are stable identifiers for matching
       candidate findings across harmless line shifts, not judgments and not a
@@ -243,5 +243,20 @@ log:
       still own semantic anchors, while the shared boundary appends a stable
       occurrence ordinal only for repeated identical anchors without using line
       numbers. Task verification passed: `bun run format:check`, `bun run lint`,
+      `bun run typecheck`, and `bun test test/core.test.ts test/detectors.test.ts
+      test/cli.test.ts` (61 tests / 138 assertions).
+  - id: log-006
+    timestamp: 2026-05-09T09:38Z
+    command: apply
+    task: document-fingerprint-output
+    summary: >
+      Documented the stable fingerprint output contract. README JSON output now
+      shows `fingerprint`, output notes describe its matching purpose and narrow
+      stability promise, and the SARIF section states
+      `partialFingerprints.primaryLocationLineHash` uses the same detector-owned
+      identity as JSON. CHANGELOG records stable finding fingerprints for the
+      unreleased CI-focused version. BACKLOG removes the completed stable
+      fingerprint item while keeping baseline and suppression as deferred
+      consumers. Verification passed: `bun run format:check`, `bun run lint`,
       `bun run typecheck`, and `bun test test/core.test.ts test/detectors.test.ts
       test/cli.test.ts` (61 tests / 138 assertions).

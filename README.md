@@ -65,6 +65,7 @@ Project resolution:
     {
       "flag": "passThroughMethod",
       "severity": "candidate",
+      "fingerprint": "strata:v1:1c5zo4q",
       "file": "src/user-service.ts",
       "line": 8,
       "message": "class method delegates to instance state with same args — layer without logic",
@@ -74,7 +75,7 @@ Project resolution:
 }
 ```
 
-Findings are sorted by `(flag, file, line)` for deterministic review and diffing.
+Findings are sorted by `(flag, file, line)` for deterministic review and diffing. Each finding has a versioned `fingerprint` so CI systems, agents, and future baselines can match the same candidate across harmless line shifts. Fingerprints are stable identifiers for review workflow state; they are not judgments and are not promised across file renames or detector semantic changes.
 
 ### SARIF For CI
 
@@ -107,6 +108,8 @@ Example GitHub Actions upload step:
 ```
 
 SARIF is for annotations and review workflow integration. If you want a blocking quality gate, run `strata . --fail-on-findings` as a separate CI step so candidates fail the job deliberately rather than being confused with SARIF upload behavior.
+
+SARIF `partialFingerprints.primaryLocationLineHash` uses the same value as JSON `finding.fingerprint`, based on detector-owned semantic anchors where available rather than raw `file:line` identity.
 
 ## Detectors
 
