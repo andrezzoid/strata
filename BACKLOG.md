@@ -4,15 +4,18 @@ Future work should earn its complexity. Each item below should be implemented on
 
 ## CLI & Output
 
+- Replace current changed-file filtering flag `--diff <git-ref>` with `--touched-since <git-ref>`. No alias or compatibility path is needed before the CLI has real users; the docs should present scan scope modes as mutually exclusive: touched files, new candidate identities, worsened existing candidates, or their future union.
+- Detector-owned impact metrics for comparing same-fingerprint findings across refs, followed by `--worsened-since <git-ref>`. Each detector should own which metadata is comparable and what direction is worse, avoiding a generic severity score that would turn candidates into verdicts.
+- Union PR gate mode, likely `--regressed-since <git-ref>`, only after `--new-since` and `--worsened-since` prove useful separately. It should report candidate-set regressions, meaning newly introduced or worsened candidate identities, while preserving the scanner's candidate-not-verdict framing.
 - Project configuration through `strata.toml` for thresholds and skip patterns.
-- Baseline support for adopting strata in repositories with existing findings. A baseline should distinguish known candidates from newly introduced ones without changing the scanner's candidate-not-verdict contract.
+- Stored baseline support for adopting strata in repositories with existing findings outside a direct git-ref comparison. A baseline should distinguish known candidates from newly introduced ones without changing the scanner's candidate-not-verdict contract.
 - Suppression support for intentionally accepted findings, including a required human-readable reason. Suppressions should stay narrow enough to avoid becoming a policy language or hiding broad classes of design signal.
 
 ## GitHub & PR Annotations
 
 - GitHub Action wrapper that installs/runs strata with minimal workflow glue for pull requests and CI. The action should own integration details only; detector behavior and scan semantics should remain in the CLI.
 - Native GitHub Actions annotations and job summaries for PR red-flag candidates, preferably through the action rather than a required third-party reporter. This should avoid write-permission dependencies where possible, keep SARIF upload optional for code-scanning users, and document Reviewdog as an optional richer-checks recipe rather than the default path.
-- Line-scoped PR reporting that distinguishes findings on changed lines from findings elsewhere in changed files, if review noise proves high enough to justify the extra diff-range machinery.
+- Line-scoped PR reporting that distinguishes findings on changed lines from findings elsewhere in changed files, if review noise remains high after `--new-since` and future worsened/regressed modes. This should stay an annotation/UI option rather than a core scanner scope mode.
 
 ## Distribution
 
