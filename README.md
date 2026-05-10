@@ -1,8 +1,8 @@
 # strata
 
-Deterministic candidate scanner for PoSD-style complexity red flags in TypeScript codebases.
+AI coding assistants write code faster than they write good design. The patterns they reliably get wrong — shallow wrappers, pass-through layers, single-implementer abstractions, duplicated implementations — are exactly what metric-based linters miss.
 
-`strata` does not judge code. It finds high-recall candidates for an AI or human reviewer to audit through the lens of John Ousterhout's _A Philosophy of Software Design_. Every finding is emitted as `severity: "candidate"`.
+Strata is a deterministic design-quality scanner for TypeScript. Grounded in John Ousterhout's _A Philosophy of Software Design_, it surfaces high-recall candidates for human or AI review. Every finding is emitted as `severity: "candidate"` — a signal to inspect, not a verdict to enforce.
 
 ## Install
 
@@ -175,6 +175,8 @@ SARIF `partialFingerprints.primaryLocationLineHash` uses the same value as JSON 
 
 ## Detectors
 
+Each detector targets a design failure that AI-assisted workflows reliably introduce and that cyclomatic-complexity or style tools do not see.
+
 | Flag                   | Scope   | Signal                                                                  |
 | ---------------------- | ------- | ----------------------------------------------------------------------- |
 | `shallowModule`        | file    | API surface is large relative to body lines.                            |
@@ -190,7 +192,7 @@ SARIF `partialFingerprints.primaryLocationLineHash` uses the same value as JSON 
 | `uniqueImplementation` | project | Interface or abstract class has no real polymorphism payoff.            |
 | `orphanFile`           | project | File is not imported by any other scanned file.                         |
 
-Notably absent: length-based long-function detection. PoSD does not treat length as the primary design problem; shallow interfaces and leaked knowledge are the target.
+Notably absent: long-function detection, cyclomatic complexity scoring. Both are well-served by existing tools. Strata occupies the gap they leave — the design layer between "this function is complex" and "this module is not earning its abstraction."
 
 ## Development
 
@@ -219,6 +221,7 @@ GitHub Actions runs the local gate scripts before merge. `bun run test:coverage`
 ## Contributing
 
 - Preserve the scanner's contract: candidates, not verdicts.
+- New detectors should target design failures that metric-based tools miss; avoid duplicating what ESLint, SonarQube, or similar tools already cover.
 - Prefer deeper modules over more modules. Split by owned knowledge, not by execution order.
 - Add or update a fixture whenever detector behavior changes.
 - Keep detector defaults conservative enough that findings focus the review instead of burying it.

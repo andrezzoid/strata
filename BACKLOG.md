@@ -1,6 +1,6 @@
 # Backlog
 
-Future work should earn its complexity. Each item below should be implemented only when a real workflow needs it.
+Future work should earn its complexity. Each item below should be implemented only when a real workflow needs it. Priority favors work that deepens the gap strata occupies: design failures that AI-assisted development introduces and that metric-based tools do not detect.
 
 ## CLI & Output
 
@@ -30,6 +30,8 @@ Future work should earn its complexity. Each item below should be implemented on
 
 ## Detector Ideas
 
+- Circular dependency detection: cycles are the structural form of knowledge encoded in the wrong place — a PoSD violation that no existing detector covers and that AI-generated wiring reliably introduces.
+- Unused export detection: a symbol-level replacement for `orphanFile` that surfaces dead interface surface rather than dead files; more precise and catches the speculative-API pattern AI models favour.
 - Layer-boundary enforcement once a real project supplies stable layer rules.
 - Multi-representation duplication detection for TS types plus runtime schemas.
 - Type-aware leakage detection for internal types exposed through public APIs.
@@ -39,5 +41,7 @@ Future work should earn its complexity. Each item below should be implemented on
 ## Explicit Non-Goals
 
 - Long-function detection: PoSD argues against length-based splitting as a default design heuristic.
-- Cyclomatic complexity scoring: branch count is a poor proxy for interface complexity.
+- Cyclomatic complexity scoring: branch count is a poor proxy for interface complexity; SonarQube and Qlty serve this well.
+- Security scanning: a different domain with different buyers; Semgrep covers it.
+- Style and formatting enforcement: ESLint and Oxlint own this; strata should stay additive to them, not competitive.
 - Duplicate literal scanning: prior experiments produced too much noise to guide useful audits.
