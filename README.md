@@ -1,8 +1,8 @@
 # strata
 
-AI coding assistants write code faster than they write good design. The patterns they reliably get wrong — shallow wrappers, pass-through layers, single-implementer abstractions, duplicated implementations — are exactly what metric-based linters miss.
+Teams using AI coding assistants ship design debt faster than ever. Strata is the automated design reviewer that catches the patterns AI reliably gets wrong — shallow modules, speculative abstractions, pass-through layers — before they compound into architectural problems.
 
-Strata is a deterministic design-quality scanner for TypeScript. Grounded in John Ousterhout's _A Philosophy of Software Design_, it surfaces high-recall candidates for human or AI review. Every finding is emitted as `severity: "candidate"` — a signal to inspect, not a verdict to enforce.
+Grounded in Ousterhout's _A Philosophy of Software Design_ and the information-hiding tradition, strata finds high-recall candidates for human or AI review in TypeScript codebases. Every finding is emitted as `severity: "candidate"` — a signal to inspect, not a verdict to enforce.
 
 ## Install
 
