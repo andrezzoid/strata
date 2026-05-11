@@ -13,6 +13,7 @@ Future work should earn its complexity. Each item below should be implemented on
 ## GitHub & PR Annotations
 
 - GitHub Action console visibility for quiet and failing runs, such as printing the candidate count, whether a summary was written, which scan mode was used, and a compact finding list when candidates are present. This should make direct `main` push failures diagnosable from logs without duplicating the full job summary.
+- CI-visible scanner failure reporting so detector or internal scan errors cannot be mistaken for a clean run in automation. Local exploratory scans may keep collecting best-effort findings, but CI-facing modes should surface tool failures distinctly from zero candidates.
 - Optional richer PR review integration if native GitHub check annotations are not useful enough for agent or human review, such as Reviewdog or a check-run/comment strategy that supports easier discussion while preserving the no-write-permission default action path.
 - Line-scoped PR reporting that distinguishes findings on changed lines from findings elsewhere in changed files, if review noise remains high after `--new-since` and future worsened/regressed modes. This should stay an annotation/UI option rather than a core scanner scope mode.
 
