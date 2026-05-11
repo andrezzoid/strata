@@ -89,7 +89,8 @@ async function scanFilesystemTarget(
       try {
         allFindings.push(...detector.detect(ctx));
       } catch (error) {
-        throw new Error(`detector ${detector.id} failed on ${ctx.file}: ${errorMessage(error)}`);
+        const reason = error instanceof Error ? error.message : String(error);
+        throw new Error(`detector ${detector.id} failed on ${ctx.file}: ${reason}`);
       }
     }
   }
@@ -97,7 +98,8 @@ async function scanFilesystemTarget(
     try {
       allFindings.push(...detector.detect(ctxs, imports));
     } catch (error) {
-      throw new Error(`cross-project detector ${detector.id} failed: ${errorMessage(error)}`);
+      const reason = error instanceof Error ? error.message : String(error);
+      throw new Error(`cross-project detector ${detector.id} failed: ${reason}`);
     }
   }
 
@@ -106,10 +108,6 @@ async function scanFilesystemTarget(
   }
 
   return buildScanResult(allFindings);
-}
-
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }
 
 function filterIntroducedFindings(current: ScanResult, base: ScanResult): ScanResult {

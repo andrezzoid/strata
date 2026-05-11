@@ -24,6 +24,15 @@ export function formatResult(
   return formatText(result, options.text ?? { mode: "full", target: "." });
 }
 
+/** Formats operational failures separately from completed candidate reports. */
+export function formatScanFailure(reason: string, context: TextReportContext): string {
+  const lines = ["strata scan failed", `Mode: ${modeLabel(context)}`, `Target: ${context.target}`];
+  if (context.mode === "introduced") lines.push(`Base ref: ${context.ref}`);
+  if (context.mode === "touched") lines.push(`Changed since: ${context.ref}`);
+  lines.push("", `Reason: ${reason}`, "", "No trustworthy candidate report was produced.");
+  return `${lines.join("\n")}\n`;
+}
+
 function formatText(result: ScanResult, context: TextReportContext): string {
   const lines: string[] = [];
 

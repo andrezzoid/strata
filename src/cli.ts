@@ -2,7 +2,7 @@
 import { statSync } from "node:fs";
 
 import { DETECTOR_IDS, type DetectorId, type DetectorSelection } from "./detectors/registry.ts";
-import { formatResult, type TextReportContext } from "./format.ts";
+import { formatResult, formatScanFailure, type TextReportContext } from "./format.ts";
 import { scanProject } from "./scan.ts";
 import type { OutputFormat, ScanResult } from "./types.ts";
 
@@ -34,34 +34,6 @@ function textReportContext(
   if (newSinceRef) return { mode: "introduced", target, ref: newSinceRef };
   if (touchedSinceRef) return { mode: "touched", target, ref: touchedSinceRef };
   return { mode: "full", target };
-}
-
-/** Formats operational scan failures without looking like a completed candidate report. */
-function formatScanFailure(error: unknown, context: TextReportContext): string {
-  const lines = [
-    "strata scan failed",
-    `Mode: ${failureModeLabel(context)}`,
-    `Target: ${context.target}`,
-  ];
-  if (context.mode === "introduced") lines.push(`Base ref: ${context.ref}`);
-  if (context.mode === "touched") lines.push(`Changed since: ${context.ref}`);
-  lines.push(
-    "",
-    `Reason: ${errorMessage(error)}`,
-    "",
-    "No trustworthy candidate report was produced.",
-  );
-  return `${lines.join("\n")}\n`;
-}
-
-function failureModeLabel(context: TextReportContext): string {
-  if (context.mode === "introduced") return "introduced candidates";
-  if (context.mode === "touched") return "touched files";
-  return "full scan";
-}
-
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error);
 }
 
 function usage(exitCode: 0 | 2): never {
@@ -168,7 +140,8 @@ export async function main(): Promise<void> {
   try {
     result = await scanProject({ target, touchedSinceRef, newSinceRef, detectorSelection });
   } catch (error) {
-    process.stderr.write(formatScanFailure(error, reportContext));
+    const reason = error instanceof Error ? error.message : String(error);
+    process.stderr.write(formatScanFailure(reason, reportContext));
     process.exit(1);
   }
   process.stdout.write(formatResult(result, format, { text: reportContext }));

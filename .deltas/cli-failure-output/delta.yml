@@ -114,6 +114,22 @@ tasks:
       - fail-closed-scope-failures
       - fail-closed-detector-failures
 
+  - id: remove-failure-helper-duplication
+    description: >
+      Remove self-scan duplicate-symbol findings introduced by the failure-output
+      implementation without changing the CLI failure contract.
+    status: done
+    context: |
+      Final verification found helper duplication between CLI/formatter mode labels and CLI/scanner thrown-value formatting.
+      Keep formatting knowledge in `format.ts`; keep scanner error messages local to scan execution.
+      This is a repair task triggered by source self-scan, not new user-facing scope.
+    acceptance:
+      - Failure report output remains unchanged for scanner, scope, and detector failures.
+      - `bun test test/core.test.ts test/cli.test.ts` passes.
+      - `bun run typecheck`, `bun run format:check`, and `bun run scan:ci` pass.
+    depends_on:
+      - document-failure-output-contract
+
 notes:
   - >
     Scanner-level failures found: invalid `--new-since` refs, non-git targets for
@@ -233,3 +249,23 @@ log:
       example, explicit distinction from zero-candidate scans, and the stdout
       contract for JSON/SARIF consumers. Added a CHANGELOG entry for the clearer
       scanner/detector failure behavior. Verified `bun run format:check` passing.
+  - id: log-008
+    timestamp: 2026-05-11T17:03Z
+    command: plan
+    summary: >
+      Final verification found two `duplicateSymbol` source self-scan candidates:
+      failure mode-label logic was duplicated between `src/cli.ts` and
+      `src/format.ts`, and thrown-value message logic was duplicated between
+      `src/cli.ts` and `src/scan.ts`. Added a focused repair task to remove that
+      implementation duplication while preserving the failure-output behavior.
+  - id: log-009
+    timestamp: 2026-05-11T17:03Z
+    command: apply
+    task: remove-failure-helper-duplication
+    summary: >
+      Moved failure-report text formatting into `src/format.ts` so it reuses the
+      existing text mode-label logic, and inlined one-off thrown-value formatting
+      at the CLI and scanner boundaries instead of keeping duplicate helpers.
+      Verified `bun test test/core.test.ts test/cli.test.ts` passing 67 tests /
+      255 expectations, `bun run typecheck` passing, `bun run scan:ci` reporting
+      no source candidates, and `bun run format:check` passing.
