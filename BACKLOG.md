@@ -4,6 +4,7 @@ Future work should earn its complexity. Each item below should be implemented on
 
 ## CLI & Output
 
+- ANSI color for text output, respecting `NO_COLOR` and keeping the plain text wording and structure stable for logs and AI agents.
 - Detector-owned impact metrics for comparing same-fingerprint findings across refs, followed by `--worsened-since <git-ref>`. Each detector should own which metadata is comparable and what direction is worse, avoiding a generic severity score that would turn candidates into verdicts.
 - Union PR gate mode, likely `--regressed-since <git-ref>`, only after `--new-since` and `--worsened-since` prove useful separately. It should report candidate-set regressions, meaning newly introduced or worsened candidate identities, while preserving the scanner's candidate-not-verdict framing.
 - Project configuration through `strata.toml` for thresholds and skip patterns.
