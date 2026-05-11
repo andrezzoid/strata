@@ -24,9 +24,9 @@ This is a DRY violation at the declaration level — not duplicated prose or mag
 
 ## How
 
-Compares the structure of top-level declarations, independent of type annotations and access modifiers. For functions, classes, interfaces, and type aliases, names are also ignored — two functions with different names but the same shape are treated as identical. For primitive constants (strings, numbers, booleans), both the name and value are part of the match, so two constants with different names or different values will not match each other. Constants with complex values (objects, arrays) are matched by structure rather than value.
+Compares the structure of top-level declarations, independent of type annotations and access modifiers. For functions, classes, interfaces, and type aliases, names are also ignored — two functions with different names but the same shape are treated as identical. Constants are more conservative: primitive string and number constants match by both name and value, while trivial numbers and booleans are ignored. Object and array constants match by a fingerprint that includes their keys and literal values, so changing a nested value changes the match.
 
-A finding fires when enough structurally identical declarations accumulate: at least 2 for functions and constants, at least 3 for classes, interfaces, and type aliases. The higher threshold for complex types reflects that structural similarity among them is more likely to occur by coincidence. The finding is anchored at the first occurrence and lists all copies with their locations.
+A finding fires when enough structurally identical declarations accumulate: at least 2 for functions, constants, and enums; at least 3 for classes, interfaces, and type aliases. The higher threshold for complex types reflects that structural similarity among them is more likely to occur by coincidence. The finding is anchored at the first occurrence and lists all copies with their locations.
 
 ## When a finding may be acceptable
 
