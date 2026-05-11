@@ -42,6 +42,8 @@ followups:
   - Treat `--worsened-since`, `--regressed-since`, stored baselines, and suppressions as separate scanner-semantics deltas.
   - Add line-scoped PR reporting only if introduced-only annotations are still too noisy in real team PRs.
   - Consider Marketplace polish, release-tag automation, and SARIF upload convenience after the first action contract is proven.
+  - Consider a richer PR review integration, such as Reviewdog or check-run/comment output, if native GitHub check annotations prove too limited for discussion-heavy human review.
+  - Add compact console output for quiet and failing action runs so direct `main` push failures are diagnosable without opening the annotations UI.
 
 tasks:
   - id: add-action-runner
@@ -188,3 +190,18 @@ log:
       reported 0 findings; the raw `orphanFile` candidate is expected because
       `action/strata-action.ts` is reached from `action.yml`, not a TypeScript
       import graph. Delta is complete.
+
+  - id: log-008
+    timestamp: 2026-05-11T08:59:38Z
+    command: verify
+    summary: >
+      Real-life trial PR #1 exposed and validated the GitHub annotation path
+      behavior. First run emitted check annotations for `types.ts`, which GitHub
+      displayed only as check annotations and did not attach cleanly to the PR
+      files because CI scanned `path: src`. Fixed in commit 73fc6f6 by qualifying
+      scan-root-relative paths back to repository-relative paths before rendering
+      annotations and summaries. Rerun check annotations were confirmed through
+      `gh api repos/andrezzoid/strata/check-runs/75316442801/annotations` as
+      `src/types.ts:1` and `src/types.ts:45`. Documentation now records the
+      `gh` retrieval recipe for agents and notes that native annotations are not
+      commentable PR review comments.

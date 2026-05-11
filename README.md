@@ -131,6 +131,17 @@ Blocking gate example:
 
 SARIF upload and Reviewdog are optional advanced integrations. Prefer the action above first; use SARIF when your team already relies on GitHub code scanning, or feed JSON/SARIF into Reviewdog if you want richer check-run behavior from your existing Reviewdog setup.
 
+Agents can retrieve the same GitHub check annotations through `gh` without scraping logs:
+
+```bash
+gh pr checks <pr> --json name,state,bucket,link
+gh run view <run-id> --json jobs
+gh api repos/<owner>/<repo>/check-runs/<check-run-id>/annotations \
+  --jq '.[] | select(.title | startswith("strata:")) | {path,start_line,title,message}'
+```
+
+GitHub exposes these as check annotations, not commentable PR review comments. The annotation `path` is repository-relative even when the action scans a subdirectory with `path: src`.
+
 ### SARIF For CI
 
 Generate a SARIF log for GitHub code scanning:
