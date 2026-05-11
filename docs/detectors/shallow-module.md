@@ -6,8 +6,12 @@ A module whose exported surface is large relative to its body lines — it expos
 
 ```typescript
 // Flagged: 4 surface elements, only 6 body lines
-export interface Logger { log(msg: string): void; }
-export interface Config { level: string; }
+export interface Logger {
+  log(msg: string): void;
+}
+export interface Config {
+  level: string;
+}
 export const DEFAULT_LEVEL = "info";
 export function createLogger(config: Config): Logger {
   return { log: (msg) => console.log(`[${config.level}] ${msg}`) };
@@ -16,7 +20,9 @@ export function createLogger(config: Config): Logger {
 
 ```typescript
 // Consider: hide Config as an implementation detail, expose only what callers need
-export interface Logger { log(msg: string): void; }
+export interface Logger {
+  log(msg: string): void;
+}
 export const DEFAULT_LEVEL = "info";
 export function createLogger(level = DEFAULT_LEVEL): Logger {
   return { log: (msg) => console.log(`[${level}] ${msg}`) };
@@ -26,9 +32,9 @@ export function createLogger(level = DEFAULT_LEVEL): Logger {
 
 ## Why
 
-David Parnas defined a module by what it *hides* — the design decisions callers should not need to know. A shallow module hides little: it exposes concepts almost as fast as it introduces them, which means callers absorb most of the complexity themselves.
+David Parnas defined a module by what it _hides_ — the design decisions callers should not need to know. A shallow module hides little: it exposes concepts almost as fast as it introduces them, which means callers absorb most of the complexity themselves.
 
-John Ousterhout formalised this as the central design metric in *A Philosophy of Software Design* (Ch. 4): good modules are *deep* — small interfaces hiding substantial implementations. Shallow modules add layers of naming without adding layers of abstraction. They exist in the call stack but not in the cognitive stack.
+John Ousterhout formalised this as the central design metric in _A Philosophy of Software Design_ (Ch. 4): good modules are _deep_ — small interfaces hiding substantial implementations. Shallow modules add layers of naming without adding layers of abstraction. They exist in the call stack but not in the cognitive stack.
 
 ## How
 

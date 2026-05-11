@@ -17,7 +17,7 @@ class OrderService {
 
 ## Why
 
-Martin Fowler named this the *Middle Man* smell: a class that does nothing but delegate. Ousterhout is more direct — a pass-through method makes the system worse, not better. It adds a new name for the caller to learn, a new frame in the call stack, and zero additional knowledge or protection.
+Martin Fowler named this the _Middle Man_ smell: a class that does nothing but delegate. Ousterhout is more direct — a pass-through method makes the system worse, not better. It adds a new name for the caller to learn, a new frame in the call stack, and zero additional knowledge or protection.
 
 The cost compounds over time. Every maintenance pass must traverse the delegation chain to understand what actually happens. If `OrderService` has five such methods, the reader must track five pairs of names to understand one underlying object. The class presents a surface without a substance.
 

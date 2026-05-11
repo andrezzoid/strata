@@ -23,7 +23,7 @@ export class ServiceB { ... }
 
 A module's exported surface is the vocabulary callers must learn to use it. Wide modules accumulate unrelated concerns that grew together for historical or convenience reasons rather than coherent design. They impose high cognitive load on every consumer: to use any part of the module, the caller must scan the entire surface to find what they need.
 
-The deeper issue is responsibility. A module with 15 exports rarely owns one coherent piece of knowledge. More likely it has become a catch-all for things that did not have a better home. Splitting along natural seams — what does this group of exports *know* and *decide* together? — is often the right response.
+The deeper issue is responsibility. A module with 15 exports rarely owns one coherent piece of knowledge. More likely it has become a catch-all for things that did not have a better home. Splitting along natural seams — what does this group of exports _know_ and _decide_ together? — is often the right response.
 
 ## How
 

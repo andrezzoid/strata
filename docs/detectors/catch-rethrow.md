@@ -19,7 +19,7 @@ A catch-rethrow is the error-handling equivalent of `passThroughMethod`: it inte
 
 If the goal is to let errors propagate, the correct design is to remove the `try/catch` entirely. If the goal is to add context, log, clean up, or wrap the error in a domain type, the catch body should do that. A pure rethrow is a third option that achieves neither.
 
-Catches that rethrow a *different* error — wrapping or enriching the original — are not flagged. Those have intent.
+Catches that rethrow a _different_ error — wrapping or enriching the original — are not flagged. Those have intent.
 
 ## How
 

@@ -17,7 +17,7 @@ try {
 
 An empty catch makes failures invisible. The operation failed; the catch clause knows it; nothing else does. Callers receive no signal, observability systems receive no event, and the program continues in a state the author did not anticipate and did not handle.
 
-This is distinct from *expected* failures handled by design — a file that might not exist, a parse that might fail on bad input. Those require a decision about what to do when the operation fails. An empty catch is not a decision; it is the absence of one. The author has acknowledged an error path and chosen to neither handle it, log it, nor propagate it.
+This is distinct from _expected_ failures handled by design — a file that might not exist, a parse that might fail on bad input. Those require a decision about what to do when the operation fails. An empty catch is not a decision; it is the absence of one. The author has acknowledged an error path and chosen to neither handle it, log it, nor propagate it.
 
 The result is a category of bugs that are hard to diagnose: the operation silently fails, the program continues in a degraded state, and no information is available to explain why.
 

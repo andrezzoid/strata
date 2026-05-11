@@ -6,12 +6,7 @@ A function or method with three or more parameters that are each forwarded direc
 
 ```typescript
 // Flagged: ctx, logger, and config are only forwarded, never used locally
-function processRequest(
-  req: Request,
-  ctx: Context,
-  logger: Logger,
-  config: Config,
-) {
+function processRequest(req: Request, ctx: Context, logger: Logger, config: Config) {
   validate(req);
   handle(req, ctx, logger, config);
 }
