@@ -456,6 +456,43 @@ describe("CLI", () => {
     }
   });
 
+  it("fails closed when touched-since ref cannot be resolved", () => {
+    const result = runStrata([
+      passThroughFixture,
+      "--touched-since",
+      "missing-ref",
+      "--format",
+      "text",
+    ]);
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toStartWith(
+      `strata scan failed\nMode: touched files\nTarget: ${passThroughFixture}\nChanged since: missing-ref\n`,
+    );
+    expect(result.stderr).toContain("Reason: failed to list files changed since missing-ref");
+    expect(result.stderr).not.toContain("No review candidates were emitted");
+  });
+
+  it("fails closed for touched-since outside a git worktree", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-cli-touched-non-git-"));
+    try {
+      await Bun.write(join(root, "index.ts"), "export const entry = true;\n");
+
+      const result = runStrata([root, "--touched-since", "HEAD", "--format", "text"]);
+
+      expect(result.status).toBe(1);
+      expect(result.stdout).toBe("");
+      expect(result.stderr).toStartWith(
+        `strata scan failed\nMode: touched files\nTarget: ${root}\nChanged since: HEAD\n`,
+      );
+      expect(result.stderr).toContain("Reason: failed to list files changed since HEAD");
+      expect(result.stderr).not.toContain("No review candidates were emitted");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it("fails on findings after introduced-only filtering", async () => {
     const root = await createIntroducedPassThroughRepo(true);
     try {

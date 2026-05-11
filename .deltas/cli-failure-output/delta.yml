@@ -62,7 +62,7 @@ tasks:
       Make scope computation failures fatal, especially `--touched-since` git
       failures that currently degrade to an empty changed-file set and produce a
       false zero-candidate report.
-    status: pending
+    status: done
     context: |
       `--touched-since` still analyzes the full graph; only the changed-file set computation changes from silent fallback to required scope context.
       Do not treat missing refs, non-git targets, or failed git commands as `no changed files`.
@@ -195,3 +195,17 @@ log:
       report was produced.` to stderr while leaving stdout empty. Verified GREEN
       with `bun test test/cli.test.ts` passing 37 tests / 133 expectations and
       `bun run typecheck` passing.
+  - id: log-005
+    timestamp: 2026-05-11T16:56Z
+    command: apply
+    task: fail-closed-scope-failures
+    summary: >
+      Added RED-first CLI coverage proving invalid `--touched-since missing-ref`
+      and non-git `--touched-since HEAD` targets previously exited 0 with normal
+      zero-candidate output. Changed touched-file collection to use required git
+      commands so missing refs and non-git targets abort through the CLI failure
+      report instead of becoming an empty changed-file set. Valid touched-file
+      filtering remains unchanged. Verified `bun test test/cli.test.ts` passing
+      39 tests / 143 expectations, `bun test test/core.test.ts` passing 26 tests
+      / 102 expectations, combined `bun test test/core.test.ts test/cli.test.ts`
+      passing 65 tests / 245 expectations, and `bun run format:check` passing.

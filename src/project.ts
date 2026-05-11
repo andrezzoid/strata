@@ -120,39 +120,26 @@ export function collectAllProjectFiles(target: string): string[] {
   return out.sort();
 }
 
-/** Returns TS/TSX files touched since a git ref, including worktree and untracked files. */
+/** Returns TS/TSX files touched since a git ref; failing to compute the scope aborts the scan. */
 export function collectChangedFiles(target: string, touchedSinceRef: string): Set<string> {
   const lines = new Set<string>();
-  const committed = tryGitOutput(
+  const committed = gitOutputOrThrow(
     ["diff", "--name-only", "--diff-filter=ACMR", touchedSinceRef, "--", "*.ts", "*.tsx"],
     target,
+    `failed to list files changed since ${touchedSinceRef}`,
   );
   for (const line of committed.split("\n")) if (line) lines.add(toPosix(line));
 
-  const workingTree = tryGitOutput(
+  const workingTree = gitOutputOrThrow(
     ["ls-files", "--modified", "--others", "--exclude-standard", "--", "*.ts", "*.tsx"],
     target,
+    "failed to list modified and untracked files",
   );
   for (const line of workingTree.split("\n")) if (line) lines.add(toPosix(line));
 
   return new Set(
     [...lines].filter((file) => statSync(join(target, file), { throwIfNoEntry: false })?.isFile()),
   );
-}
-
-function tryGitOutput(args: string[], cwd: string): string {
-  try {
-    const result = Bun.spawnSync(["git", ...args], {
-      cwd,
-      stdin: "ignore",
-      stdout: "pipe",
-      stderr: "ignore",
-    });
-    return result.success ? (result.stdout?.toString() ?? "") : "";
-  } catch {
-    // A missing ref or non-git target means "no changed files" for this source.
-    return "";
-  }
 }
 
 function gitOutputOrThrow(args: string[], cwd: string, failureMessage: string): string {
