@@ -171,7 +171,7 @@ describe("formatResult", () => {
         message: "Duplicate shape",
         metadata: {
           preview: "type Shape = { id: string }",
-          previewFrom: "src/a.ts",
+          previewFrom: "src/a.ts:3",
           occurrences: [{ name: "Shape", file: "src/a.ts", line: 3 }],
         },
       },
@@ -182,15 +182,69 @@ describe("formatResult", () => {
     expect(formatResult(result, "json")).toBe(`${JSON.stringify(result, null, 2)}\n`);
   });
 
-  it("emits text summaries and duplicate-symbol detail blocks", () => {
-    const output = formatResult(result, "text");
+  it("emits a first-class text report with candidate framing and grouped detail", () => {
+    const output = formatResult(result, "text", { text: { mode: "full", target: "src" } });
 
-    expect(output).toContain("Total: 1 findings");
-    expect(output).toContain("  duplicateSymbol: 1");
-    expect(output).toContain("  1  src/a.ts");
-    expect(output).toContain("  [duplicateSymbol] src/a.ts:3 — Duplicate shape");
-    expect(output).toContain("      preview (from src/a.ts):");
-    expect(output).toContain("      occurrences (1):");
+    expect(output).toStartWith("strata complexity candidates\nMode: full scan\nTarget: src\n");
+    expect(output).toContain("Found 1 review candidate.");
+    expect(output).toContain("candidate signals, not automated design verdicts");
+    expect(output).toContain("By detector:\n  duplicateSymbol  1");
+    expect(output).toContain("Top files:\n  1  src/a.ts");
+    expect(output).toContain(
+      "duplicateSymbol\n  Suspicious when declarations share the same structure",
+    );
+    expect(output).toContain("  src/a.ts:3\n    Duplicate shape");
+    expect(output).toContain("    preview (from src/a.ts:3):");
+    expect(output).toContain("    occurrences (1):\n      src/a.ts:3  Shape");
+    expect(output).not.toContain("strata:v1:duplicate-shape-sample");
+    expect(output).not.toContain("severity");
+  });
+
+  it("normalizes non-ASCII detector punctuation in text messages", () => {
+    const output = formatResult(
+      {
+        summary: {
+          totalFindings: 1,
+          byFlag: { orphanFile: 1 },
+          topFiles: [{ file: "src/a.ts", count: 1 }],
+        },
+        findings: [
+          {
+            flag: "orphanFile",
+            severity: "candidate",
+            fingerprint: "strata:v1:unicode-sample",
+            file: "src/a.ts",
+            line: 1,
+            message: "const re-declared 2× across files — duplicated shape …",
+            metadata: {},
+          },
+        ],
+      },
+      "text",
+      { text: { mode: "full", target: "src" } },
+    );
+
+    expect(output).toContain("const re-declared 2x across files - duplicated shape ...");
+    expect(output).not.toContain("×");
+    expect(output).not.toContain("—");
+    expect(output).not.toContain("…");
+  });
+
+  it("emits compact zero-candidate text without empty section shells", () => {
+    const output = formatResult(
+      { summary: { totalFindings: 0, byFlag: {}, topFiles: [] }, findings: [] },
+      "text",
+      { text: { mode: "introduced", target: ".", ref: "origin/main" } },
+    );
+
+    expect(output).toStartWith(
+      "strata complexity candidates\nMode: introduced candidates\nTarget: .\nBase ref: origin/main\n",
+    );
+    expect(output).toContain("No review candidates were emitted for this scan.");
+    expect(output).toContain("not a verdict that the design is clean");
+    expect(output).not.toContain("By detector:");
+    expect(output).not.toContain("Top files:");
+    expect(output).not.toContain("Findings:");
   });
 
   it("emits GitHub-code-scanning-friendly SARIF", () => {

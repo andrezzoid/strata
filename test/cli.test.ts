@@ -144,8 +144,19 @@ describe("CLI", () => {
     expect(subcommand.stderr).toContain("no such path: version");
   });
 
-  it("prints JSON by default", () => {
+  it("prints text by default", () => {
     const result = runStrata([passThroughFixture]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toStartWith(
+      `strata complexity candidates\nMode: full scan\nTarget: ${passThroughFixture}\n`,
+    );
+    expect(result.stdout).toContain("Found 4 review candidates.");
+    expect(result.stdout).toContain("candidate signals, not automated design verdicts");
+  });
+
+  it("prints JSON when explicitly requested", () => {
+    const result = runStrata([passThroughFixture, "--format", "json"]);
 
     expect(result.status).toBe(0);
     const parsed = JSON.parse(result.stdout);
@@ -156,7 +167,13 @@ describe("CLI", () => {
   });
 
   it("prints only requested detector findings", () => {
-    const result = runStrata([passThroughFixture, "--only", "passThroughMethod"]);
+    const result = runStrata([
+      passThroughFixture,
+      "--only",
+      "passThroughMethod",
+      "--format",
+      "json",
+    ]);
 
     expect(result.status).toBe(0);
     const parsed = JSON.parse(result.stdout);
@@ -167,7 +184,13 @@ describe("CLI", () => {
   });
 
   it("omits excluded detector findings", () => {
-    const result = runStrata([passThroughFixture, "--exclude", "passThroughMethod"]);
+    const result = runStrata([
+      passThroughFixture,
+      "--exclude",
+      "passThroughMethod",
+      "--format",
+      "json",
+    ]);
 
     expect(result.status).toBe(0);
     const parsed = JSON.parse(result.stdout);
@@ -183,11 +206,18 @@ describe("CLI", () => {
     const result = runStrata([passThroughFixture]);
 
     expect(result.status).toBe(0);
-    expect(JSON.parse(result.stdout).summary.totalFindings).toBeGreaterThan(0);
+    expect(result.stdout).toContain("Found 4 review candidates.");
   });
 
-  it("fails when requested and findings exist", () => {
+  it("fails with default text output when requested and findings exist", () => {
     const result = runStrata([passThroughFixture, "--fail-on-findings"]);
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toContain("Found 4 review candidates.");
+  });
+
+  it("fails with explicit JSON output when requested and findings exist", () => {
+    const result = runStrata([passThroughFixture, "--format", "json", "--fail-on-findings"]);
 
     expect(result.status).toBe(1);
     expect(JSON.parse(result.stdout).summary.totalFindings).toBeGreaterThan(0);
@@ -199,7 +229,7 @@ describe("CLI", () => {
       const result = runStrata([root, "--fail-on-findings"]);
 
       expect(result.status).toBe(0);
-      expect(JSON.parse(result.stdout).summary.totalFindings).toBe(0);
+      expect(result.stdout).toContain("No review candidates were emitted for this scan.");
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -209,8 +239,14 @@ describe("CLI", () => {
     const result = runStrata([passThroughFixture, "--format", "text"]);
 
     expect(result.status).toBe(0);
-    expect(result.stdout).toContain("Total:");
-    expect(result.stdout).toContain("[passThroughMethod] case.ts:7");
+    expect(result.stdout).toStartWith(
+      `strata complexity candidates\nMode: full scan\nTarget: ${passThroughFixture}\n`,
+    );
+    expect(result.stdout).toContain("Found 4 review candidates.");
+    expect(result.stdout).toContain("candidate signals, not automated design verdicts");
+    expect(result.stdout).toContain("passThroughMethod\n  Suspicious when a method only forwards");
+    expect(result.stdout).toContain("  case.ts:7\n    class method delegates");
+    expect(result.stdout).not.toContain("strata:v1:");
   });
 
   it("prints text output after detector filtering", () => {
@@ -224,7 +260,35 @@ describe("CLI", () => {
 
     expect(result.status).toBe(0);
     expect(result.stdout).not.toContain("[passThroughMethod]");
-    expect(result.stdout).toContain("[orphanFile]");
+    expect(result.stdout).toContain("orphanFile");
+  });
+
+  it("prints introduced-only text output with base-ref context", async () => {
+    const root = await createIntroducedPassThroughRepo(true);
+    try {
+      const result = runStrata([
+        join(root, "src"),
+        "--new-since",
+        "HEAD",
+        "--only",
+        "passThroughMethod",
+        "--format",
+        "text",
+      ]);
+
+      expect(result.status).toBe(0);
+      expect(result.stdout).toStartWith(
+        `strata complexity candidates\nMode: introduced candidates\nTarget: ${join(root, "src")}\nBase ref: HEAD\n`,
+      );
+      expect(result.stdout).toContain("Found 1 review candidate introduced since HEAD.");
+      expect(result.stdout).toContain("Inherited");
+      expect(result.stdout).toContain("candidates are omitted by fingerprint");
+      expect(result.stdout).toContain("new-service.ts:1");
+      expect(result.stdout).not.toContain("\n  service.ts:1\n");
+      expect(result.stdout).not.toContain("strata:v1:");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it("prints SARIF output", () => {
@@ -273,6 +337,8 @@ describe("CLI", () => {
         "HEAD",
         "--only",
         "passThroughMethod",
+        "--format",
+        "json",
       ]);
 
       expect(result.status).toBe(0);
@@ -324,6 +390,8 @@ describe("CLI", () => {
         "HEAD",
         "--only",
         "passThroughMethod",
+        "--format",
+        "json",
       ]);
 
       expect(result.status).toBe(0);
@@ -347,6 +415,8 @@ describe("CLI", () => {
         "HEAD",
         "--only",
         "passThroughMethod",
+        "--format",
+        "json",
         "--fail-on-findings",
       ]);
 
@@ -366,6 +436,8 @@ describe("CLI", () => {
         "HEAD",
         "--only",
         "passThroughMethod",
+        "--format",
+        "json",
         "--fail-on-findings",
       ]);
 
@@ -377,7 +449,14 @@ describe("CLI", () => {
   });
 
   it("passes with --fail-on-findings when filtering removes every finding", () => {
-    const result = runStrata([passThroughFixture, "--only", "wideSignature", "--fail-on-findings"]);
+    const result = runStrata([
+      passThroughFixture,
+      "--only",
+      "wideSignature",
+      "--format",
+      "json",
+      "--fail-on-findings",
+    ]);
 
     expect(result.status).toBe(0);
     expect(JSON.parse(result.stdout).summary.totalFindings).toBe(0);

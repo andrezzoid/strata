@@ -2,7 +2,7 @@
 import { statSync } from "node:fs";
 
 import { DETECTOR_IDS, type DetectorId, type DetectorSelection } from "./detectors/registry.ts";
-import { formatResult } from "./format.ts";
+import { formatResult, type TextReportContext } from "./format.ts";
 import { scanProject } from "./scan.ts";
 import type { OutputFormat } from "./types.ts";
 
@@ -24,6 +24,16 @@ function printUsage(stream: { write(text: string): void }): void {
       "  Scan TypeScript files for PoSD-style complexity smell candidates.\n" +
       "  --version prints the installed strata version.\n",
   );
+}
+
+function textReportContext(
+  target: string,
+  touchedSinceRef: string | null,
+  newSinceRef: string | null,
+): TextReportContext {
+  if (newSinceRef) return { mode: "introduced", target, ref: newSinceRef };
+  if (touchedSinceRef) return { mode: "touched", target, ref: touchedSinceRef };
+  return { mode: "full", target };
 }
 
 function usage(exitCode: 0 | 2): never {
@@ -63,7 +73,7 @@ export async function main(): Promise<void> {
   let target = "";
   let touchedSinceRef: string | null = null;
   let newSinceRef: string | null = null;
-  let format: OutputFormat = "json";
+  let format: OutputFormat = "text";
   let failOnFindings = false;
   let detectorSelection: DetectorSelection = { kind: "all" };
   let detectorFilterFlag: "--only" | "--exclude" | null = null;
@@ -125,7 +135,9 @@ export async function main(): Promise<void> {
   }
 
   const result = await scanProject({ target, touchedSinceRef, newSinceRef, detectorSelection });
-  process.stdout.write(formatResult(result, format));
+  process.stdout.write(
+    formatResult(result, format, { text: textReportContext(target, touchedSinceRef, newSinceRef) }),
+  );
   if (failOnFindings && result.summary.totalFindings > 0) process.exit(1);
 }
 

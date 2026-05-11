@@ -5,6 +5,8 @@ All notable changes to `strata` will be documented here.
 ## 0.2.1 - Unreleased
 
 - Adds `strata --version` and shows the installed package version at the top of `strata --help`.
+- Improves `--format text` into a first-class local review report with scan context, candidate framing, detector explanations, grouped findings, top files, and compact zero-candidate output.
+- Changes the default CLI output from JSON to text; use `--format json` for the structured machine interface.
 
 ## 0.2.0 - 2026-05-11
 

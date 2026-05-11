@@ -16,23 +16,95 @@ import { detectWideSignature } from "./wide-signature.ts";
 export type CrossProjectDetector = (ctxs: Ctx[], imports: ImportResolver) => Finding[];
 
 type DetectorDefinition =
-  | { id: string; kind: "single"; detect: SingleDetector }
-  | { id: string; kind: "cross"; detect: CrossProjectDetector };
+  | { id: string; kind: "single"; description: string; detect: SingleDetector }
+  | { id: string; kind: "cross"; description: string; detect: CrossProjectDetector };
 
 /** Public detector catalog; CLI/API filtering names come from this single ordered list. */
 export const DETECTOR_DEFINITIONS = [
-  { id: "shallowModule", kind: "single", detect: detectShallowModule },
-  { id: "passThroughMethod", kind: "single", detect: detectPassThroughMethod },
-  { id: "passThroughVariable", kind: "single", detect: detectPassThroughVariable },
-  { id: "emptyCatch", kind: "single", detect: detectEmptyCatch },
-  { id: "catchRethrow", kind: "single", detect: detectCatchRethrow },
-  { id: "genericNaming", kind: "single", detect: detectGenericNaming },
-  { id: "tsEscapeHatch", kind: "single", detect: detectTsEscapeHatches },
-  { id: "wideModule", kind: "single", detect: detectWideModule },
-  { id: "wideSignature", kind: "single", detect: detectWideSignature },
-  { id: "duplicateSymbol", kind: "cross", detect: detectDuplicateSymbol },
-  { id: "uniqueImplementation", kind: "cross", detect: detectUniqueImplementation },
-  { id: "orphanFile", kind: "cross", detect: detectOrphanFile },
+  {
+    id: "shallowModule",
+    kind: "single",
+    description:
+      "Suspicious when a module exposes a large interface relative to its implementation; readers pay API cost without much hidden complexity.",
+    detect: detectShallowModule,
+  },
+  {
+    id: "passThroughMethod",
+    kind: "single",
+    description:
+      "Suspicious when a method only forwards to another object; the layer may add API surface without hiding useful complexity.",
+    detect: detectPassThroughMethod,
+  },
+  {
+    id: "passThroughVariable",
+    kind: "single",
+    description:
+      "Suspicious when parameters travel through a function without being used; the function may be plumbing instead of an abstraction.",
+    detect: detectPassThroughVariable,
+  },
+  {
+    id: "emptyCatch",
+    kind: "single",
+    description:
+      "Suspicious when a catch block discards errors; failure behavior becomes invisible to callers and reviewers.",
+    detect: detectEmptyCatch,
+  },
+  {
+    id: "catchRethrow",
+    kind: "single",
+    description:
+      "Suspicious when a catch block only rethrows; the handler may add control-flow noise without adding policy.",
+    detect: detectCatchRethrow,
+  },
+  {
+    id: "genericNaming",
+    kind: "single",
+    description:
+      "Suspicious when declarations use vague suffixes; generic names often hide an unfocused responsibility.",
+    detect: detectGenericNaming,
+  },
+  {
+    id: "tsEscapeHatch",
+    kind: "single",
+    description:
+      "Suspicious when TypeScript checks are bypassed; safety assumptions move from the compiler into reviewer memory.",
+    detect: detectTsEscapeHatches,
+  },
+  {
+    id: "wideModule",
+    kind: "single",
+    description:
+      "Suspicious when a module exports many top-level names; callers must understand a broad surface before using it.",
+    detect: detectWideModule,
+  },
+  {
+    id: "wideSignature",
+    kind: "single",
+    description:
+      "Suspicious when a function requires many positional parameters; callers must know too much ordering and context.",
+    detect: detectWideSignature,
+  },
+  {
+    id: "duplicateSymbol",
+    kind: "cross",
+    description:
+      "Suspicious when declarations share the same structure; the project may have rebuilt existing concepts instead of reusing them.",
+    detect: detectDuplicateSymbol,
+  },
+  {
+    id: "uniqueImplementation",
+    kind: "cross",
+    description:
+      "Suspicious when an interface or abstract class has only one implementation; abstraction cost may not buy polymorphism.",
+    detect: detectUniqueImplementation,
+  },
+  {
+    id: "orphanFile",
+    kind: "cross",
+    description:
+      "Suspicious when a source file is not imported by the scanned project; it may be dead code, forgotten exploration, or an entrypoint the scanner cannot infer.",
+    detect: detectOrphanFile,
+  },
 ] as const satisfies readonly DetectorDefinition[];
 
 export type DetectorId = (typeof DETECTOR_DEFINITIONS)[number]["id"];
@@ -43,6 +115,15 @@ export type DetectorSelection =
   | { kind: "exclude"; ids: readonly DetectorId[] };
 
 export const DETECTOR_IDS = DETECTOR_DEFINITIONS.map((definition) => definition.id) as DetectorId[];
+
+const DETECTOR_DESCRIPTIONS = new Map<string, string>(
+  DETECTOR_DEFINITIONS.map((definition) => [definition.id, definition.description]),
+);
+
+/** Returns the review-facing detector explanation used by human-readable reports. */
+export function describeDetector(id: string): string {
+  return DETECTOR_DESCRIPTIONS.get(id) ?? "Detector emitted a review candidate.";
+}
 
 type SelectedDetectorSet = {
   single: Array<{ id: DetectorId; detect: SingleDetector }>;

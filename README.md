@@ -41,7 +41,7 @@ strata --version
 Defaults:
 
 - `PATH` defaults to the current directory.
-- `--format` defaults to `json`.
+- `--format` defaults to `text`, the local review report.
 - `--format sarif` emits SARIF 2.1.0 for GitHub code scanning and other CI consumers.
 - Scan scope modes are mutually exclusive review questions: touched files, new candidate identities, future worsened existing candidates, or their future union.
 - `--touched-since` analyzes the full project graph, then filters findings to files touched since the git ref so cross-file detectors keep correct context.
@@ -58,6 +58,99 @@ Project resolution:
 - First-version limit: no monorepo tsconfig selection, project references, or `extends` chain evaluation.
 
 ## Output
+
+### Text For Local Review
+
+Text output is the default because it is the local human/agent review interface:
+
+```bash
+strata .
+strata . --format text
+```
+
+Example with candidates present:
+
+```text
+strata complexity candidates
+Mode: full scan
+Target: .
+
+Found 4 review candidates.
+
+These are candidate signals, not automated design verdicts. Review whether
+each finding actually makes the system harder to understand or modify.
+
+By detector:
+  orphanFile         1
+  passThroughMethod  2
+  shallowModule      1
+
+Top files:
+  4  case.ts
+
+passThroughMethod
+  Suspicious when a method only forwards to another object; the layer may add API surface without hiding useful complexity.
+
+  case.ts:7
+    class method delegates to instance state with same args - layer without logic
+
+  case.ts:11
+    class method delegates to instance state with same args - layer without logic
+```
+
+Introduced-only text answers a different review question: which candidate identities did this change create?
+
+```bash
+strata . --new-since origin/main --format text
+```
+
+```text
+strata complexity candidates
+Mode: introduced candidates
+Target: .
+Base ref: origin/main
+
+Found 1 review candidate introduced since origin/main.
+
+These are candidate signals, not automated design verdicts. Inherited
+candidates are omitted by fingerprint; omitted does not mean approved.
+
+By detector:
+  passThroughMethod  1
+
+Top files:
+  1  src/new-service.ts
+
+passThroughMethod
+  Suspicious when a method only forwards to another object; the layer may add API surface without hiding useful complexity.
+
+  src/new-service.ts:3
+    class method delegates to instance state with same args - layer without logic
+```
+
+Example when no enabled detector matches the selected scope:
+
+```text
+strata complexity candidates
+Mode: introduced candidates
+Target: .
+Base ref: origin/main
+
+No review candidates were emitted for this scan.
+
+This is not a verdict that the design is clean. It only means no enabled
+detector matched the selected scope.
+```
+
+Text output teaches the review model and stays compact: detector groups include a short explanation, findings include locations and human evidence, and empty sections are omitted. It intentionally omits fixed `severity`, raw metadata, and finding fingerprints. Use JSON or SARIF when another tool needs stable machine identity.
+
+### JSON For Tools
+
+Use JSON when another tool needs the stable structured result, including finding fingerprints:
+
+```bash
+strata . --format json
+```
 
 ```json
 {

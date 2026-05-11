@@ -1,0 +1,347 @@
+goal: >
+  Make `strata --format text` a first-class local CLI interface with a compact,
+  excellent human report and README examples that define the UX contract.
+
+acceptance:
+  - Text output frames findings as candidates, not verdicts.
+  - Text output reports scan mode, target path/ref context, candidate count, top files, grouped findings, and evidence.
+  - Bare `strata [PATH]` defaults to text output; JSON remains available explicitly through `--format json`.
+  - README documents text output with real examples for `strata . --format text` and `strata . --new-since origin/main --format text`.
+  - README includes examples for zero findings and findings present.
+  - JSON and SARIF output contracts remain unchanged.
+
+context: |
+  Current README lists `--format text`, but the Output section only documents JSON.
+  This delta should treat local CLI text output as a user interface, not a debug fallback.
+  Andre wants colored output kept in mind, even if color ships as a follow-up after the plain text contract.
+  Text output may be read by both humans and AI agents, so it should teach the review model rather than only dump locations.
+  Current `formatText()` only receives `ScanResult`, so it cannot report target path, scope mode, or git ref without a presentation-context seam from the CLI.
+  Current zero-candidate text output still prints empty `Top files` and `Findings` sections; this undercuts the human report contract.
+  Andre decided text should become the default output so the first-run CLI experience matches the primary local review interface.
+  Chosen design: keep JSON/SARIF `ScanResult` unchanged and pass text-only report context from the CLI into the formatter, letting the formatter own the complete text layout.
+  Rejected design: add scan metadata to `ScanResult`; it would make text formatting simpler but would change the public JSON contract for a presentation-only need.
+  Rejected design: have the CLI print a text header and let `formatText()` print the rest; it splits one UI contract across two modules and makes tests/docs reason about stitching.
+
+refs:
+  - README.md
+  - CHANGELOG.md
+  - src/format.ts
+  - src/cli.ts
+  - src/types.ts
+  - src/detectors/registry.ts
+  - test/cli.test.ts
+  - test/core.test.ts
+  - action/strata-action.ts
+
+open_questions: []
+
+followups:
+  - Add opt-out-aware ANSI color after the plain deterministic text contract lands; design the layout so headings, counts, and candidate locations can be colored without changing wording or parsing shape.
+  - Defer inherited-candidate or base-scan counts for `--new-since`; current scan results only expose the filtered current findings, so the text UI should describe the mode without pretending to know hidden totals.
+
+tasks:
+  - id: implement-text-report-ui
+    description: >
+      Replace the current text dump with the first-class human report: text-only
+      presentation context from the CLI, candidate framing, mode/path/ref lines,
+      by-detector and top-file summaries, detector-group teaching descriptions,
+      grouped candidates, and zero-candidate output.
+    status: done
+    context: |
+      Write failing formatter/CLI tests first. Keep JSON/SARIF output and `ScanResult` unchanged.
+      Prefer a small `TextReportContext` passed only for text formatting over adding scan metadata to public JSON.
+      Detector descriptions should live near the public detector catalog so filtering, grouping, and teaching share one source of truth.
+      Do not add ANSI color yet, but keep the layout stable enough that color can decorate headings/counts/locations later without changing text content.
+      Evidence should use the finding message and existing detector metadata where concise; do not widen detector metadata just to manufacture pretty text.
+    acceptance:
+      - Core formatter tests fail first for full-scan text shape: title, `Mode: full scan`, `Target: ...`, candidate count, candidate-not-verdict framing, by-detector counts, top files, grouped detector headings, one-line detector descriptions, and no fingerprint/severity/raw metadata dump.
+      - Core formatter tests fail first for zero-candidate text shape: no empty `By detector`, `Top files`, or detector-group sections, and explicit non-verdict wording.
+      - CLI tests fail first for `--new-since <ref> --format text`, proving `Mode: introduced candidates`, `Base ref: <ref>`, and inherited-candidate omission wording are rendered from CLI context.
+      - Text output remains deterministic ASCII with stable section order and two-space indentation.
+      - JSON and SARIF formatter tests pass unchanged, proving their output contracts did not change.
+      - `bun test test/core.test.ts test/cli.test.ts` and `bun run typecheck` pass.
+    depends_on: []
+
+  - id: document-text-output-contract
+    description: >
+      Update release-facing docs so `--format text` is documented as a first-class
+      local CLI interface with realistic examples for full scans, introduced-only
+      scans, zero candidates, and candidates present.
+    status: done
+    context: |
+      README currently documents only JSON under Output despite listing `--format text` in Usage.
+      Examples should match the implemented plain text contract closely enough to teach users what to expect without becoming brittle snapshots.
+      CHANGELOG should record the user-visible text output upgrade.
+    acceptance:
+      - README Output section includes a text-output subsection before or alongside JSON, with `strata . --format text` and `strata . --new-since origin/main --format text` examples.
+      - README includes both zero-candidate and candidates-present text examples using candidate-not-verdict framing.
+      - README explains that text output is optimized for local human/agent review, while JSON/SARIF remain the stable machine interfaces for fingerprints and integrations.
+      - CHANGELOG records the improved text output as an unreleased user-facing change.
+      - `bun run format:check` passes.
+    depends_on:
+      - implement-text-report-ui
+
+  - id: make-text-default-format
+    description: >
+      Make bare CLI scans use the new text report by default while preserving JSON
+      and SARIF behind explicit `--format` flags.
+    status: done
+    context: |
+      This is a user-visible default change and belongs in this delta because text is now the primary local review interface.
+      Update existing CLI tests that parsed bare output as JSON so they request `--format json` explicitly.
+      Preserve `--fail-on-findings` semantics: output should still be written before a non-zero exit when candidates are present.
+    acceptance:
+      - A CLI test fails first proving `strata <path>` emits text output with the full-scan header and candidate framing.
+      - Existing JSON behavior is still covered through explicit `--format json` tests, including detector filtering and `--new-since`/`--touched-since` cases.
+      - `--fail-on-findings` still exits non-zero after writing the selected format; default `--fail-on-findings` output is text and explicit `--format json --fail-on-findings` still parses as JSON.
+      - README Defaults says `--format` defaults to `text`, and JSON examples use `--format json` explicitly.
+      - CHANGELOG records the default-output change.
+      - `bun test test/cli.test.ts`, `bun run typecheck`, and `bun run format:check` pass.
+    depends_on:
+      - implement-text-report-ui
+
+notes:
+  - >
+    Text report contract should be compact and deterministic: title, mode line,
+    target/ref line, candidate count, candidate-not-verdict framing, by-detector
+    counts, top files, then findings grouped by detector.
+  - >
+    Zero-candidate output should say no candidates were emitted for this scan and
+    explicitly avoid claiming the design is clean. It should not show empty
+    section shells.
+  - >
+    Evidence should be detector-owned human detail, not a raw metadata dump:
+    keep the finding message, preserve duplicate-symbol previews/occurrences,
+    and add concise metadata lines where they explain why the detector fired.
+    Omit fingerprints from default text output; users or agents that need stable
+    machine identity should use JSON/SARIF.
+  - >
+    Each detector group should include a one-line teaching description, such as
+    what the detector is suspicious of and why that shape can increase design
+    complexity. Keep this educational text short and detector-owned so it does
+    not become generic advice pasted into every finding.
+  - >
+    Default text should omit fields that do not help immediate review: fixed
+    severity (`candidate`), raw metadata objects, SARIF/JSON schema details,
+    fingerprints, and empty summary sections. The report should spend its space
+    on review framing, grouped signals, locations, and evidence.
+  - >
+    `--new-since origin/main --format text` should say it reports candidate
+    identities introduced since `origin/main`; inherited candidates are omitted,
+    not judged acceptable.
+  - |
+    Canonical full-scan text shape:
+
+    strata complexity candidates
+    Mode: full scan
+    Target: .
+
+    Found 4 review candidates.
+
+    These are candidate signals, not automated design verdicts. Review whether
+    each finding actually makes the system harder to understand or modify.
+
+    By detector:
+      passThroughMethod  2
+      orphanFile         1
+      shallowModule      1
+
+    Top files:
+      4  case.ts
+
+    passThroughMethod
+      Suspicious when a method only forwards to another object; the layer may add API surface without hiding useful complexity.
+
+      case.ts:7
+        class method delegates to instance state with same args - layer without logic
+        evidence: delegates getUser(id) to this.repo.getUser(id)
+
+      case.ts:11
+        class method delegates to instance state with same args - layer without logic
+        evidence: delegates findUser(id) to this.repo.findUser(id)
+
+    orphanFile
+      Suspicious when a source file is not imported by the scanned project; it may be dead code, forgotten exploration, or an entrypoint the scanner cannot infer.
+
+      case.ts:1
+        file is not imported by any other file - possible dead code or forgotten exploration
+  - |
+    Canonical introduced-only text shape:
+
+    strata complexity candidates
+    Mode: introduced candidates
+    Target: .
+    Base ref: origin/main
+
+    Found 1 review candidate introduced since origin/main.
+
+    These are candidate signals, not automated design verdicts. Inherited
+    candidates are omitted by fingerprint; omitted does not mean approved.
+
+    By detector:
+      passThroughMethod  1
+
+    Top files:
+      1  src/new-service.ts
+
+    passThroughMethod
+      Suspicious when a method only forwards to another object; the layer may add API surface without hiding useful complexity.
+
+      src/new-service.ts:3
+        class method delegates to instance state with same args - layer without logic
+        evidence: delegates getProject(id) to this.repo.getProject(id)
+  - |
+    Canonical zero-candidate text shape:
+
+    strata complexity candidates
+    Mode: introduced candidates
+    Target: .
+    Base ref: origin/main
+
+    No review candidates were emitted for this scan.
+
+    This is not a verdict that the design is clean. It only means no enabled
+    detector matched the selected scope.
+  - >
+    Formatting details for Plan: keep ASCII punctuation, stable section order,
+    two-space indentation, no empty `By detector`, `Top files`, or detector
+    groups when total candidates is zero. If detector-specific evidence cannot
+    be produced cleanly for the first implementation, keep the `evidence:` line
+    out rather than dumping raw metadata.
+
+log:
+  - id: log-001
+    timestamp: 2026-05-11T13:50Z
+    command: explore
+    summary: >
+      Created the text-output-ui delta from the request to make `--format text`
+      a first-class human interface and document its contract in README examples.
+  - id: log-002
+    timestamp: 2026-05-11T13:50Z
+    command: explore
+    summary: >
+      Inspected README, CLI parsing, formatter, public result types, CLI/core
+      tests, scan scope behavior, and GitHub Action summary wording. Ran current
+      text output for a full repo scan, a fixture scan, a zero-candidate filtered
+      scan, and `--new-since origin/main`. Findings: current text output lacks
+      path/mode/ref context, uses `findings` instead of candidate framing, leaves
+      empty sections for zero candidates, and only gives special evidence for
+      duplicate symbols. Compared three designs and selected a text-only
+      presentation context passed from CLI to formatter so JSON/SARIF stay
+      unchanged while the formatter owns the complete human report layout.
+  - id: log-003
+    timestamp: 2026-05-11T13:59Z
+    command: explore
+    summary: >
+      Incorporated Andre's design notes: color should remain compatible with the
+      layout even if shipped later; text output should teach humans and AI agents
+      how to interpret detectors, likely through one-line detector descriptions;
+      and default text output should omit fingerprints and other machine-oriented
+      fields unless they directly improve immediate review.
+  - id: log-004
+    timestamp: 2026-05-11T14:14Z
+    command: explore
+    summary: >
+      Added canonical text-output mockups for full scans, introduced-only scans,
+      and zero-candidate scans so a later planning agent can derive tasks from a
+      concrete UX contract rather than only high-level direction.
+  - id: log-005
+    timestamp: 2026-05-11T14:20Z
+    command: plan
+    summary: >
+      Planned two vertical slices after confirming `bun test test/core.test.ts
+      test/cli.test.ts` passes. First slice implements the text report UI with a
+      text-only CLI context seam, detector teaching descriptions, grouped
+      candidates, and zero-candidate behavior while preserving JSON/SARIF.
+      Second slice documents the text contract in README examples and records the
+      user-facing output change in CHANGELOG.
+  - id: log-006
+    timestamp: 2026-05-11T14:24Z
+    command: apply
+    task: implement-text-report-ui
+    summary: >
+      Implemented the text report UI with a `TextReportContext` passed from the
+      CLI only for text formatting. Added detector teaching descriptions to the
+      detector catalog, grouped candidates by detector, added mode/target/ref
+      headers, candidate-not-verdict framing, zero-candidate output, ASCII message
+      rendering, and concise evidence from existing metadata. JSON/SARIF output
+      remains derived from the unchanged `ScanResult`. Verified RED first with
+      failing core and CLI tests, then GREEN with `bun test test/core.test.ts
+      test/cli.test.ts` (57 pass, 0 fail, 210 expectations) and `bun run
+      typecheck` passing.
+  - id: log-007
+    timestamp: 2026-05-11T14:26Z
+    command: apply
+    task: document-text-output-contract
+    summary: >
+      Documented text output as a first-class local review interface in README:
+      added `strata . --format text`, `strata . --new-since origin/main --format
+      text`, findings-present output, zero-candidate output, and guidance that
+      text omits fingerprints/raw metadata while JSON/SARIF remain the stable
+      machine interfaces. Added an unreleased CHANGELOG entry for the improved
+      text report. Verified `bun run format:check` passing, plus `bun test
+      test/core.test.ts test/cli.test.ts` (57 pass, 0 fail, 210 expectations)
+      and `bun run typecheck` passing after formatting changed TypeScript files.
+  - id: log-008
+    timestamp: 2026-05-11T14:28Z
+    command: apply
+    task: implement-text-report-ui
+    summary: >
+      Verification surfaced a text-contract bug: duplicate-symbol occurrence rows
+      were not nested under the `occurrences` evidence heading, and duplicate
+      messages could still leak non-ASCII `×`/ellipsis punctuation despite the
+      ASCII text-output rule. Added failing core formatter assertions, then fixed
+      text normalization and occurrence indentation. Verified `bun test
+      test/core.test.ts test/cli.test.ts` (58 pass, 0 fail, 214 expectations)
+      and `bun run typecheck` passing.
+  - id: log-009
+    timestamp: 2026-05-11T14:29Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Verified text
+      output frames candidates as non-verdict review signals; reports scan mode,
+      target/ref context, candidate counts, top files, detector-group teaching
+      descriptions, grouped candidate detail, and concise evidence; omits fixed
+      severity, raw metadata dumps, and fingerprint values; documents full,
+      introduced-only, findings-present, and zero-candidate examples in README;
+      and leaves JSON/SARIF contracts unchanged. Regression gates: `bun run
+      format:check` pass; `bun run lint` 0 warnings/errors; `bun run typecheck`
+      pass; `bun run test` 108 pass, 0 fail, 317 expectations; `bun run
+      test:coverage` 90.31% lines meets 85%; `bun run package:check` pass; `bun
+      run scan:ci` reports 0 source findings. Delta is complete.
+  - id: log-010
+    timestamp: 2026-05-11T14:33Z
+    command: plan
+    summary: >
+      Replanned the delta after Andre decided the new text report should be the
+      default CLI output. Added one focused task to switch the CLI default from
+      JSON to text, update bare-output tests and docs, and preserve explicit
+      JSON/SARIF behavior for integrations.
+  - id: log-011
+    timestamp: 2026-05-11T14:36Z
+    command: apply
+    task: make-text-default-format
+    summary: >
+      Made text the default CLI output by changing the CLI's initial format from
+      JSON to text. Added RED first CLI assertions proving bare `strata <path>`
+      emits the full text report and that `--fail-on-findings` writes default
+      text before exiting non-zero. Updated JSON-oriented CLI tests to request
+      `--format json` explicitly, preserving detector filtering,
+      introduced-only, touched-file, and fail-on-findings JSON behavior. Updated
+      README defaults and JSON examples, plus CHANGELOG. Verified `bun test
+      test/cli.test.ts` (34 pass, 0 fail, 118 expectations), `bun run
+      typecheck`, and `bun run format:check` passing.
+  - id: log-012
+    timestamp: 2026-05-11T14:36Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass after the default
+      output switch. Bare scans now use the text report; explicit `--format json`
+      and `--format sarif` remain available for integrations; README documents
+      text as the default local review interface and JSON as the structured tool
+      interface; CHANGELOG records the default change. Regression gates: `bun run
+      format:check` pass; `bun run lint` 0 warnings/errors; `bun run typecheck`
+      pass; `bun run test` 110 pass, 0 fail, 323 expectations; `bun run
+      test:coverage` 90.31% lines meets 85%; `bun run package:check` pass; `bun
+      run scan:ci` reports 0 source findings using the new default text output.
+      Delta is complete.
