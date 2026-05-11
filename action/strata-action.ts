@@ -64,6 +64,29 @@ export function buildScanPlan(inputs: ActionInputs): ScanPlan {
   return { fetchBranch, scanArgs };
 }
 
+/**
+ * Converts scan-root-relative paths back to workflow-root-relative paths.
+ *
+ * strata reports paths relative to the scan target so CLI output stays compact.
+ * GitHub annotations need repository-relative paths to attach to PR files.
+ */
+export function qualifyResultPaths(result: ScanResult, scanPath: string): ScanResult {
+  const prefix = scanPathPrefix(scanPath);
+  return {
+    summary: {
+      ...result.summary,
+      topFiles: result.summary.topFiles.map(({ file, count }) => ({
+        file: qualifyPath(file, prefix),
+        count,
+      })),
+    },
+    findings: result.findings.map((finding) => ({
+      ...finding,
+      file: qualifyPath(finding.file, prefix),
+    })),
+  };
+}
+
 /** Renders one finding as a GitHub Actions warning annotation. */
 export function formatAnnotation(finding: Finding): string {
   const properties = [
@@ -125,7 +148,7 @@ export async function runAction(
     [join(actionPath, "bin", "strata.js"), ...plan.scanArgs],
     workspace,
   );
-  const result = JSON.parse(scan.stdout) as ScanResult;
+  const result = qualifyResultPaths(JSON.parse(scan.stdout) as ScanResult, inputs.path);
 
   for (const candidate of result.findings) process.stdout.write(`${formatAnnotation(candidate)}\n`);
   await writeJobSummary(env.GITHUB_STEP_SUMMARY, formatJobSummary(result));
@@ -136,6 +159,28 @@ export async function runAction(
 function trimmedOrNull(value: string | undefined): string | null {
   const trimmed = value?.trim() ?? "";
   return trimmed ? trimmed : null;
+}
+
+function scanPathPrefix(scanPath: string): string {
+  const normalized = normalizeAnnotationPath(scanPath).replace(/\/+$/, "");
+  if (!normalized || normalized === ".") return "";
+  if (/\.(tsx?)$/i.test(normalized)) {
+    const slash = normalized.lastIndexOf("/");
+    return slash === -1 ? "" : normalized.slice(0, slash);
+  }
+  return normalized;
+}
+
+function qualifyPath(file: string, prefix: string): string {
+  const normalizedFile = normalizeAnnotationPath(file);
+  if (!prefix || normalizedFile === prefix || normalizedFile.startsWith(`${prefix}/`)) {
+    return normalizedFile;
+  }
+  return `${prefix}/${normalizedFile}`;
+}
+
+function normalizeAnnotationPath(path: string): string {
+  return path.replaceAll("\\", "/").replace(/^\.\//, "");
 }
 
 function isLocalRevisionExpression(ref: string): boolean {
