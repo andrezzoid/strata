@@ -2,6 +2,11 @@
 
 All notable changes to `strata` will be documented here.
 
+## 0.1.2 - Unreleased
+
+- Repositions README and BACKLOG around AI-era design quality: leads with the pattern of design debt that AI coding assistants reliably introduce, grounds the tool in the information-hiding tradition alongside Ousterhout's _A Philosophy of Software Design_, and extends the explicit non-goals to mark the boundary with metric-based and security tools.
+- Adds per-detector documentation in `docs/detectors/` covering what each detector flags, the design principle at stake, how detection works, when a finding may be acceptable, and cross-links to related detectors.
+
 ## 0.1.1 - Unreleased
 
 - Focuses the release on CI usage: local scripts and GitHub Actions now cover formatting, linting, typechecking, tests, coverage, package dry-run validation, and source self-scan gating.

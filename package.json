@@ -24,6 +24,7 @@
   "files": [
     "bin",
     "src",
+    "docs",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"

@@ -1,8 +1,8 @@
 # strata
 
-Deterministic candidate scanner for PoSD-style complexity red flags in TypeScript codebases.
+Teams using AI coding assistants ship design debt faster than ever. Strata is the automated design reviewer that catches the patterns AI reliably gets wrong — shallow modules, speculative abstractions, pass-through layers — before they compound into architectural problems.
 
-`strata` does not judge code. It finds high-recall candidates for an AI or human reviewer to audit through the lens of John Ousterhout's _A Philosophy of Software Design_. Every finding is emitted as `severity: "candidate"`.
+Grounded in Ousterhout's _A Philosophy of Software Design_ and the information-hiding tradition, strata finds high-recall candidates for human or AI review in TypeScript codebases. Every finding is emitted as `severity: "candidate"` — a signal to inspect, not a verdict to enforce.
 
 ## Install
 
@@ -175,22 +175,24 @@ SARIF `partialFingerprints.primaryLocationLineHash` uses the same value as JSON 
 
 ## Detectors
 
-| Flag                   | Scope   | Signal                                                                  |
-| ---------------------- | ------- | ----------------------------------------------------------------------- |
-| `shallowModule`        | file    | API surface is large relative to body lines.                            |
-| `wideModule`           | file    | Too many top-level exports.                                             |
-| `wideSignature`        | file    | Function, method, or constructor has too many required parameters.      |
-| `passThroughMethod`    | file    | Class method delegates to instance state with the same arguments.       |
-| `passThroughVariable`  | file    | Several parameters are only forwarded through calls.                    |
-| `genericNaming`        | file    | Type/class names end with vague suffixes such as `Manager` or `Helper`. |
-| `tsEscapeHatch`        | file    | `as any`, `@ts-ignore`, or `@ts-expect-error`.                          |
-| `emptyCatch`           | file    | `catch` clause has no executable statement.                             |
-| `catchRethrow`         | file    | `catch` only rethrows the caught value.                                 |
-| `duplicateSymbol`      | project | Named declarations with identical structure are repeated.               |
-| `uniqueImplementation` | project | Interface or abstract class has no real polymorphism payoff.            |
-| `orphanFile`           | project | File is not imported by any other scanned file.                         |
+Each detector targets a design failure that AI-assisted workflows reliably introduce and that cyclomatic-complexity or style tools do not see.
 
-Notably absent: length-based long-function detection. PoSD does not treat length as the primary design problem; shallow interfaces and leaked knowledge are the target.
+| Flag                                                              | Scope   | Signal                                                                  |
+| ----------------------------------------------------------------- | ------- | ----------------------------------------------------------------------- |
+| [`shallowModule`](docs/detectors/shallow-module.md)               | file    | API surface is large relative to body lines.                            |
+| [`wideModule`](docs/detectors/wide-module.md)                     | file    | Too many top-level exports.                                             |
+| [`wideSignature`](docs/detectors/wide-signature.md)               | file    | Function, method, or constructor has too many required parameters.      |
+| [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Class method delegates to instance state with the same arguments.       |
+| [`passThroughVariable`](docs/detectors/pass-through-variable.md)  | file    | Several parameters are only forwarded through calls.                    |
+| [`genericNaming`](docs/detectors/generic-naming.md)               | file    | Type/class names end with vague suffixes such as `Manager` or `Helper`. |
+| [`tsEscapeHatch`](docs/detectors/ts-escape-hatch.md)              | file    | `as any`, `@ts-ignore`, or `@ts-expect-error`.                          |
+| [`emptyCatch`](docs/detectors/empty-catch.md)                     | file    | `catch` clause has no executable statement.                             |
+| [`catchRethrow`](docs/detectors/catch-rethrow.md)                 | file    | `catch` only rethrows the caught value.                                 |
+| [`duplicateSymbol`](docs/detectors/duplicate-symbol.md)           | project | Named declarations with identical structure are repeated.               |
+| [`uniqueImplementation`](docs/detectors/unique-implementation.md) | project | Interface or abstract class has no real polymorphism payoff.            |
+| [`orphanFile`](docs/detectors/orphan-file.md)                     | project | File is not imported by any other scanned file.                         |
+
+Notably absent: long-function detection, cyclomatic complexity scoring. Both are well-served by existing tools. Strata occupies the gap they leave — the design layer between "this function is complex" and "this module is not earning its abstraction."
 
 ## Development
 
@@ -219,6 +221,7 @@ GitHub Actions runs the local gate scripts before merge. `bun run test:coverage`
 ## Contributing
 
 - Preserve the scanner's contract: candidates, not verdicts.
+- New detectors should target design failures that metric-based tools miss; avoid duplicating what ESLint, SonarQube, or similar tools already cover.
 - Prefer deeper modules over more modules. Split by owned knowledge, not by execution order.
 - Add or update a fixture whenever detector behavior changes.
 - Keep detector defaults conservative enough that findings focus the review instead of burying it.
