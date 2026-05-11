@@ -4,6 +4,8 @@ All notable changes to `strata` will be documented here.
 
 ## 0.2.1 - Unreleased
 
+- Adds `strata --version` and shows the installed package version at the top of `strata --help`.
+
 ## 0.2.0 - 2026-05-11
 
 - Repositions README and BACKLOG around AI-era design quality: leads with the pattern of design debt that AI coding assistants reliably introduce, grounds the tool in the information-hiding tradition alongside Ousterhout's _A Philosophy of Software Design_, and extends the explicit non-goals to mark the boundary with metric-based and security tools.

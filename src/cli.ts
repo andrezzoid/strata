@@ -6,12 +6,23 @@ import { formatResult } from "./format.ts";
 import { scanProject } from "./scan.ts";
 import type { OutputFormat } from "./types.ts";
 
+type PackageMetadata = { version: string };
+
 const DETECTOR_ID_SET = new Set<string>(DETECTOR_IDS);
+const PACKAGE_JSON_PATH = Bun.fileURLToPath(new URL("../package.json", import.meta.url));
+const PACKAGE_METADATA = (await Bun.file(PACKAGE_JSON_PATH).json()) as PackageMetadata;
+const VERSION_LINE = `strata ${PACKAGE_METADATA.version}`;
+
+function printVersion(stream: { write(text: string): void }): void {
+  stream.write(`${VERSION_LINE}\n`);
+}
 
 function printUsage(stream: { write(text: string): void }): void {
   stream.write(
-    "strata [PATH] [--touched-since <git-ref>|--new-since <git-ref>] [--format json|text|sarif] [--only <detectors>|--exclude <detectors>] [--fail-on-findings]\n" +
-      "  Scan TypeScript files for PoSD-style complexity smell candidates.\n",
+    `${VERSION_LINE}\n` +
+      "strata [PATH] [--touched-since <git-ref>|--new-since <git-ref>] [--format json|text|sarif] [--only <detectors>|--exclude <detectors>] [--fail-on-findings]\n" +
+      "  Scan TypeScript files for PoSD-style complexity smell candidates.\n" +
+      "  --version prints the installed strata version.\n",
   );
 }
 
@@ -91,6 +102,9 @@ export async function main(): Promise<void> {
       };
     } else if (arg === "--fail-on-findings") {
       failOnFindings = true;
+    } else if (arg === "--version") {
+      printVersion(process.stdout);
+      process.exit(0);
     } else if (arg === "-h" || arg === "--help") {
       usage(0);
     } else if (arg.startsWith("-")) {

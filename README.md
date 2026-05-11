@@ -35,6 +35,7 @@ strata [PATH] --format sarif
 strata [PATH] --only passThroughMethod,duplicateSymbol
 strata [PATH] --exclude orphanFile,genericNaming
 strata [PATH] --fail-on-findings
+strata --version
 ```
 
 Defaults:
@@ -47,6 +48,7 @@ Defaults:
 - `--new-since` scans the current target and the base ref, then reports only current candidates whose stable `fingerprint` was absent from the base scan.
 - `--only` and `--exclude` accept comma-separated detector IDs from the table below. They filter which detectors run, not how findings are judged; every emitted finding remains a review candidate.
 - `--fail-on-findings` exits non-zero when candidates are emitted, which is intended for CI gates; default scans remain report-only.
+- `--version` prints the installed `strata` package version. `--help` also starts with the same version line.
 
 Project resolution:
 

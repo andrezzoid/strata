@@ -1,0 +1,118 @@
+goal: >
+  Explore and define the right CLI version surface so users can tell which
+  installed strata version they are running.
+
+acceptance:
+  - "`strata --version` exits 0 and prints `strata <package.json version>`."
+  - "`strata --help` exits 0 and includes the same version before the usage line."
+  - Version behavior works through both `src/cli.ts` and the packaged `bin/strata.js` launcher.
+  - Tests cover the version/help behavior without making release metadata brittle.
+
+context: |
+  User preference: likely add dedicated `--version` and include version in `--help`.
+  Current CLI help is a two-line `printUsage()` string in `src/cli.ts`; unknown flags, including `--version`, exit through the generic error path.
+  Package metadata already exposes version `0.2.0`; `bin/strata.js` delegates to the same exported `main()` as direct source execution.
+  Surveyed git, node, npm, bun, gh, ripgrep, tsc, oxlint, and oxfmt: every one supports `--version`, but short aliases vary between `-v`, `-V`, and none.
+  Help output convention is mixed: bun, ripgrep, tsc, and npm surface the current version in help; git, gh, node, oxlint, and oxfmt only advertise the version flag.
+  Recommended first design: add long-form `--version`, print `strata <version>`, include `strata <version>` at the top of help, and skip short aliases for now.
+  Plan shape: one vertical task keeps the CLI thin and avoids a docs-only intermediate state that describes behavior before it exists.
+
+refs:
+  - src/cli.ts
+  - bin/strata.js
+  - package.json
+  - test/cli.test.ts
+  - README.md
+
+open_questions: []
+
+followups:
+  - Revisit a short version alias only if users ask for one; `-v` and `-V` conventions conflict and `-v` may be useful for future verbose output.
+
+notes:
+  - "Observed `--version` output styles: git and gh use named output with extra context, node/npm/bun use bare versions, ripgrep includes feature details, tsc/ox tools use `Version` labels."
+  - "A `version` subcommand is not necessary for strata's current flat CLI; npm has one because package version management is itself a command domain."
+
+tasks:
+  - id: add-cli-version-output
+    description: >
+      Add the user-visible version surface to the CLI: write failing CLI tests,
+      load the package version from package metadata, handle `--version`, include
+      the same version line in help, and document the new behavior.
+    status: done
+    context: |
+      Keep `src/cli.ts` as the thin process adapter: argument parsing, usage/version output, scan invocation, and exit behavior.
+      Prefer reading the package version from package metadata over duplicating a hard-coded constant; avoid changing `tsconfig` just to import JSON unless implementation proves it is the smallest clean path.
+      Do not add `-v`, `-V`, or a `version` subcommand in this first slice.
+      Update README/CHANGELOG because this is user-facing CLI behavior.
+    acceptance:
+      - "A new test fails before implementation for `strata --version`, expecting exit 0, stdout `strata <package.json version>`, and empty stderr."
+      - "A new or updated help test proves `strata --help` exits 0 and starts with `strata <package.json version>` before the usage line."
+      - "A packaged-bin test proves `bun bin/strata.js --version` uses the same behavior as direct source execution."
+      - "No short alias or `version` subcommand is documented or accepted."
+      - README usage documents `strata --version`, and CHANGELOG records the new CLI version output.
+      - "`bun test test/cli.test.ts` and `bun run typecheck` pass."
+    depends_on: []
+
+log:
+  - id: log-001
+    timestamp: 2026-05-11T12:54Z
+    command: explore
+    summary: >
+      Created the CLI version-output delta. Initial unknowns are current help
+      construction, package metadata access, common CLI conventions, alias scope,
+      and where help should display the version.
+  - id: log-002
+    timestamp: 2026-05-11T12:54Z
+    command: explore
+    summary: >
+      Explored strata's current CLI and common tool conventions. `src/cli.ts`
+      currently hard-codes help and rejects `--version`; `package.json` already
+      carries the canonical package version and the packaged launcher delegates
+      to the same CLI entrypoint. Sampled git, node, npm, bun, gh, ripgrep,
+      tsc, oxlint, and oxfmt. `--version` is universal; short aliases conflict;
+      help sometimes includes the live version. Recommended planning target:
+      implement long-form `--version`, print `strata <version>`, add the same
+      version line to `--help`, and leave short aliases out of the first slice.
+  - id: log-003
+    timestamp: 2026-05-11T13:07Z
+    command: plan
+    summary: >
+      Planned one vertical task, `add-cli-version-output`, covering tests,
+      CLI behavior, packaged-bin proof, README, and CHANGELOG. This keeps the
+      task independently verifiable and avoids splitting documentation from the
+      behavior it describes. Baseline before planning passed: `bun test
+      test/cli.test.ts` reported 27 tests / 81 assertions. No open questions
+      remain; short aliases and a `version` subcommand stay out of scope.
+  - id: log-004
+    timestamp: 2026-05-11T13:12Z
+    command: apply
+    task: add-cli-version-output
+    summary: >
+      Added CLI version output backed by package metadata. TDD red check:
+      `bun test test/cli.test.ts` failed as expected with 4 version/help/bin
+      assertions while `--version` was unknown and help lacked the version
+      header. Implemented `strata --version`, added the same `strata 0.2.0`
+      line before help usage, preserved no short aliases or `version`
+      subcommand, and updated README plus CHANGELOG. Verification passed:
+      `bun test test/cli.test.ts` (31 tests / 97 assertions), `bun run
+      typecheck`, `bun run lint`, `bun run format:check`, `bun run test` (105
+      tests / 287 assertions), `bun src/cli.ts src --format json` (0 source
+      findings), `bun src/cli.ts --version`, `bun bin/strata.js --version`, and
+      `bun src/cli.ts --help`.
+  - id: log-005
+    timestamp: 2026-05-11T13:13Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Task-level:
+      the TDD red check failed before implementation for `--version` and help;
+      CLI tests now prove direct `strata --version`, version-first help,
+      packaged-bin `--version`, absent `-v`/`-V` aliases, and no `version`
+      subcommand. README and CHANGELOG document the new behavior. Delta-level:
+      manual checks showed `bun src/cli.ts --version` and `bun bin/strata.js
+      --version` both print `strata 0.2.0`, and `bun src/cli.ts --help` starts
+      with the same version line before usage. Regression checks passed: `bun
+      test test/cli.test.ts` (31 tests / 97 assertions), `bun run typecheck`,
+      `bun run lint`, `bun run format:check`, `bun run test` (105 tests / 287
+      assertions), and `bun src/cli.ts src --format json` (0 source findings).
+      No bugs, design gaps, or context gaps detected; delta is complete.

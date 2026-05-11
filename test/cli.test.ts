@@ -10,6 +10,13 @@ const cli = join(repoRoot, "src/cli.ts");
 const bin = join(repoRoot, "bin/strata.js");
 const passThroughFixture = join(repoRoot, "test/fixtures/pass-through-method");
 
+async function readPackageVersion(): Promise<string> {
+  const packageJson = (await Bun.file(join(repoRoot, "package.json")).json()) as {
+    version: string;
+  };
+  return packageJson.version;
+}
+
 function runStrata(args: string[]) {
   const result = Bun.spawnSync(["bun", cli, ...args], {
     cwd: repoRoot,
@@ -108,6 +115,35 @@ async function createTouchedPassThroughRepo(): Promise<string> {
 }
 
 describe("CLI", () => {
+  it("prints the package version", async () => {
+    const result = runStrata(["--version"]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toBe(`strata ${await readPackageVersion()}\n`);
+    expect(result.stderr).toBe("");
+  });
+
+  it("prints the package version before help usage", async () => {
+    const result = runStrata(["--help"]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toStartWith(`strata ${await readPackageVersion()}\nstrata [PATH]`);
+    expect(result.stderr).toBe("");
+  });
+
+  it("does not accept version aliases", () => {
+    const lowerShort = runStrata(["-v"]);
+    const upperShort = runStrata(["-V"]);
+    const subcommand = runStrata(["version"]);
+
+    expect(lowerShort.status).toBe(2);
+    expect(lowerShort.stderr).toContain("unknown flag: -v");
+    expect(upperShort.status).toBe(2);
+    expect(upperShort.stderr).toContain("unknown flag: -V");
+    expect(subcommand.status).toBe(2);
+    expect(subcommand.stderr).toContain("no such path: version");
+  });
+
   it("prints JSON by default", () => {
     const result = runStrata([passThroughFixture]);
 
@@ -417,15 +453,24 @@ describe("CLI", () => {
     expect(result.stderr).toContain("cannot combine --only and --exclude");
   });
 
-  it("exposes the packaged bin launcher", () => {
+  it("exposes the packaged bin launcher", async () => {
     const result = runPackagedBin(["--help"]);
 
     expect(result.status).toBe(0);
+    expect(result.stdout).toContain(`strata ${await readPackageVersion()}`);
     expect(result.stdout).toContain("strata [PATH]");
     expect(result.stdout).toContain("--touched-since <git-ref>");
     expect(result.stdout).toContain("--new-since <git-ref>");
     expect(result.stdout).toContain("--only <detectors>");
     expect(result.stdout).toContain("--exclude <detectors>");
+  });
+
+  it("prints the package version through the packaged bin launcher", async () => {
+    const result = runPackagedBin(["--version"]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toBe(`strata ${await readPackageVersion()}\n`);
+    expect(result.stderr).toBe("");
   });
 
   it("rejects unknown flags", () => {
