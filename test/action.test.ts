@@ -1,4 +1,7 @@
 import { describe, expect, it } from "bun:test";
+import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 import {
   buildScanPlan,
@@ -29,6 +32,36 @@ const result: ScanResult = {
   },
   findings: [finding],
 };
+
+function runActionScript(env: Record<string, string>): {
+  status: number | null;
+  stdout: string;
+  stderr: string;
+} {
+  const workspace = process.cwd();
+  const run = Bun.spawnSync(["bun", "action/strata-action.ts"], {
+    cwd: workspace,
+    env: {
+      ...process.env,
+      GITHUB_ACTION_PATH: workspace,
+      GITHUB_WORKSPACE: workspace,
+      ...env,
+    },
+    stdin: "ignore",
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  return {
+    status: run.exitCode,
+    stdout: run.stdout.toString(),
+    stderr: run.stderr.toString(),
+  };
+}
+
+async function writeFakeStrataCli(actionPath: string, source: string): Promise<void> {
+  mkdirSync(join(actionPath, "bin"), { recursive: true });
+  await Bun.write(join(actionPath, "bin", "strata.js"), source);
+}
 
 describe("GitHub Action runner", () => {
   it("ships root composite action metadata with a minimal input surface", async () => {
@@ -90,7 +123,117 @@ describe("GitHub Action runner", () => {
         "--only",
         "passThroughMethod,duplicateSymbol",
       ],
+      textReportContext: {
+        mode: "introduced",
+        target: "packages/app",
+        ref: "origin/main",
+      },
     });
+  });
+
+  it("prints the CLI text report to action logs when a job summary is configured", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-action-summary-"));
+    try {
+      const summaryPath = join(root, "summary.md");
+      const run = runActionScript({
+        STRATA_INPUT_PATH: "test/fixtures/pass-through-method",
+        GITHUB_STEP_SUMMARY: summaryPath,
+      });
+
+      expect(run.status).toBe(0);
+      expect(run.stdout).toContain(
+        "strata complexity candidates\nMode: full scan\nTarget: test/fixtures/pass-through-method\n",
+      );
+      expect(run.stdout).toContain("Found 4 review candidates.");
+      expect(run.stdout).toContain("GitHub job summary: written");
+      expect(run.stdout).toContain("::warning file=test/fixtures/pass-through-method/case.ts");
+      expect(await Bun.file(summaryPath).text()).toContain("# strata complexity candidates");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("prints CLI zero-candidate text to action logs instead of going silent", () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-action-zero-"));
+    try {
+      const run = runActionScript({
+        STRATA_INPUT_PATH: "test/fixtures/pass-through-method",
+        STRATA_INPUT_ONLY: "catchRethrow",
+        GITHUB_STEP_SUMMARY: join(root, "summary.md"),
+      });
+
+      expect(run.status).toBe(0);
+      expect(run.stdout).toContain(
+        "strata complexity candidates\nMode: full scan\nTarget: test/fixtures/pass-through-method\n",
+      );
+      expect(run.stdout).toContain("No review candidates were emitted for this scan.");
+      expect(run.stdout).toContain("GitHub job summary: written");
+      expect(run.stdout).not.toContain("::warning");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("prints normal candidate output before failing on findings", () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-action-fail-findings-"));
+    try {
+      const run = runActionScript({
+        STRATA_INPUT_PATH: "test/fixtures/pass-through-method",
+        STRATA_INPUT_FAIL_ON_FINDINGS: "true",
+        GITHUB_STEP_SUMMARY: join(root, "summary.md"),
+      });
+
+      expect(run.status).toBe(1);
+      expect(run.stdout).toContain("Found 4 review candidates.");
+      expect(run.stdout).toContain("GitHub job summary: written");
+      expect(run.stdout).toContain("::warning file=test/fixtures/pass-through-method/case.ts");
+      expect(run.stderr).toBe("");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("forwards CLI scan failures without action command boilerplate", () => {
+    const run = runActionScript({
+      STRATA_INPUT_PATH: "test/fixtures/pass-through-method",
+      STRATA_INPUT_BASE_REF: "HEAD~999999",
+    });
+
+    expect(run.status).toBe(1);
+    expect(run.stdout).toBe("");
+    expect(run.stderr).toStartWith(
+      "strata scan failed\nMode: introduced candidates\nTarget: test/fixtures/pass-through-method\nBase ref: HEAD~999999\n",
+    );
+    expect(run.stderr).toContain("No trustworthy candidate report was produced.");
+    expect(run.stderr).not.toContain("bun ");
+    expect(run.stderr).not.toContain("strata action failed");
+  });
+
+  it("forwards detector failure reports from the scan command", async () => {
+    const actionPath = mkdtempSync(join(tmpdir(), "strata-action-fake-cli-"));
+    try {
+      await writeFakeStrataCli(
+        actionPath,
+        `#!/usr/bin/env bun
+process.stderr.write("strata scan failed\\nMode: full scan\\nTarget: .\\n\\nReason: detector throwSingle failed on case.ts: forced detector failure\\n\\nNo trustworthy candidate report was produced.\\n");
+process.exit(1);
+`,
+      );
+
+      const run = runActionScript({
+        GITHUB_ACTION_PATH: actionPath,
+        STRATA_INPUT_PATH: ".",
+      });
+
+      expect(run.status).toBe(1);
+      expect(run.stdout).toBe("");
+      expect(run.stderr).toStartWith("strata scan failed\nMode: full scan\nTarget: .\n");
+      expect(run.stderr).toContain("detector throwSingle failed on case.ts");
+      expect(run.stderr).not.toContain("bun ");
+      expect(run.stderr).not.toContain("strata action failed");
+    } finally {
+      rmSync(actionPath, { recursive: true, force: true });
+    }
   });
 
   it("renders escaped GitHub warning annotations", () => {

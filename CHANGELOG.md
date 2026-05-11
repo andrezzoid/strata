@@ -8,6 +8,7 @@ All notable changes to `strata` will be documented here.
 - Improves `--format text` into a first-class local review report with scan context, candidate framing, detector explanations, grouped findings, top files, and compact zero-candidate output.
 - Changes the default CLI output from JSON to text; use `--format json` for the structured machine interface.
 - Makes scanner and detector operational failures unmistakable: failures now write a `strata scan failed` report to stderr, leave JSON/SARIF stdout empty, and never masquerade as zero-candidate scans.
+- Makes GitHub Action logs reuse the CLI text report for scan results, report job-summary status, and forward `strata scan failed` reports without action command boilerplate.
 
 ## 0.2.0 - 2026-05-11
 

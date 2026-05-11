@@ -213,7 +213,7 @@ jobs:
       - uses: andrezzoid/strata@v0.1.1
 ```
 
-The action emits native GitHub warning annotations plus a job summary. It does not need write permissions because it uses workflow commands and `GITHUB_STEP_SUMMARY`, not PR comments.
+The action emits native GitHub warning annotations plus a job summary. It also prints the same scan report shape as `strata --format text` to the live console, followed by whether the GitHub job summary was written. It does not need write permissions because it uses workflow commands and `GITHUB_STEP_SUMMARY`, not PR comments.
 
 Defaults:
 
@@ -221,6 +221,7 @@ Defaults:
 - On pull requests, the action fetches the base branch and runs introduced-only scanning with `--new-since origin/<base>`.
 - Outside pull request contexts, no base ref is available, so the action runs a normal scan.
 - Findings do not fail the job unless `fail-on-findings` is enabled.
+- Scanner or detector failures print the `strata scan failed` report and exit non-zero; they do not look like zero-candidate scans or candidate gates.
 
 Inputs:
 

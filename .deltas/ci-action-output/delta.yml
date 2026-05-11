@@ -1,0 +1,256 @@
+goal: >
+  Improve CI-facing output so GitHub Action logs summarize scan visibility and
+  scanner/tool failures cannot be mistaken for zero review candidates.
+
+acceptance:
+  - GitHub Action console output prints the same scan report shape as `strata --format text`, including scan mode, target/ref context, candidate count, and the normal finding list when candidates exist.
+  - Action console output adds only action-owned side-effect status, such as whether a GitHub job summary was written.
+  - Zero-candidate action runs still print a short visible console result instead of going silent when the job summary file is used.
+  - CI-facing scanner/tool failures reuse the `strata scan failed` report shape and are exited distinctly from candidate findings and zero-candidate scans.
+  - Failure behavior is covered for scanner-level failures and detector/internal failures in the action path.
+
+context: |
+  This delta is separate from cli-failure-output: that completed the CLI failure contract, while this work focuses on GitHub Action and CI log behavior.
+  The current backlog calls out console visibility and CI-visible scanner failure reporting as the next GitHub/output work after text output.
+  Current action runs the CLI as JSON, then writes annotations and a Markdown job summary; with `GITHUB_STEP_SUMMARY` set, zero-candidate runs print nothing and candidate runs print only warning commands.
+  Current scan failures exit non-zero, but the action wraps them as `strata action failed` with command boilerplate around the CLI's `strata scan failed` report.
+  Revised design after Andre's steering: action console output should reuse the existing `--format text` report for successful scans and the existing `strata scan failed` report for scan failures, not introduce a compact report mode.
+  The action may add small action-owned status lines for GitHub side effects, such as whether the summary was written, but candidate and failure report text should come from the CLI formatter contract.
+  Rejected design: add `--format github` or action-specific CLI output; it leaks GitHub integration into the core CLI and creates another dialect.
+  Rejected design: have the action hand-format compact console prose from JSON only; it is simple now but duplicates candidate framing, mode labels, and message normalization.
+
+refs:
+  - BACKLOG.md
+  - README.md
+  - CHANGELOG.md
+  - action.yml
+  - action/strata-action.ts
+  - src/cli.ts
+  - src/format.ts
+  - src/scan.ts
+  - src/types.ts
+  - test/action.test.ts
+  - test/cli.test.ts
+  - test/core.test.ts
+  - .deltas/text-output-ui/delta.yml
+  - .deltas/cli-failure-output/delta.yml
+  - .deltas/github-action-ci-adoption/delta.yml
+
+open_questions: []
+
+followups: []
+
+tasks:
+  - id: reuse-text-report-in-action-console
+    description: >
+      Make successful GitHub Action runs print the existing CLI text report to
+      the live console, then add only action-owned status for GitHub summary
+      writing. Keep JSON as the internal CLI invocation used for annotations and
+      summary data.
+    status: done
+    context: |
+      Do not add a compact formatter or `--format github`.
+      The action can parse JSON, qualify paths for annotations/summary, and still render the console report from the unqualified scan result so it matches `strata <path> --format text`.
+      Text context should use the normalized comparison ref (`origin/<base>` when the action fetched a branch), matching the CLI command the action actually ran.
+    acceptance:
+      - Action tests fail first proving a summary-file run prints `strata complexity candidates`, `Mode: full scan`, `Target: ...`, and `Found ... review candidates` to stdout.
+      - Action tests fail first proving a zero-candidate summary-file run prints the CLI zero-candidate text instead of no stdout.
+      - Action output records whether the GitHub job summary was written, without changing the CLI text report itself.
+      - Warning annotations and job summary writing still happen before `fail-on-findings` exits non-zero.
+      - `bun test test/action.test.ts` passes.
+    depends_on: []
+
+  - id: reuse-scan-failure-report-in-action
+    description: >
+      Route scanner/CLI failures in the GitHub Action through the same
+      `strata scan failed` report shape instead of wrapping them in a generic
+      action failure message with command boilerplate.
+    status: done
+    context: |
+      Candidate gating is not a tool failure: when findings exist and `fail-on-findings` is true, the action should still emit the normal report, annotations, and summary before returning 1.
+      Preserve action-specific workflow errors only for failures outside the scanner/CLI failure contract.
+      If the action invokes the CLI as JSON and stderr starts with the scan failure report, forward that report directly.
+    acceptance:
+      - Action tests fail first for an invalid base ref, expecting stderr or workflow error data to contain `strata scan failed` without `bun ... failed` command boilerplate.
+      - Action tests cover a detector/internal scan failure in the action path, proving it exits non-zero with `strata scan failed` and no candidate report/annotations.
+      - `fail-on-findings` with candidates remains distinguishable from a scanner/tool failure: normal candidate output is printed and the exit code is 1 only after feedback is emitted.
+      - Existing CLI failure tests still pass, proving the CLI contract did not change.
+      - `bun test test/action.test.ts test/cli.test.ts` passes.
+    depends_on:
+      - reuse-text-report-in-action-console
+
+  - id: document-action-console-output
+    description: >
+      Update release-facing docs and backlog so the GitHub Action console
+      contract reflects the implemented text-report reuse and scan-failure
+      wording.
+    status: done
+    context: |
+      README already documents action annotations/summary and CLI operational failures; update only the action-facing console behavior.
+      BACKLOG should remove or narrow the completed console-visibility and CI-visible failure items.
+      CHANGELOG should record the user-visible action output improvement.
+    acceptance:
+      - README says action logs include the same text report shape as `strata --format text`, plus summary-write status.
+      - README or action docs state scanner/tool failures use `strata scan failed` rather than zero-candidate wording.
+      - BACKLOG removes or narrows the completed GitHub Action console visibility and CI-visible scanner failure items.
+      - CHANGELOG records the action console/failure output improvement.
+      - `bun run format:check` passes.
+    depends_on:
+      - reuse-scan-failure-report-in-action
+
+notes:
+  - >
+    Evidence from running the action with `GITHUB_STEP_SUMMARY` set: a fixture
+    with four candidates printed four `::warning` annotation commands and no
+    count/mode/summary-status line; a zero-candidate filtered run printed no
+    console output at all.
+  - >
+    Evidence from running the action with an invalid local base ref: the step
+    emitted `::error title=strata action failed::bun ... failed` and embedded
+    the CLI `strata scan failed` report. The failure is non-zero, but the title
+    and command wrapper make the scanner failure less direct than the CLI
+    contract.
+  - >
+    The GitHub job summary currently reports total candidates, detector counts,
+    top files, and candidate-not-verdict framing, but lacks scan mode/ref context
+    and uses zero-candidate wording (`Found 0 review candidates`) that is weaker
+    than the CLI's explicit non-verdict zero-candidate text.
+  - >
+    Design A chosen after human steering: print the full CLI text report from the
+    action after parsing JSON, then add only small action-owned status lines for
+    GitHub side effects. It maximizes reuse, fixes silence, and preserves one
+    candidate-output dialect across local and CI logs.
+  - >
+    Design B rejected after human steering: add a shared compact text-report path
+    in `src/format.ts`. It would reduce console length, but introduces a second
+    text shape for the same scan result and makes users learn two reports.
+  - >
+    Design C rejected: introduce a GitHub/action CLI format. It would centralize
+    output in the CLI, but it widens the public format surface for one integration
+    and repeats the earlier rejected `--format github` direction from the action
+    adoption delta.
+  - >
+    Implementation should preserve the important existing boundary: the action
+    invokes the CLI as JSON so scanner behavior stays centralized; it should not
+    call `scanProject()` directly unless a later concrete need justifies
+    duplicating CLI option semantics.
+  - >
+    Failure implementation should distinguish candidate-gate exits from tool
+    failures: `fail-on-findings` exits after annotations/summary for candidates;
+    scan failures reuse `formatScanFailure()` wording directly, while action
+    infrastructure failures should use GitHub workflow error wording only when
+    they are not scanner/CLI failures, such as the runner being unable to write
+    `GITHUB_STEP_SUMMARY` after a completed scan. Do not invent a second scanner
+    failure dialect for the action.
+  - >
+    Baseline verification during explore: `bun test test/action.test.ts` passed
+    8 tests / 24 expectations; `bun test test/core.test.ts test/cli.test.ts`
+    passed 67 tests / 255 expectations.
+
+log:
+  - id: log-001
+    timestamp: 2026-05-11T17:14Z
+    command: explore
+    summary: >
+      Created a focused CI/action output delta because the requested work is
+      related to, but materially different from, the completed text-output-ui,
+      cli-failure-output, and github-action-ci-adoption deltas.
+  - id: log-002
+    timestamp: 2026-05-11T17:16Z
+    command: explore
+    summary: >
+      Inspected BACKLOG/README, the completed text/failure/action deltas, the
+      action runner, CLI failure path, formatter, scanner failure propagation,
+      and action/CLI/core tests. Ran the action against candidate,
+      zero-candidate, summary-file, and invalid-base-ref scenarios. Confirmed
+      that successful action feedback is currently split between annotations and
+      job summary, leaving direct logs without mode/count/summary status and
+      leaving zero-candidate runs silent when `GITHUB_STEP_SUMMARY` is set.
+      Confirmed CLI scanner/detector failures already fail closed, but the action
+      wraps scan failures in a generic action-error title. Compared three designs
+      and selected a shared compact text-report formatter plus action-owned
+      summary-status/error plumbing so CLI and action output reuse wording without
+      exposing a new public CLI format.
+  - id: log-003
+    timestamp: 2026-05-11T20:05Z
+    command: explore
+    summary: >
+      Revised the recommended design after Andre questioned the need for compact
+      action output. The delta now favors direct reuse of the existing
+      `--format text` scan report and `strata scan failed` failure report in the
+      action console, with only small action-owned status lines for GitHub side
+      effects such as summary-write status. The compact-mode idea is rejected
+      because it creates a second output dialect for the same scan result.
+  - id: log-004
+    timestamp: 2026-05-11T20:11Z
+    command: plan
+    summary: >
+      Planned three vertical tasks after confirming the explored model against
+      current action, CLI, and formatter tests. Baseline verification passed:
+      `bun test test/action.test.ts` reported 8 tests / 24 expectations, and
+      `bun test test/core.test.ts test/cli.test.ts` reported 67 tests / 255
+      expectations. The first task makes successful action logs reuse the CLI
+      text report while preserving JSON internally for annotations and summaries.
+      The second task makes scanner/CLI failures in the action reuse the existing
+      `strata scan failed` report and keeps candidate gating distinct from tool
+      failures. The final task updates README, CHANGELOG, and BACKLOG once the
+      behavior is concrete.
+  - id: log-005
+    timestamp: 2026-05-11T20:13Z
+    command: apply
+    task: reuse-text-report-in-action-console
+    summary: >
+      Added RED-first action integration tests proving summary-file runs lacked
+      CLI text output for candidate, zero-candidate, and fail-on-findings cases.
+      Wired action scan planning to carry the same text report context as the CLI
+      invocation, kept JSON as the internal scan format, printed
+      `formatResult(..., "text")` to the action console, and added a small
+      `GitHub job summary: written/not configured` side-effect status line after
+      job summary handling. Warning annotations and job summary writing still
+      occur before `fail-on-findings` returns 1. Verified `bun test
+      test/action.test.ts` passing 11 tests / 40 expectations.
+  - id: log-006
+    timestamp: 2026-05-11T20:14Z
+    command: apply
+    task: reuse-scan-failure-report-in-action
+    summary: >
+      Added RED-first action coverage for invalid base-ref scan failures and a
+      fake CLI detector failure report. The RED run showed both were wrapped as
+      `::error title=strata action failed::bun ... failed` with escaped scan
+      output. Introduced a command-failure boundary in the action runner and
+      forward stderr directly when the CLI emitted a `strata scan failed` report,
+      preserving the existing CLI failure wording without command boilerplate.
+      Candidate gating remains distinct: action tests still prove normal text
+      output, annotations, and summary status are emitted before
+      `fail-on-findings` returns 1. Verified `bun test test/action.test.ts`
+      passing 13 tests / 52 expectations, `bun test test/cli.test.ts` passing 41
+      tests / 153 expectations, and `bun run typecheck` passing.
+  - id: log-007
+    timestamp: 2026-05-11T20:15Z
+    command: apply
+    task: document-action-console-output
+    summary: >
+      Documented the action console contract in README: live logs now use the
+      same scan report shape as `strata --format text`, include job-summary
+      write status, and scanner/detector failures print `strata scan failed`
+      instead of zero-candidate or candidate-gate wording. Removed completed
+      action console visibility and CI-visible scanner failure backlog items, and
+      added a CHANGELOG entry for the action log/failure output improvement.
+      Verified `bun run format:check` passing after formatting the action runner.
+  - id: log-008
+    timestamp: 2026-05-11T20:16Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Action console
+      output now prints the normal CLI text report shape for candidate and
+      zero-candidate scans, adds only `GitHub job summary: written/not
+      configured` side-effect status, preserves annotations and job summary
+      writing before `fail-on-findings` exits 1, and forwards CLI-emitted
+      `strata scan failed` reports without action command boilerplate. Docs and
+      backlog now reflect the completed action console/failure behavior.
+      Regression gates: `bun run format:check` pass; `bun run lint` 0 warnings /
+      0 errors; `bun run typecheck` pass; `bun run test` 122 pass / 0 fail / 386
+      expectations; `bun run test:coverage` 88.38% lines meets 85%; `bun run
+      package:check` pass for 40 package entries; `bun run scan:ci` reports no
+      source candidates; `bun run scan -- action --exclude orphanFile
+      --fail-on-findings` reports no action candidates. Delta is complete.

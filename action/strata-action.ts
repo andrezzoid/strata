@@ -1,5 +1,6 @@
 import { join } from "node:path";
 
+import { formatResult, type TextReportContext } from "../src/format.ts";
 import type { Finding, ScanResult } from "../src/types.ts";
 
 /** User-facing action inputs after defaults and whitespace normalization. */
@@ -22,7 +23,22 @@ export type ScanPlan = {
   fetchBranch: string | null;
   /** Arguments passed to the strata CLI after the executable path. */
   scanArgs: string[];
+  /** Presentation context for the console report that mirrors `strata --format text`. */
+  textReportContext: TextReportContext;
 };
+
+type SummaryWriteStatus = "written" | "not-configured";
+
+class CommandFailure extends Error {
+  constructor(
+    command: string,
+    args: string[],
+    readonly stdout: string,
+    readonly stderr: string,
+  ) {
+    super(`${command} ${args.join(" ")} failed\n${stderr}`.trim());
+  }
+}
 
 /** Normalizes composite-action environment values into the runner's small contract. */
 export function normalizeActionInputs(env: Record<string, string | undefined>): ActionInputs {
@@ -53,15 +69,17 @@ export function buildScanPlan(inputs: ActionInputs): ScanPlan {
 
   let fetchBranch: string | null = null;
   const scanArgs = [inputs.path, "--format", "json"];
+  let textReportContext: TextReportContext = { mode: "full", target: inputs.path };
   if (inputs.baseRef) {
     const base = normalizeBaseRef(inputs.baseRef);
     fetchBranch = base.fetchBranch;
     scanArgs.push("--new-since", base.compareRef);
+    textReportContext = { mode: "introduced", target: inputs.path, ref: base.compareRef };
   }
   if (inputs.only) scanArgs.push("--only", inputs.only);
   if (inputs.exclude) scanArgs.push("--exclude", inputs.exclude);
 
-  return { fetchBranch, scanArgs };
+  return { fetchBranch, scanArgs, textReportContext };
 }
 
 /**
@@ -143,15 +161,24 @@ export async function runAction(
 
   if (plan.fetchBranch) fetchBaseBranch(plan.fetchBranch, workspace);
 
-  const scan = runCommand(
-    "bun",
-    [join(actionPath, "bin", "strata.js"), ...plan.scanArgs],
-    workspace,
-  );
-  const result = qualifyResultPaths(JSON.parse(scan.stdout) as ScanResult, inputs.path);
+  let scan: { stdout: string; stderr: string };
+  try {
+    scan = runCommand("bun", [join(actionPath, "bin", "strata.js"), ...plan.scanArgs], workspace);
+  } catch (error) {
+    if (error instanceof CommandFailure && isScanFailureReport(error.stderr)) {
+      process.stderr.write(withTrailingNewline(error.stderr.trimEnd()));
+      return 1;
+    }
+    throw error;
+  }
+  const scanResult = JSON.parse(scan.stdout) as ScanResult;
+  process.stdout.write(formatResult(scanResult, "text", { text: plan.textReportContext }));
+
+  const result = qualifyResultPaths(scanResult, inputs.path);
 
   for (const candidate of result.findings) process.stdout.write(`${formatAnnotation(candidate)}\n`);
-  await writeJobSummary(env.GITHUB_STEP_SUMMARY, formatJobSummary(result));
+  const summaryStatus = await writeJobSummary(env.GITHUB_STEP_SUMMARY, formatJobSummary(result));
+  process.stdout.write(formatSummaryWriteStatus(summaryStatus));
 
   return exitCodeForFindings(result, inputs.failOnFindings);
 }
@@ -222,20 +249,34 @@ function runCommand(
   const stdout = result.stdout?.toString() ?? "";
   const stderr = result.stderr?.toString() ?? "";
   if (!result.success) {
-    throw new Error(`${command} ${args.join(" ")} failed\n${stderr}`.trim());
+    throw new CommandFailure(command, args, stdout, stderr);
   }
   return { stdout, stderr };
 }
 
-async function writeJobSummary(summaryPath: string | undefined, markdown: string): Promise<void> {
-  if (!summaryPath) {
-    process.stdout.write(markdown);
-    return;
-  }
+function isScanFailureReport(stderr: string): boolean {
+  return stderr.startsWith("strata scan failed\n");
+}
+
+function withTrailingNewline(value: string): string {
+  return value.endsWith("\n") ? value : `${value}\n`;
+}
+
+async function writeJobSummary(
+  summaryPath: string | undefined,
+  markdown: string,
+): Promise<SummaryWriteStatus> {
+  if (!summaryPath) return "not-configured";
 
   const summaryFile = Bun.file(summaryPath);
   const existing = (await summaryFile.exists()) ? await summaryFile.text() : "";
   await Bun.write(summaryPath, `${existing}${markdown}`);
+  return "written";
+}
+
+function formatSummaryWriteStatus(status: SummaryWriteStatus): string {
+  if (status === "written") return "GitHub job summary: written\n";
+  return "GitHub job summary: not configured\n";
 }
 
 function escapeCommandData(value: string): string {
