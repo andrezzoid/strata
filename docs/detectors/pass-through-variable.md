@@ -17,6 +17,18 @@ function processRequest(
 }
 ```
 
+```typescript
+// Consider A: group the forwarded values so the signature reflects the real dependency
+type Env = { ctx: Context; logger: Logger; config: Config };
+function processRequest(req: Request, env: Env) {
+  validate(req);
+  handle(req, env);
+}
+
+// Consider B: if the function adds nothing beyond the calls it makes, remove it
+// and let callers invoke validate() and handle() directly
+```
+
 ## Why
 
 Where `passThroughMethod` flags a method that is purely a forwarding delegate, `passThroughVariable` flags a function that carries parameters it never applies. The function accepts knowledge it does not use — it is a plumbing layer, threading context through without contributing to its handling.
@@ -31,3 +43,7 @@ Examines each parameter to determine whether it is used locally or only forwarde
 
 - **Unavoidable context threading**: some frameworks require passing context objects through layers that do not directly use them. If the threading is genuinely imposed by the framework, document it with an inline comment so the intent is legible to the next reader.
 - **Dependency injection wiring**: a factory or composition root that accepts and forwards dependencies to constructors may be intentionally thin — its purpose is wiring, not transformation.
+
+---
+
+**See also:** [`passThroughMethod`](pass-through-method.md) — the same plumbing-layer problem expressed through method delegation rather than parameter threading.

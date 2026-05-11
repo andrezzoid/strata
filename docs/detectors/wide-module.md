@@ -35,3 +35,7 @@ Public class members inside an exported class are not counted here — they are 
 
 - **Deliberate barrel files**: an `index.ts` that re-exports from a package is an aggregation point by design. These should contain no implementation logic; if they do, the re-export purpose is undermined.
 - **Stable toolkit modules**: a `strings.ts` with 12 independent string utilities may legitimately be wide if each function is genuinely independent and callers import only what they need. The question is whether the module has a coherent identity or is simply a miscellany.
+
+---
+
+**See also:** [`shallowModule`](shallow-module.md) — measures the same surface from a different angle: too little implementation relative to exports rather than too many exports outright.

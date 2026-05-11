@@ -32,3 +32,7 @@ A finding fires when enough structurally identical declarations accumulate: at l
 
 - **Test fixtures**: test files often redeclare minimal structures to keep tests self-contained and independent. Common test path patterns are excluded by default.
 - **Intentional parallel implementations**: two modules that implement the same contract for different contexts — a real adapter and an in-memory stub — will have similar structure by design. The question is whether both exist for a clear reason at the same abstraction level.
+
+---
+
+**See also:** [`uniqueImplementation`](unique-implementation.md) — a related AI-introduced pattern: speculative abstractions created without a real polymorphism need.

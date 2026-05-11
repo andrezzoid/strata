@@ -16,6 +16,19 @@ class PostgresUserRepository implements UserRepository {
 }
 ```
 
+```typescript
+// Consider A: remove the interface if no substitution is needed
+class UserRepository {
+  findById(id: string): Promise<User> { ... }
+  save(user: User): Promise<void> { ... }
+}
+
+// Consider B: introduce a second implementer to justify the abstraction
+class InMemoryUserRepository implements UserRepository {
+  // test double — now the interface earns its existence and the finding clears
+}
+```
+
 ## Why
 
 An interface or abstract class exists to enable polymorphism: the ability to substitute one implementation for another at a boundary the caller does not need to know about. That payoff requires at least two real implementations. With only one, the interface costs something — indirection, a type to maintain, imports to manage, a level of naming to traverse — and returns nothing. Callers could reference `PostgresUserRepository` directly at no design cost.
@@ -35,3 +48,7 @@ Interfaces fire when exactly **1** class explicitly implements them. An interfac
 - **Testability seams**: an interface defined to enable mocking in tests has a legitimate purpose even with one production implementer. The question is whether the interface is actually used in tests — if so, there are effectively two implementations (production and test double).
 - **Anticipated second implementation**: if a second implementation is planned and near, the abstraction is early rather than speculative. Track this explicitly so the finding can be revisited when the second implementation arrives or the plan is abandoned.
 - **Framework-required interfaces**: some frameworks require implementing a specific interface even if only one production implementation will ever exist.
+
+---
+
+**See also:** [`duplicateSymbol`](duplicate-symbol.md) — a related AI-introduced pattern: rebuilding existing declarations rather than reusing them.

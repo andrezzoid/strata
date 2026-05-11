@@ -14,6 +14,16 @@ export function createLogger(config: Config): Logger {
 }
 ```
 
+```typescript
+// Consider: hide Config as an implementation detail, expose only what callers need
+export interface Logger { log(msg: string): void; }
+export const DEFAULT_LEVEL = "info";
+export function createLogger(level = DEFAULT_LEVEL): Logger {
+  return { log: (msg) => console.log(`[${level}] ${msg}`) };
+}
+// Fewer exports, same capability — callers no longer need to know about Config
+```
+
 ## Why
 
 David Parnas defined a module by what it *hides* — the design decisions callers should not need to know. A shallow module hides little: it exposes concepts almost as fast as it introduces them, which means callers absorb most of the complexity themselves.
@@ -28,3 +38,7 @@ Compares how much a file exposes against how much it implements. The exported su
 
 - **Pure type files**: a file that exports only TypeScript type declarations has a high surface/body ratio by design. Types are the product, not incidental to it.
 - **Intentionally thin adapters**: a legitimate adapter over a third-party dependency may have little logic by design. The question to ask is whether the adapter hides a meaningful decision — if it does, the shallow ratio is earned.
+
+---
+
+**See also:** [`wideModule`](wide-module.md) — measures the same surface from a different angle: too many exports rather than too few implementation lines.

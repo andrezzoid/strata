@@ -29,3 +29,7 @@ Flags `catch` blocks that contain no executable statements. A comment inside the
 
 - **Best-effort operations**: cleanup, telemetry, or cache-warming operations where failure should genuinely not affect the main control flow. Even here, an inline comment explaining the intent is more honest than silence, and a `console.warn` or structured log call costs almost nothing.
 - **Expected no-ops**: some APIs use exceptions for control flow in ways that are irrelevant to the caller. These should be documented with an inline comment so the intent is legible to the next reader.
+
+---
+
+**See also:** [`catchRethrow`](catch-rethrow.md) — a related catch-handling failure where the error is acknowledged but not handled.

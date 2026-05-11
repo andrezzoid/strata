@@ -31,3 +31,7 @@ Looks for class methods whose entire body is a single call to an object the clas
 
 - **Interface conformance with future intent**: a method required by an interface may delegate to an inner collaborator as a placeholder, with the expectation that logic will accumulate. The finding is accurate but premature; the correct time to add the method is when the logic arrives.
 - **Adapter facades over unstable internals**: if the inner object's type or name is expected to change, a forwarding method decouples callers from the change. This is a legitimate use of indirection, though it should accumulate real logic as the design stabilises.
+
+---
+
+**See also:** [`passThroughVariable`](pass-through-variable.md) — the same plumbing-layer problem expressed through parameters rather than method delegation.

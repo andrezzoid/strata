@@ -29,3 +29,7 @@ Flags `catch` blocks containing exactly one statement: a `throw` of the same err
 
 - **TypeScript control-flow narrowing**: occasionally a rethrow satisfies TypeScript's control-flow analysis in a way that restructuring the code would not. If removing the catch would produce a type error, consider whether the typing can be improved upstream before accepting the rethrow.
 - **Temporary stubs**: if the catch body is a placeholder that will be filled in, track it explicitly — either via a suppression with a rationale or a linked ticket in a comment — rather than leaving a silent rethrow.
+
+---
+
+**See also:** [`emptyCatch`](empty-catch.md) — a related catch-handling failure where the error is silently discarded rather than pointlessly re-raised.
