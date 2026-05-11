@@ -26,18 +26,9 @@ AI coding assistants are particularly prone to this pattern: they default to int
 
 ## How
 
-Builds an import-resolved scope for each file using the project's tsconfig.json path aliases. Then, across all scanned files:
+Traces `implements` and `extends` relationships across the project, using the import graph to connect each concrete class to the interface or abstract class it references. TypeScript's structural typing means only explicit declarations are counted — a class that satisfies an interface's shape without declaring it is not treated as an implementer.
 
-1. Collects all `TSInterfaceDeclaration` and abstract `ClassDeclaration` as candidate abstractions.
-2. Collects all concrete `ClassDeclaration` that have an `implements` clause or `extends` a known candidate.
-3. Resolves cross-file references using the import graph to match implementers to their declaration site.
-
-Firing conditions:
-
-- **Interface**: fires when exactly **1** explicit implementer is found. An interface with 0 implementers is not flagged — it may be forward-declared or consumed by code outside the scan path.
-- **Abstract class**: fires when **0 or 1** subclasses are found. Abstract classes cannot be instantiated directly, so zero subclasses means the class is dead code.
-
-Test-only files are excluded from both sides of the analysis.
+Interfaces fire when exactly **1** class explicitly implements them. An interface with no implementers is not flagged — it may be forward-declared or consumed by code outside the scan path. Abstract classes fire when they have **0 or 1** subclasses; with zero they are unreachable, with one there is no polymorphism payoff. Test-only files are excluded from both sides of the analysis.
 
 ## When a finding may be acceptable
 

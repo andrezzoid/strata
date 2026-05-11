@@ -23,7 +23,7 @@ Catches that rethrow a *different* error — wrapping or enriching the original 
 
 ## How
 
-Looks for `CatchClause` nodes with exactly one body statement. That statement must be a `ThrowStatement` whose argument is an `Identifier`. If the catch clause binds a parameter, the thrown identifier must match the parameter name exactly. Catches that throw a different identifier, a wrapped error, or a new expression are not flagged.
+Flags `catch` blocks containing exactly one statement: a `throw` of the same error that was caught. Catches that throw a different value, a wrapped error, or a new expression are excluded — those have intent.
 
 ## When a finding may be acceptable
 

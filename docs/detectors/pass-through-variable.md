@@ -25,9 +25,7 @@ This is an information-hiding failure in both directions. The caller must supply
 
 ## How
 
-For each function or method with at least 3 parameters and at least 2 body statements, the detector examines each `Identifier` parameter. A parameter is considered pass-through if every reference to its name in the function body appears in argument position of a call expression — it is never read, destructured, compared, branched on, or used in any other way.
-
-A finding fires when at least 3 parameters simultaneously satisfy the pass-through condition. The dual threshold (≥3 parameters, ≥3 pass-through) prevents false positives on functions that forward one or two arguments alongside real local logic.
+Examines each parameter to determine whether it is used locally or only forwarded. A parameter is pass-through if it is never read, compared, branched on, or transformed — its only appearances are as arguments passed into other calls. A finding fires when at least 3 parameters in the same function are all pass-through. The threshold prevents false positives on functions that forward a couple of arguments alongside real logic.
 
 ## When a finding may be acceptable
 

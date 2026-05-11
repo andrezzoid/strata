@@ -24,19 +24,9 @@ This is a DRY violation at the declaration level — not duplicated prose or mag
 
 ## How
 
-Each eligible top-level declaration is reduced to a normalised AST fingerprint. Normalisation ignores:
+Compares the structure of top-level declarations across files, independent of their names, type annotations, and access modifiers. Two functions with different names but the same shape — same control flow, same call structure, same parameter count — are treated as identical. Literal values in constants are abstracted away, so two constants with different string values but otherwise identical structure will match.
 
-- **Identifier names**: `parseId` and `toNumber` match because their structure is the same.
-- **Type annotations and type parameters**: `string` vs `unknown` in a parameter does not affect the fingerprint.
-- **Modifier flags**: `optional`, `static`, `async`, `readonly`, `abstract`, `accessibility`.
-- **Literal values in constants**: matched by structure and shape, not value.
-
-Declarations are grouped by `kind + fingerprint`. A finding fires when the same normalised structure appears:
-
-- **2 or more times** for functions and constants
-- **3 or more times** for classes, interfaces, and type aliases (higher threshold because structural similarity among complex types is more common by coincidence)
-
-The finding is anchored to the first occurrence (alphabetically by file, then by position) and includes all occurrences in its metadata with their names, files, and lines.
+A finding fires when enough structurally identical declarations accumulate: at least 2 for functions and constants, at least 3 for classes, interfaces, and type aliases. The higher threshold for complex types reflects that structural similarity among them is more likely to occur by coincidence. The finding is anchored at the first occurrence and lists all copies with their locations.
 
 ## When a finding may be acceptable
 

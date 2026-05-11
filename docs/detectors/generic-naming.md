@@ -21,7 +21,7 @@ Phil Karlton's observation — that naming is one of the two hard problems in co
 
 ## How
 
-Walks the AST for `ClassDeclaration`, `TSInterfaceDeclaration`, and `TSTypeAliasDeclaration`. Tests each declaration's identifier against a fixed suffix list using a regular expression. Fires once per matching declaration name, regardless of the declaration's content.
+Checks the names of classes, interfaces, and type aliases against a fixed list of vague suffixes. Fires once per matching name, regardless of what the declaration contains.
 
 The flagged suffixes are: `Manager`, `Helper`, `Wrapper`, `Container`, `Holder`, `Utils`, `Util`, `Misc`, `Common`, `Processor`, `Handler`.
 

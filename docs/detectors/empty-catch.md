@@ -23,7 +23,7 @@ The result is a category of bugs that are hard to diagnose: the operation silent
 
 ## How
 
-Looks for `CatchClause` AST nodes where the body's statement list is empty (`body.body.length === 0`). A comment inside the catch body does not satisfy the check — a comment is not an executable statement and does not constitute handling.
+Flags `catch` blocks that contain no executable statements. A comment inside the catch body does not satisfy the check — a comment is not handling.
 
 ## When a finding may be acceptable
 

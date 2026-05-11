@@ -25,13 +25,7 @@ Free functions are intentionally excluded from this check. A standalone function
 
 ## How
 
-Looks for `MethodDefinition` nodes (excluding constructors) whose body contains exactly one statement: either a `return` of a `CallExpression`, or an `ExpressionStatement` wrapping one. The requirements are:
-
-1. The call target must be a `MemberExpression` rooted at `this` or `this.property` (one level of nesting).
-2. The number of call arguments must match the number of method parameters exactly.
-3. Each argument must be an `Identifier` whose name matches the corresponding parameter name, in order.
-
-If the method transforms any argument, adds any argument, or contains any other statement, it is not flagged.
+Looks for class methods whose entire body is a single call to an object the class owns, passing the method's own parameters through unchanged and in the same order. Any method that transforms an argument, adds logic, or does anything beyond the delegation is excluded.
 
 ## When a finding may be acceptable
 

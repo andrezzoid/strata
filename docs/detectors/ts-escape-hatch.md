@@ -23,12 +23,7 @@ The deeper problem is propagation. Once a value crosses an `as any` boundary, it
 
 ## How
 
-Detection runs in two passes:
-
-- **`as any` casts**: walks the AST for `TSAsExpression` nodes where the cast target is `TSAnyKeyword`. Each occurrence emits a separate finding.
-- **Suppression comments**: scans all parsed comment tokens for values that begin with `@ts-ignore` or `@ts-expect-error`. Each matching comment emits a finding anchored to its line.
-
-Fingerprints are derived from the expression or comment content, making them stable across harmless formatting changes.
+Scans each file for two patterns independently: `as any` casts anywhere in expression position, and `@ts-ignore` / `@ts-expect-error` suppression comments. Each occurrence is flagged separately. Fingerprints are derived from the cast expression or comment content, keeping findings stable across formatting changes.
 
 ## When a finding may be acceptable
 

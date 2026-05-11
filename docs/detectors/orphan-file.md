@@ -12,7 +12,7 @@ The design concern is that orphan files represent decisions that were never comp
 
 ## How
 
-Resolves every `import` statement across all scanned files using the project's tsconfig.json path aliases to build a map of incoming-import counts per file. Any file with zero incoming imports is a candidate.
+Builds a map of which files are imported by which others across the entire project, resolving path aliases from tsconfig.json. Any file with no incoming imports is a candidate.
 
 The following are excluded, as they are entrypoints or framework-managed files rather than orphans:
 

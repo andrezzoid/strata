@@ -27,7 +27,7 @@ The deeper issue is responsibility. A module with 15 exports rarely owns one coh
 
 ## How
 
-Counts top-level `export` statements, including named declarations, re-export specifiers, and `export *` forms. The threshold is more than 10 top-level exports.
+Counts all top-level exports: named declarations, re-exports, and `export *` forms. A finding fires when the count exceeds 10.
 
 Public class members inside an exported class are not counted here — they are measured separately by `shallowModule`. `wideModule` measures breadth at the module level, not depth within a class.
 

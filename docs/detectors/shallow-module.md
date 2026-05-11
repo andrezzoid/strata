@@ -22,14 +22,7 @@ John Ousterhout formalised this as the central design metric in *A Philosophy of
 
 ## How
 
-The detector counts two quantities per file:
-
-- **Surface elements**: top-level exports plus public class members. These are the concepts a caller must understand to use the module.
-- **Body lines**: non-blank, non-comment, non-import lines. These represent the implementation work the module performs on behalf of callers.
-
-A finding fires when `surface / body > 0.3`, with a minimum of 2 surface elements and 3 body lines. The minimums prevent trivially small files from producing misleading ratios.
-
-The finding is anchored at line 1 and includes `surface` and `bodyLines` in its metadata.
+Compares how much a file exposes against how much it implements. The exported surface counts top-level exports and public class members — everything a caller must understand to use the module. The implementation body counts non-blank, non-comment, non-import lines. When the surface exceeds 30% of the body, with at least 2 surface elements and 3 body lines, the module is considered shallow. The minimums prevent trivially small files from producing misleading ratios.
 
 ## When a finding may be acceptable
 

@@ -25,12 +25,7 @@ The positional nature of parameters compounds the problem: unlike named properti
 
 ## How
 
-Walks the AST for `FunctionDeclaration` and `MethodDefinition` nodes (including constructors). For each, counts required parameters:
-
-- `Identifier` params that are not marked `optional`
-- `TSParameterProperty` nodes (constructor injection syntax) whose inner identifier is not optional
-
-Rest parameters, destructured parameters, and optional parameters are excluded from the count. A finding fires when the required count exceeds 4.
+Counts required positional parameters on functions, methods, and constructors. Optional parameters, rest parameters, and destructured parameters are excluded — only parameters the caller must always supply are counted. A finding fires when the required count exceeds 4.
 
 ## When a finding may be acceptable
 
