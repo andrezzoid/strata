@@ -269,3 +269,19 @@ log:
       Verified `bun test test/core.test.ts test/cli.test.ts` passing 67 tests /
       255 expectations, `bun run typecheck` passing, `bun run scan:ci` reporting
       no source candidates, and `bun run format:check` passing.
+  - id: log-010
+    timestamp: 2026-05-11T17:04Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Scanner, scope,
+      and detector operational failures now render as `strata scan failed` on
+      stderr with mode/target/ref context, a plain reason, and `No trustworthy
+      candidate report was produced.` JSON/SARIF stdout remains empty on
+      operational failures, while successful text/JSON/SARIF candidate output is
+      preserved. Documentation distinguishes operational failures from
+      zero-candidate scans and records the behavior change in CHANGELOG. Final
+      regression gates: `bun run format:check` pass; `bun run lint` 0 warnings /
+      0 errors; `bun run typecheck` pass; `bun run test` 117 pass / 0 fail / 358
+      expectations; `bun run test:coverage` 88.38% lines meets 85%; `bun run
+      package:check` pass; `bun run scan:ci` reports no source candidates. Delta
+      is complete.
