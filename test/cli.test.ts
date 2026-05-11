@@ -291,6 +291,56 @@ describe("CLI", () => {
     }
   });
 
+  it("prints scanner failures as failure reports instead of stack traces", () => {
+    const result = runStrata([
+      passThroughFixture,
+      "--new-since",
+      "missing-ref",
+      "--format",
+      "text",
+    ]);
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toStartWith(
+      `strata scan failed\nMode: introduced candidates\nTarget: ${passThroughFixture}\nBase ref: missing-ref\n`,
+    );
+    expect(result.stderr).toContain("Reason: invalid git ref: missing-ref");
+    expect(result.stderr).toContain("No trustworthy candidate report was produced.");
+    expect(result.stderr).not.toContain("Bun v");
+    expect(result.stderr).not.toContain(" at ");
+  });
+
+  it("keeps JSON stdout empty when scanner failures occur", () => {
+    const result = runStrata([
+      passThroughFixture,
+      "--new-since",
+      "missing-ref",
+      "--format",
+      "json",
+    ]);
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toStartWith("strata scan failed\nMode: introduced candidates\n");
+    expect(result.stderr).toContain("Reason: invalid git ref: missing-ref");
+  });
+
+  it("keeps SARIF stdout empty when scanner failures occur", () => {
+    const result = runStrata([
+      passThroughFixture,
+      "--new-since",
+      "missing-ref",
+      "--format",
+      "sarif",
+    ]);
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe("");
+    expect(result.stderr).toStartWith("strata scan failed\nMode: introduced candidates\n");
+    expect(result.stderr).toContain("Reason: invalid git ref: missing-ref");
+  });
+
   it("prints SARIF output", () => {
     const result = runStrata([passThroughFixture, "--format", "sarif"]);
 

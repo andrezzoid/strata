@@ -1,0 +1,197 @@
+goal: >
+  Make scanner and detector failures unmistakable in CLI output, so users can
+  distinguish tool failures from complexity candidates and know when results are
+  incomplete or unavailable.
+
+acceptance:
+  - CLI output clearly distinguishes scanner/detector failures from review candidates.
+  - Failure output explains that no trustworthy candidate report was produced.
+  - Text output gets a human-readable failure contract; JSON/SARIF stdout stays reserved for completed scan results unless this delta explicitly changes that contract.
+  - Tests cover failure presentation for scanner-level and detector-level failures.
+
+context: |
+  This delta is separate from text-output-ui: that work completed the normal candidate report, while this explores operational failure reporting.
+  Today `scanProject()` returns only completed-looking `ScanResult` values, while scanner setup failures throw and detector failures write directly to stderr.
+  Current `--new-since` failures escape as Bun stack traces; current invalid `--touched-since` refs are swallowed as an empty changed-file set and can print a false zero-candidate report.
+  Detector failures are currently partial scans with no status in stdout, exit code, JSON, SARIF, or action summaries; machine consumers can trust incomplete output by accident.
+  Recommended design: completed scans return `ScanResult`; operational failures abort the scan through a typed failure path that the CLI formats once. Do not return partial candidate reports in this version.
+  Rejected design: add diagnostics/status to `ScanResult`; it preserves partial findings, but widens every public formatter/consumer around an ambiguity we do not yet need.
+  Rejected design: add only a CLI try/catch; it cleans fatal stack traces but leaves detector failures hidden because scan core still writes directly to stderr.
+
+refs:
+  - src/cli.ts
+  - src/scan.ts
+  - src/detectors/registry.ts
+  - src/project.ts
+  - src/ast.ts
+  - src/format.ts
+  - src/types.ts
+  - src/sarif.ts
+  - action/strata-action.ts
+  - test/cli.test.ts
+  - test/core.test.ts
+  - README.md
+  - CHANGELOG.md
+
+open_questions: []
+
+followups:
+  - Consider whether GitHub Action summaries should get a failure-specific markdown contract after the CLI contract lands; the action currently trusts successful JSON stdout and ignores stderr on success.
+
+tasks:
+  - id: add-cli-failure-report-contract
+    description: >
+      Add the CLI-facing failure report contract for operational scan failures and
+      route scanner exceptions through it instead of leaking runtime stack traces.
+      Keep stdout reserved for completed scan results across text, JSON, and SARIF.
+    status: done
+    context: |
+      Keep the CLI thin: argument parsing, scan invocation, selected output on success, failure formatting on failure.
+      A failure report is not a candidate report; do not reuse `strata complexity candidates` or zero-candidate wording.
+      Prefer one top-level failure presentation path over per-helper stderr writes.
+    acceptance:
+      - A CLI test fails first for `--new-since missing-ref --format text`, expecting exit code 1, empty stdout, no Bun stack trace, and stderr starting with `strata scan failed`.
+      - The failure report includes mode, target, base ref when present, a plain reason, and `No trustworthy candidate report was produced.`
+      - CLI tests fail first proving `--format json` and `--format sarif` scanner failures also leave stdout empty and report failure on stderr rather than emitting partial machine output.
+      - Existing successful text, JSON, SARIF, and `--fail-on-findings` CLI tests still pass.
+      - `bun test test/cli.test.ts` passes.
+    depends_on: []
+
+  - id: fail-closed-scope-failures
+    description: >
+      Make scope computation failures fatal, especially `--touched-since` git
+      failures that currently degrade to an empty changed-file set and produce a
+      false zero-candidate report.
+    status: pending
+    context: |
+      `--touched-since` still analyzes the full graph; only the changed-file set computation changes from silent fallback to required scope context.
+      Do not treat missing refs, non-git targets, or failed git commands as `no changed files`.
+      Preserve valid touched-since filtering behavior and base-snapshot cleanup behavior.
+    acceptance:
+      - A CLI test fails first for `--touched-since missing-ref`, expecting the scan failure report instead of `No review candidates were emitted`.
+      - A core or CLI test fails first for a non-git target with `--touched-since HEAD`, proving it fails closed rather than returning an empty changed-file set.
+      - Existing valid `--touched-since HEAD` tests still emit only candidates touching changed files.
+      - Existing invalid `--new-since` and non-git base snapshot tests keep clear failure reasons without leaking cleanup worktrees.
+      - `bun test test/core.test.ts test/cli.test.ts` passes.
+    depends_on:
+      - add-cli-failure-report-contract
+
+  - id: fail-closed-detector-failures
+    description: >
+      Replace detector-level stderr swallowing with fail-closed scan failures that
+      identify the detector and file context, so partial detector runs cannot look
+      like trustworthy completed results.
+    status: pending
+    context: |
+      Detector selection should remain caller-facing only through `--only` and `--exclude`; do not introduce plugin machinery.
+      If tests need injected throwing detectors, keep the seam internal to scan execution rather than widening the public CLI contract.
+      Single-file failures should name detector and file; cross-project failures should name detector and project-level context.
+    acceptance:
+      - A RED-first test proves a single-file detector exception aborts the scan, exits non-zero through the CLI path, and names detector plus file in stderr.
+      - A RED-first test proves a cross-project detector exception aborts the scan, exits non-zero through the CLI path, and names the detector in stderr.
+      - No successful `ScanResult`, JSON, SARIF, or text candidate output is produced after any detector exception.
+      - Existing detector-selection tests still prove selected detectors run and excluded detectors do not run.
+      - `bun test test/core.test.ts test/cli.test.ts` and `bun run typecheck` pass.
+    depends_on:
+      - add-cli-failure-report-contract
+
+  - id: document-failure-output-contract
+    description: >
+      Document the failure-output contract in release-facing docs so users and
+      tool integrators know that operational failures are stderr-only and distinct
+      from candidate output.
+    status: pending
+    context: |
+      This is a user-visible CLI behavior change and should be reflected in both README and CHANGELOG.
+      Keep docs focused on trust semantics: failure means no trustworthy candidate report, not zero candidates.
+      Do not expand the GitHub Action behavior unless implementation changes it directly.
+    acceptance:
+      - README documents a `strata scan failed` example and distinguishes it from zero-candidate output.
+      - README states JSON/SARIF stdout is reserved for completed scans; operational failures write to stderr and exit non-zero.
+      - CHANGELOG records the clearer scanner/detector failure output as an unreleased change.
+      - `bun run format:check` passes.
+    depends_on:
+      - fail-closed-scope-failures
+      - fail-closed-detector-failures
+
+notes:
+  - >
+    Scanner-level failures found: invalid `--new-since` refs, non-git targets for
+    base snapshots, worktree creation failures, path/stat/read traversal failures,
+    and explicit `scanProject()` option conflicts. The CLI currently handles usage
+    errors and missing target paths itself, but it does not wrap operational
+    failures from `scanProject()`.
+  - >
+    `collectChangedFiles()` currently uses `tryGitOutput()` for `--touched-since`,
+    so missing refs and non-git targets degrade to an empty changed-file set. That
+    is the most dangerous current behavior because text output says no detector
+    matched the selected scope even though the scope could not be computed.
+  - >
+    Detector failures are caught inside `scanFilesystemTarget()` and written as
+    `detector <id> failed on <file>: <message>` or `cross-detector <id> failed:
+    <message>` on stderr. The returned `ScanResult` has no indication that one or
+    more detectors did not run successfully, and the CLI exits zero unless
+    `--fail-on-findings` sees emitted candidates.
+  - >
+    Failure reports should be a separate CLI surface from candidate reports. A
+    good text shape is `strata scan failed`, followed by mode/target/ref context,
+    a plain reason, and wording that no trustworthy candidate report was produced.
+    It should not reuse `strata complexity candidates` or zero-candidate wording.
+  - >
+    Preserve stdout as the selected machine format only for completed scans. On
+    operational failure, write the failure report to stderr and exit non-zero;
+    this keeps JSON/SARIF consumers from parsing partial candidate payloads as
+    successful results.
+  - >
+    Tests needed before implementation: invalid `--new-since` produces the new
+    failure report with no Bun stack trace; invalid/non-git `--touched-since`
+    fails instead of printing no candidates; a single-file detector throw and a
+    cross-project detector throw both fail closed and identify detector/file
+    context; successful text/JSON/SARIF candidate output remains unchanged.
+
+log:
+  - id: log-001
+    timestamp: 2026-05-11T16:33Z
+    command: explore
+    summary: >
+      Created a focused delta for CLI failure output after comparing the request
+      with the completed text-output-ui delta. This work concerns scanner and
+      detector operational failures, not normal candidate-report formatting.
+  - id: log-002
+    timestamp: 2026-05-11T16:37Z
+    command: explore
+    summary: >
+      Inspected CLI parsing, scan orchestration, project/git helpers, parser
+      behavior, detector registry/execution, text/JSON/SARIF formatting, README
+      output docs, CLI/core tests, and the GitHub Action consumer. Reproduced an
+      invalid `--new-since` ref producing a Bun stack trace, an invalid
+      `--touched-since` ref producing a normal zero-candidate report, and a
+      missing target producing only a terse usage-style stderr line. Compared
+      three designs: CLI-only catch, fail-closed typed scan failures, and partial
+      diagnostics in `ScanResult`. Selected fail-closed typed scan failures for
+      the next version because it makes trust explicit while preserving the
+      existing successful `ScanResult`/JSON/SARIF candidate contracts.
+  - id: log-003
+    timestamp: 2026-05-11T16:49Z
+    command: plan
+    summary: >
+      Planned four vertical tasks after re-reading project context and the CLI,
+      scan, project, and test seams. Baseline `bun test test/core.test.ts
+      test/cli.test.ts` passed with 60 tests and 220 expectations. The task graph
+      first establishes one CLI failure-report contract, then fixes the two
+      trust-breaking failure sources independently: silent scope/git failures and
+      swallowed detector exceptions. Documentation is last so README/CHANGELOG
+      match the implemented contract rather than speculative wording.
+  - id: log-004
+    timestamp: 2026-05-11T16:54Z
+    command: apply
+    task: add-cli-failure-report-contract
+    summary: >
+      Added RED-first CLI coverage for invalid `--new-since missing-ref` across
+      text, JSON, and SARIF formats. The RED run showed the previous Bun stack
+      trace failure in `bun test test/cli.test.ts` with 3 failing tests. Added a
+      single CLI-boundary failure report that writes `strata scan failed`,
+      mode/target/ref context, a plain reason, and `No trustworthy candidate
+      report was produced.` to stderr while leaving stdout empty. Verified GREEN
+      with `bun test test/cli.test.ts` passing 37 tests / 133 expectations and
+      `bun run typecheck` passing.

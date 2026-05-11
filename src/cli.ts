@@ -4,7 +4,7 @@ import { statSync } from "node:fs";
 import { DETECTOR_IDS, type DetectorId, type DetectorSelection } from "./detectors/registry.ts";
 import { formatResult, type TextReportContext } from "./format.ts";
 import { scanProject } from "./scan.ts";
-import type { OutputFormat } from "./types.ts";
+import type { OutputFormat, ScanResult } from "./types.ts";
 
 type PackageMetadata = { version: string };
 
@@ -34,6 +34,34 @@ function textReportContext(
   if (newSinceRef) return { mode: "introduced", target, ref: newSinceRef };
   if (touchedSinceRef) return { mode: "touched", target, ref: touchedSinceRef };
   return { mode: "full", target };
+}
+
+/** Formats operational scan failures without looking like a completed candidate report. */
+function formatScanFailure(error: unknown, context: TextReportContext): string {
+  const lines = [
+    "strata scan failed",
+    `Mode: ${failureModeLabel(context)}`,
+    `Target: ${context.target}`,
+  ];
+  if (context.mode === "introduced") lines.push(`Base ref: ${context.ref}`);
+  if (context.mode === "touched") lines.push(`Changed since: ${context.ref}`);
+  lines.push(
+    "",
+    `Reason: ${errorMessage(error)}`,
+    "",
+    "No trustworthy candidate report was produced.",
+  );
+  return `${lines.join("\n")}\n`;
+}
+
+function failureModeLabel(context: TextReportContext): string {
+  if (context.mode === "introduced") return "introduced candidates";
+  if (context.mode === "touched") return "touched files";
+  return "full scan";
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function usage(exitCode: 0 | 2): never {
@@ -66,8 +94,9 @@ function parseDetectorIds(flag: "--only" | "--exclude", value: string): Detector
 }
 
 /**
- * Runs the process-oriented CLI: reads argv, writes output, and exits for usage errors.
- * Kept exportable so package bin launchers can stay tiny and share this exact behavior.
+ * Runs the process-oriented CLI: reads argv, writes successful scan output, and exits.
+ * Operational scan failures are reported here so lower scanner layers never need
+ * to know which CLI format was requested.
  */
 export async function main(): Promise<void> {
   let target = "";
@@ -134,10 +163,15 @@ export async function main(): Promise<void> {
     process.exit(2);
   }
 
-  const result = await scanProject({ target, touchedSinceRef, newSinceRef, detectorSelection });
-  process.stdout.write(
-    formatResult(result, format, { text: textReportContext(target, touchedSinceRef, newSinceRef) }),
-  );
+  const reportContext = textReportContext(target, touchedSinceRef, newSinceRef);
+  let result: ScanResult;
+  try {
+    result = await scanProject({ target, touchedSinceRef, newSinceRef, detectorSelection });
+  } catch (error) {
+    process.stderr.write(formatScanFailure(error, reportContext));
+    process.exit(1);
+  }
+  process.stdout.write(formatResult(result, format, { text: reportContext }));
   if (failOnFindings && result.summary.totalFindings > 0) process.exit(1);
 }
 
