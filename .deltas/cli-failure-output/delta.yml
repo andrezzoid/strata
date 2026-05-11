@@ -81,7 +81,7 @@ tasks:
       Replace detector-level stderr swallowing with fail-closed scan failures that
       identify the detector and file context, so partial detector runs cannot look
       like trustworthy completed results.
-    status: pending
+    status: done
     context: |
       Detector selection should remain caller-facing only through `--only` and `--exclude`; do not introduce plugin machinery.
       If tests need injected throwing detectors, keep the seam internal to scan execution rather than widening the public CLI contract.
@@ -209,3 +209,18 @@ log:
       39 tests / 143 expectations, `bun test test/core.test.ts` passing 26 tests
       / 102 expectations, combined `bun test test/core.test.ts test/cli.test.ts`
       passing 65 tests / 245 expectations, and `bun run format:check` passing.
+  - id: log-006
+    timestamp: 2026-05-11T16:59Z
+    command: apply
+    task: fail-closed-detector-failures
+    summary: >
+      Added RED-first in-process CLI coverage with temporary test detector
+      definitions so no public plugin or detector-selection contract was added.
+      The RED run showed single-file and cross-project detector exceptions both
+      exited 0 with partial-looking output. Changed detector execution to rethrow
+      contextual scan failures naming the detector and file/project scope, which
+      the existing CLI failure report now renders with empty stdout. Verified
+      `bun test test/cli.test.ts` passing 41 tests / 153 expectations, `bun test
+      test/core.test.ts` passing 26 tests / 102 expectations, combined `bun test
+      test/core.test.ts test/cli.test.ts` passing 67 tests / 255 expectations,
+      `bun run typecheck` passing, and `bun run format:check` passing.

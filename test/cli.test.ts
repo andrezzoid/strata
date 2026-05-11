@@ -4,11 +4,32 @@ import { dirname, join, resolve } from "node:path";
 
 import { describe, expect, it } from "bun:test";
 
+import type { Ctx } from "../src/ast.ts";
+import { main } from "../src/cli.ts";
+import { DETECTOR_DEFINITIONS } from "../src/detectors/registry.ts";
+import type { ImportResolver } from "../src/scope.ts";
+import type { Finding } from "../src/types.ts";
+
 const here = dirname(Bun.fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
 const cli = join(repoRoot, "src/cli.ts");
 const bin = join(repoRoot, "bin/strata.js");
 const passThroughFixture = join(repoRoot, "test/fixtures/pass-through-method");
+
+type TestDetectorDefinition =
+  | { id: string; kind: "single"; description: string; detect: (ctx: Ctx) => Finding[] }
+  | {
+      id: string;
+      kind: "cross";
+      description: string;
+      detect: (ctxs: Ctx[], imports: ImportResolver) => Finding[];
+    };
+
+class ProcessExit extends Error {
+  constructor(readonly code: number) {
+    super(`process.exit(${code})`);
+  }
+}
 
 async function readPackageVersion(): Promise<string> {
   const packageJson = (await Bun.file(join(repoRoot, "package.json")).json()) as {
@@ -43,6 +64,59 @@ function runPackagedBin(args: string[]) {
     stdout: result.stdout?.toString() ?? "",
     stderr: result.stderr?.toString() ?? "",
   };
+}
+
+async function runStrataInProcess(args: string[]) {
+  const originalArgv = process.argv;
+  const stdout = process.stdout as unknown as { write(text: unknown): boolean };
+  const stderr = process.stderr as unknown as { write(text: unknown): boolean };
+  const originalStdoutWrite = stdout.write;
+  const originalStderrWrite = stderr.write;
+  const processControl = process as unknown as { exit(code?: number): never };
+  const originalExit = processControl.exit;
+  let status = 0;
+  let stdoutText = "";
+  let stderrText = "";
+
+  try {
+    process.argv = ["bun", cli, ...args];
+    stdout.write = (text: unknown) => {
+      stdoutText += String(text);
+      return true;
+    };
+    stderr.write = (text: unknown) => {
+      stderrText += String(text);
+      return true;
+    };
+    processControl.exit = (code = 0) => {
+      throw new ProcessExit(code);
+    };
+
+    await main();
+  } catch (error) {
+    if (!(error instanceof ProcessExit)) throw error;
+    status = error.code;
+  } finally {
+    process.argv = originalArgv;
+    stdout.write = originalStdoutWrite;
+    stderr.write = originalStderrWrite;
+    processControl.exit = originalExit;
+  }
+
+  return { status, stdout: stdoutText, stderr: stderrText };
+}
+
+async function withDetectorDefinition<T>(
+  definition: TestDetectorDefinition,
+  run: () => Promise<T>,
+): Promise<T> {
+  const definitions = DETECTOR_DEFINITIONS as unknown as TestDetectorDefinition[];
+  definitions.push(definition);
+  try {
+    return await run();
+  } finally {
+    definitions.splice(definitions.lastIndexOf(definition), 1);
+  }
 }
 
 function runGit(cwd: string, args: string[]): void {
@@ -339,6 +413,64 @@ describe("CLI", () => {
     expect(result.stdout).toBe("");
     expect(result.stderr).toStartWith("strata scan failed\nMode: introduced candidates\n");
     expect(result.stderr).toContain("Reason: invalid git ref: missing-ref");
+  });
+
+  it("fails closed when a single-file detector throws", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-cli-single-detector-failure-"));
+    try {
+      await Bun.write(join(root, "case.ts"), "export const entry = true;\n");
+
+      const result = await withDetectorDefinition(
+        {
+          id: "throwSingle",
+          kind: "single",
+          description: "Test-only detector that throws from a file scan.",
+          detect() {
+            throw new Error("forced single detector failure");
+          },
+        },
+        () => runStrataInProcess([root, "--format", "text"]),
+      );
+
+      expect(result.status).toBe(1);
+      expect(result.stdout).toBe("");
+      expect(result.stderr).toStartWith(`strata scan failed\nMode: full scan\nTarget: ${root}\n`);
+      expect(result.stderr).toContain(
+        "Reason: detector throwSingle failed on case.ts: forced single detector failure",
+      );
+      expect(result.stderr).not.toContain("strata complexity candidates");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("fails closed when a cross-project detector throws", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-cli-cross-detector-failure-"));
+    try {
+      await Bun.write(join(root, "case.ts"), "export const entry = true;\n");
+
+      const result = await withDetectorDefinition(
+        {
+          id: "throwCross",
+          kind: "cross",
+          description: "Test-only detector that throws from a project scan.",
+          detect() {
+            throw new Error("forced cross detector failure");
+          },
+        },
+        () => runStrataInProcess([root, "--format", "json"]),
+      );
+
+      expect(result.status).toBe(1);
+      expect(result.stdout).toBe("");
+      expect(result.stderr).toStartWith(`strata scan failed\nMode: full scan\nTarget: ${root}\n`);
+      expect(result.stderr).toContain(
+        "Reason: cross-project detector throwCross failed: forced cross detector failure",
+      );
+      expect(result.stderr).not.toContain('"summary"');
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 
   it("prints SARIF output", () => {
