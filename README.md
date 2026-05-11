@@ -144,6 +144,23 @@ detector matched the selected scope.
 
 Text output teaches the review model and stays compact: detector groups include a short explanation, findings include locations and human evidence, and empty sections are omitted. It intentionally omits fixed `severity`, raw metadata, and finding fingerprints. Use JSON or SARIF when another tool needs stable machine identity.
 
+### Operational Failures
+
+Scanner or detector failures are not zero-candidate scans. If strata cannot compute the requested scope or a detector crashes, it writes a failure report to stderr, exits non-zero, and does not emit text, JSON, or SARIF candidate output on stdout:
+
+```text
+strata scan failed
+Mode: introduced candidates
+Target: .
+Base ref: missing-ref
+
+Reason: invalid git ref: missing-ref
+
+No trustworthy candidate report was produced.
+```
+
+For `--format json` and `--format sarif`, stdout is reserved for completed scan results. Operational failures still use the stderr report above so tool consumers do not accidentally parse partial findings as trustworthy output.
+
 ### JSON For Tools
 
 Use JSON when another tool needs the stable structured result, including finding fingerprints:

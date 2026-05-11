@@ -100,7 +100,7 @@ tasks:
       Document the failure-output contract in release-facing docs so users and
       tool integrators know that operational failures are stderr-only and distinct
       from candidate output.
-    status: pending
+    status: done
     context: |
       This is a user-visible CLI behavior change and should be reflected in both README and CHANGELOG.
       Keep docs focused on trust semantics: failure means no trustworthy candidate report, not zero candidates.
@@ -224,3 +224,12 @@ log:
       test/core.test.ts` passing 26 tests / 102 expectations, combined `bun test
       test/core.test.ts test/cli.test.ts` passing 67 tests / 255 expectations,
       `bun run typecheck` passing, and `bun run format:check` passing.
+  - id: log-007
+    timestamp: 2026-05-11T17:00Z
+    command: apply
+    task: document-failure-output-contract
+    summary: >
+      Documented operational failure output in README with a `strata scan failed`
+      example, explicit distinction from zero-candidate scans, and the stdout
+      contract for JSON/SARIF consumers. Added a CHANGELOG entry for the clearer
+      scanner/detector failure behavior. Verified `bun run format:check` passing.
