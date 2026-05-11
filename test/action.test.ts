@@ -7,6 +7,7 @@ import {
   formatJobSummary,
   normalizeActionInputs,
   normalizeBaseRef,
+  qualifyResultPaths,
 } from "../action/strata-action.ts";
 import type { Finding, ScanResult } from "../src/types.ts";
 
@@ -96,6 +97,23 @@ describe("GitHub Action runner", () => {
     expect(formatAnnotation(finding)).toBe(
       "::warning file=src/service%2Capi.ts,line=12,title=strata%3A passThroughMethod::class method delegates with 100%25 matching args%0Areview this layer%0Afingerprint: strata:v1:abc123",
     );
+  });
+
+  it("qualifies scan-root-relative findings for GitHub annotations", () => {
+    const scanRootResult: ScanResult = {
+      summary: {
+        totalFindings: 1,
+        byFlag: { passThroughMethod: 1 },
+        topFiles: [{ file: "types.ts", count: 1 }],
+      },
+      findings: [{ ...finding, file: "types.ts" }],
+    };
+
+    const qualified = qualifyResultPaths(scanRootResult, "src");
+
+    expect(qualified.findings[0]?.file).toBe("src/types.ts");
+    expect(qualified.summary.topFiles[0]?.file).toBe("src/types.ts");
+    expect(formatAnnotation(qualified.findings[0]!)).toContain("file=src/types.ts");
   });
 
   it("renders a job summary that preserves candidate-not-verdict framing", () => {
