@@ -32,7 +32,7 @@ John Ousterhout formalised this as the central design metric in *A Philosophy of
 
 ## How
 
-Compares how much a file exposes against how much it implements. The exported surface counts top-level exports and public class members — everything a caller must understand to use the module. The implementation body counts non-blank, non-comment, non-import lines. When the surface exceeds 30% of the body, with at least 2 surface elements and 3 body lines, the module is considered shallow. The minimums prevent trivially small files from producing misleading ratios.
+Compares how much a file exposes against how much it implements. The exported surface counts top-level exports; for classes declared directly inline in a named export statement, public members are each counted individually. Classes exported by reference or as a default export count as a single element. The implementation body counts non-blank, non-comment, non-import lines. When the surface exceeds 30% of the body, with at least 2 surface elements and 3 body lines, the module is considered shallow. The minimums prevent trivially small files from producing misleading ratios.
 
 ## When a finding may be acceptable
 

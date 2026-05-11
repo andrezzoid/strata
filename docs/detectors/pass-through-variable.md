@@ -39,6 +39,8 @@ This is an information-hiding failure in both directions. The caller must supply
 
 Examines each parameter to determine whether it is used locally or only forwarded. A parameter is pass-through if it is never read, compared, branched on, or transformed — its only appearances are as arguments passed into other calls. A finding fires when at least 3 parameters in the same function are all pass-through. The threshold prevents false positives on functions that forward a couple of arguments alongside real logic.
 
+Only named function declarations and class methods are checked; arrow functions and function expressions are not. The function must also have at least two body statements — a single-statement wrapper is excluded even if all its parameters are forwarded.
+
 ## When a finding may be acceptable
 
 - **Unavoidable context threading**: some frameworks require passing context objects through layers that do not directly use them. If the threading is genuinely imposed by the framework, document it with an inline comment so the intent is legible to the next reader.

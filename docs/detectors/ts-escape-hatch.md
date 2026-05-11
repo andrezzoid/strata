@@ -28,4 +28,4 @@ Scans each file for two patterns independently: `as any` casts anywhere in expre
 ## When a finding may be acceptable
 
 - **Third-party library type gaps**: a library without accurate type definitions may require a cast. The correct response is a narrow cast to a specific type rather than `any`, but when the type cannot be expressed at all, `as any` may be the only option. It should be accompanied by a comment explaining why.
-- **`@ts-expect-error` in test files**: tests intentionally pass wrong types to verify error behaviour. This is a legitimate use that does not indicate a design problem. Consider scoping with `--exclude tsEscapeHatch` on test paths if this creates consistent noise.
+- **`@ts-expect-error` in test files**: tests intentionally pass wrong types to verify error behaviour. This is a legitimate use that does not indicate a design problem. If it creates consistent noise, run strata against a non-test subdirectory or use `--exclude tsEscapeHatch` to suppress the detector for the whole scan.

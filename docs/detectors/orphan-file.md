@@ -23,6 +23,6 @@ The following are excluded, as they are entrypoints or framework-managed files r
 
 ## When a finding may be acceptable
 
-- **Test helpers loaded by the test runner**: files consumed via glob patterns by Bun, Vitest, or Jest are not statically imported and will appear as orphans. Scope the exclusion with `--exclude orphanFile` on test paths, or rely on the `--only` flag to keep the detector focused on non-test directories.
+- **Test helpers loaded by the test runner**: files consumed via glob patterns by Bun, Vitest, or Jest are not statically imported and will appear as orphans. Pass a specific non-test subdirectory as the scan target to limit strata's reach, or use `--exclude orphanFile` to suppress the detector for the whole scan.
 - **Scripts and one-off tools**: build scripts, migration scripts, and similar utilities are intentionally standalone. Consider whether they belong in the scanned path at all — if not, exclude their directory from the scan target.
 - **Intentional module boundaries**: a file that is a library entrypoint consumed by external packages rather than by files within the scan path will appear as an orphan. Barrel files named `index.ts` are excluded by default; other entrypoint names may need manual exclusion.

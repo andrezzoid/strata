@@ -2,7 +2,7 @@
 
 ## What
 
-A named declaration — function, class, interface, type alias, or constant — whose structure appears in multiple places across the project, suggesting the same design decision was implemented more than once.
+A named declaration — function, class, interface, type alias, enum, or constant — whose structure appears in two or more places in the project (within a single file or across files), suggesting the same design decision was implemented more than once.
 
 ```typescript
 // src/orders/utils.ts
@@ -24,7 +24,7 @@ This is a DRY violation at the declaration level — not duplicated prose or mag
 
 ## How
 
-Compares the structure of top-level declarations across files, independent of their names, type annotations, and access modifiers. Two functions with different names but the same shape — same control flow, same call structure, same parameter count — are treated as identical. Literal values in constants are abstracted away, so two constants with different string values but otherwise identical structure will match.
+Compares the structure of top-level declarations, independent of type annotations and access modifiers. For functions, classes, interfaces, and type aliases, names are also ignored — two functions with different names but the same shape are treated as identical. For primitive constants (strings, numbers, booleans), both the name and value are part of the match, so two constants with different names or different values will not match each other. Constants with complex values (objects, arrays) are matched by structure rather than value.
 
 A finding fires when enough structurally identical declarations accumulate: at least 2 for functions and constants, at least 3 for classes, interfaces, and type aliases. The higher threshold for complex types reflects that structural similarity among them is more likely to occur by coincidence. The finding is anchored at the first occurrence and lists all copies with their locations.
 

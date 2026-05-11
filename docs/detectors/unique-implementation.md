@@ -23,9 +23,10 @@ class UserRepository {
   save(user: User): Promise<void> { ... }
 }
 
-// Consider B: introduce a second implementer to justify the abstraction
+// Consider B: introduce a second implementer in non-test code to justify the abstraction
 class InMemoryUserRepository implements UserRepository {
-  // test double — now the interface earns its existence and the finding clears
+  // test doubles in test files are excluded from analysis and will not clear the finding;
+  // this must live in src/ or equivalent production code to count
 }
 ```
 
@@ -45,7 +46,7 @@ Interfaces fire when exactly **1** class explicitly implements them. An interfac
 
 ## When a finding may be acceptable
 
-- **Testability seams**: an interface defined to enable mocking in tests has a legitimate purpose even with one production implementer. The question is whether the interface is actually used in tests — if so, there are effectively two implementations (production and test double).
+- **Testability seams**: an interface defined to enable mocking in tests has a legitimate purpose even with one production implementer. Note that test doubles in test files are excluded from analysis, so they do not clear the finding — the second implementer must live in production code for the detector to consider it real polymorphism.
 - **Anticipated second implementation**: if a second implementation is planned and near, the abstraction is early rather than speculative. Track this explicitly so the finding can be revisited when the second implementation arrives or the plan is abandoned.
 - **Framework-required interfaces**: some frameworks require implementing a specific interface even if only one production implementation will ever exist.
 
