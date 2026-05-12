@@ -2,7 +2,9 @@
 
 All notable changes to `strata` will be documented here.
 
-## 0.2.1 - Unreleased
+## 0.3.1 - Unreleased
+
+## 0.3.0 - 2026-05-12
 
 - Adds `strata --version` and shows the installed package version at the top of `strata --help`.
 - Improves `--format text` into a first-class local review report with scan context, candidate framing, detector explanations, grouped findings, top files, and compact zero-candidate output.

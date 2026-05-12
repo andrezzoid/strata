@@ -1,6 +1,6 @@
 {
   "name": "@andrezzoid/strata",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Deterministic candidate scanner for PoSD-style complexity red flags in TypeScript codebases.",
   "license": "MIT",
   "homepage": "https://github.com/andrezzoid/strata#readme",
