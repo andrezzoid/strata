@@ -1,0 +1,164 @@
+goal: >
+  Rethink the `passThroughMethod` detector so its signal matches the
+  pass-through-method and shallow-module research while keeping legitimate
+  thin adapters, dispatchers, and decorators out of the high-confidence path.
+
+acceptance:
+  - Detector behavior is grounded in `docs/research/` and documented in `docs/detectors/pass-through-method.md`.
+  - Related detectors keep clear boundaries, especially `shallowModule`, `passThroughVariable`, `wideModule`, and `uniqueImplementation`.
+  - Proposed detection rules identify same-abstraction forwarding without treating every adapter or interface implementation as harmful.
+  - Any behavior change is covered by detector tests before implementation.
+
+context: |
+  Current detector is single-file and class-method-only: one statement, simple identifier params, exact forwarded args, member call rooted on `this`.
+  It does not yet check public/exported surface, callee-name similarity, `return await`, imported/top-level collaborators, or class-level concentration.
+  Research anchors the signal on same-abstraction forwarding that adds interface complexity without functionality; adjacent layers should expose different abstractions.
+  Related detectors already own module surface ratios, parameter threading, wide export breadth, and speculative polymorphism; pass-through-method should not absorb those jobs.
+  Recommended direction: refine the class-method detector first, add concentration metadata/messages, and document adapter/interface exceptions rather than attempting broad semantic suppression.
+  Exported free-function forwarding is plausible but should be a later, explicit expansion because current docs intentionally exclude it as often a named/stable facade.
+
+refs:
+  - docs/research/
+  - docs/research/red-flags-source.md
+  - docs/research/parnas-decomposition-criteria.md
+  - src/detectors/pass-through-method.ts
+  - src/detectors/pass-through-variable.ts
+  - src/detectors/shallow-module.ts
+  - src/detectors/unique-implementation.ts
+  - src/types.ts
+  - docs/detectors/pass-through-method.md
+  - docs/detectors/pass-through-variable.md
+  - docs/detectors/shallow-module.md
+  - test/detectors.test.ts
+  - test/fixtures/pass-through-method/case.ts
+
+open_questions: []
+
+followups:
+  - Decide during Plan whether exported free-function wrappers are in scope now or deferred until a concrete false-negative motivates them.
+  - If adapter/interface false positives become noisy in real scans, consider a cross-project suppression pass that uses implementer counts instead of class-name heuristics.
+
+tasks:
+  - id: tighten-method-candidate-shape
+    description: >
+      Test and implement the refined per-method candidate shape for public
+      class methods that only forward to a collaborator at the same abstraction.
+    status: done
+    context: |
+      Use TDD in `test/detectors.test.ts` before changing detector behavior.
+      Keep the detector single-file and class-method scoped for this slice.
+      Treat unspecified accessibility as public; private/protected and `#private` methods are not caller-facing surface.
+      Underscore prefixes are naming convention only, so they do not suppress otherwise matching candidates.
+      A collaborator receiver is `this.<field>...`, not direct `this.<method>(...)` self-delegation.
+    acceptance:
+      - Tests cover existing positives plus `return await this.repo.getUser(id)` as a positive case.
+      - Tests cover private/protected methods, direct `this.method(...)`, transformed/reordered args, and unrelated callee names as negative cases.
+      - Detector requires same-order identifier args and a callee name that equals or clearly stems with the wrapper name.
+      - Existing pass-through-method fixture expectations still pass or are intentionally updated with the new contract.
+    depends_on: []
+
+  - id: add-concentration-evidence
+    description: >
+      Add class-level pass-through surface evidence to each method finding
+      instead of introducing detector severity levels.
+    status: pending
+    context: |
+      `Finding.severity` is fixed to `candidate`; concentration belongs in metadata and review-facing text.
+      Count public non-constructor methods and refined pass-through candidates within the containing class.
+      Escalation evidence should trigger at `>=3` pass-through methods or `>50%` pass-through public surface.
+    acceptance:
+      - Findings include stable metadata for class name, wrapper method, receiver/callee, pass-through method count, public method count, and ratio.
+      - Text output includes pass-through class-surface evidence when concentration thresholds are met.
+      - Concentration evidence does not create duplicate class-level findings or change the public `severity` contract.
+    depends_on:
+      - tighten-method-candidate-shape
+
+  - id: align-detector-docs
+    description: >
+      Update detector documentation and public summaries so they describe the
+      refined same-abstraction forwarding signal and its review exceptions.
+    status: pending
+    context: |
+      Keep docs honest about mechanical limits: this version stays class-method scoped.
+      Free-function wrappers remain a follow-up unless a concrete false-negative justifies expanding scope.
+      Adapter, dispatcher, decorator, and interface-implementation cases should be framed as judgment calls, not automatic suppressions.
+    acceptance:
+      - "`docs/detectors/pass-through-method.md` explains scope, `return await`, collaborator receivers, name similarity, and concentration evidence."
+      - README, registry, and SARIF summaries match the refined detector signal.
+      - Related detector docs still point to clear boundaries with `passThroughVariable`, `shallowModule`, and `uniqueImplementation`.
+    depends_on:
+      - add-concentration-evidence
+
+  - id: verify-detector-realignment
+    description: >
+      Verify the integrated detector change against tests, typechecking,
+      fixture output, and a source self-scan.
+    status: pending
+    context: |
+      Verification should prove behavior changed only where the refined detector contract says it should.
+      The final complexity review should check that helper extraction did not create shallow detector modules or duplicate AST-shape knowledge.
+    acceptance:
+      - "`bun run typecheck` passes."
+      - "`bun run test` passes."
+      - "`bun src/cli.ts src --only passThroughMethod --format json` is reviewed for expected source candidates."
+      - Manual complexity review finds no new shallow wrappers or detector-boundary leakage.
+    depends_on:
+      - align-detector-docs
+
+log:
+  - id: log-001
+    timestamp: 2026-05-15T08:34:39Z
+    command: explore
+    summary: >
+      Explored current pass-through-method implementation, detector docs,
+      related detector boundaries, tests, and research notes. Current behavior
+      is narrower than the draft on functions/import receivers/await, but also
+      broader on private methods, direct `this.method(...)` delegation, and
+      name-unrelated forwarding. Compared two approaches: a focused single-file
+      class-method refinement versus a cross-project semantic detector. The
+      focused refinement is preferred for the next step because it aligns with
+      the research-backed same-abstraction signal while avoiding overlap with
+      `uniqueImplementation` and preserving the scanner's fixed `candidate`
+      severity contract.
+
+  - id: log-002
+    timestamp: 2026-05-15T09:01:05Z
+    command: plan
+    summary: >
+      Planned four dependent slices: refine the per-method class signal with
+      tests first, add class-level concentration evidence without changing
+      severity, align public docs/summaries, then verify with typecheck, tests,
+      fixtures, and self-scan. Relevant baseline passed before planning:
+      `bun test test/detectors.test.ts` reported 25 pass, 0 fail.
+
+  - id: log-003
+    timestamp: 2026-05-15T09:24:06Z
+    command: apply
+    task: tighten-method-candidate-shape
+    summary: >
+      Refined `detectPassThroughMethod` to require public class methods,
+      collaborator receivers rooted at `this.<field>`, exact same-order
+      identifier args, direct call or `return await` call bodies, and matching
+      method-name stems. Added detector tests for await delegation, stemmed
+      method names, private/protected exclusions, direct self delegation,
+      reordered args, transformed args, and unrelated callee names.
+      Acceptance evidence: initial RED run failed on await and exclusion cases;
+      after implementation `bun test test/detectors.test.ts` passed with 28
+      tests, 0 failures; `bun test test/fixtures.test.ts` passed with 13 tests,
+      0 failures; `bun run typecheck` passed; fixture CLI output for
+      `test/fixtures/pass-through-method` still reported exactly 2 findings;
+      source self-scan with `--only passThroughMethod` reported 0 findings.
+
+  - id: log-004
+    timestamp: 2026-05-15T09:54:06Z
+    command: apply
+    task: tighten-method-candidate-shape
+    summary: >
+      Corrected the public-surface rule after review: underscore-prefixed method
+      names are convention, not syntax-level visibility, so they no longer
+      suppress pass-through candidates. Added a RED test proving `_saveUser()`
+      is flagged when it otherwise matches the refined detector contract, then
+      removed the underscore exclusion. Acceptance evidence: the new test failed
+      before the detector change, then `bun test test/detectors.test.ts` passed
+      with 29 tests, 0 failures; `bun test test/fixtures.test.ts` passed with
+      13 tests, 0 failures; `bun run typecheck` passed.

@@ -145,6 +145,54 @@ describe("detectPassThroughMethod", () => {
     expect(findings[0].flag).toBe("passThroughMethod");
   });
 
+  it("flags await-only collaborator delegation", () => {
+    const findings = runSingle(
+      detectPassThroughMethod,
+      `
+      class UserService {
+        repo: any;
+        async getUser(id: string) {
+          return await this.repo.getUser(id);
+        }
+      }
+      `,
+    );
+
+    expect(findings).toHaveLength(1);
+  });
+
+  it("flags collaborator delegation with a shared method-name stem", () => {
+    const findings = runSingle(
+      detectPassThroughMethod,
+      `
+      class CacheFacade {
+        cache: any;
+        invalidate(key: string) {
+          return this.cache.invalidateKey(key);
+        }
+      }
+      `,
+    );
+
+    expect(findings).toHaveLength(1);
+  });
+
+  it("flags underscore-prefixed methods when they are otherwise public pass-throughs", () => {
+    const findings = runSingle(
+      detectPassThroughMethod,
+      `
+      class UserService {
+        repo: any;
+        _saveUser(user: User) {
+          return this.repo.saveUser(user);
+        }
+      }
+      `,
+    );
+
+    expect(findings).toHaveLength(1);
+  });
+
   it("ignores wrappers that add behavior before delegating", () => {
     const findings = runSingle(
       detectPassThroughMethod,
@@ -153,6 +201,37 @@ describe("detectPassThroughMethod", () => {
         repo: any;
         getUser(id: string) {
           return this.repo.getUser(id.trim());
+        }
+      }
+      `,
+    );
+
+    expect(findings).toEqual([]);
+  });
+
+  it("ignores non-public, self, reordered, transformed, and unrelated delegation", () => {
+    const findings = runSingle(
+      detectPassThroughMethod,
+      `
+      class UserService {
+        repo: any;
+        private getUser(id: string) {
+          return this.repo.getUser(id);
+        }
+        protected deleteUser(id: string) {
+          return this.repo.deleteUser(id);
+        }
+        loadUser(id: string) {
+          return this.loadUser(id);
+        }
+        copyUser(from: string, to: string) {
+          return this.repo.copyUser(to, from);
+        }
+        normalizeUser(id: string) {
+          return this.repo.normalizeUser(id.trim());
+        }
+        findUser(id: string) {
+          return this.repo.loadById(id);
         }
       }
       `,
