@@ -93,7 +93,7 @@ tasks:
     description: >
       Verify the integrated detector change against tests, typechecking,
       fixture output, and a source self-scan.
-    status: pending
+    status: done
     context: |
       Verification should prove behavior changed only where the refined detector contract says it should.
       The final complexity review should check that helper extraction did not create shallow detector modules or duplicate AST-shape knowledge.
@@ -202,3 +202,24 @@ log:
       test/action.test.ts` passed with 13 tests, 0 failures; `bun run
       typecheck` passed; `bun run test` passed with 127 tests, 0 failures;
       source self-scan with `--only passThroughMethod` reported 0 findings.
+
+  - id: log-007
+    timestamp: 2026-05-15T13:14:42Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass for the
+      pass-through-method realignment. Verified the integrated detector rules,
+      metadata, text evidence, docs, README examples, registry summary, and
+      SARIF summary against the completed task logs and current code. Acceptance
+      evidence: `bun run typecheck` passed; `bun run test` passed with 127
+      tests, 0 failures; `bun test test/fixtures.test.ts` passed with 13 tests,
+      0 failures; `bun src/cli.ts src --only passThroughMethod --format json`
+      reported 0 findings; `bun src/cli.ts test/fixtures/pass-through-method
+      --only passThroughMethod --format json` reported exactly 2 findings with
+      class metadata and concentrated evidence. Full source self-scan with
+      `bun src/cli.ts src --format json` reported 0 findings. Manual complexity
+      review found no new shallow wrappers, no duplicated detector AST-shape
+      knowledge outside `src/detectors/pass-through-method.ts`, and no detector
+      boundary leakage into `passThroughVariable`, `shallowModule`, or
+      `uniqueImplementation`. No regressions or verification failures detected;
+      delta is complete.
