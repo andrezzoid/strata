@@ -2,7 +2,7 @@
 
 ## What
 
-A class method whose only statement delegates to an instance property with the same arguments — a naming layer that contributes no behaviour.
+A public class method whose only executable statement forwards its own parameters, unchanged and in the same order, to a collaborator method with the same or closely stemmed name. It is a naming layer that contributes no behaviour.
 
 ```typescript
 // Flagged
@@ -11,6 +11,28 @@ class OrderService {
 
   save(order: Order): Promise<void> {
     return this.repo.save(order); // same name, same args, no logic
+  }
+}
+```
+
+```typescript
+// Also flagged: await-only forwarding is still just forwarding
+class OrderService {
+  constructor(private repo: OrderRepository) {}
+
+  async save(order: Order): Promise<void> {
+    return await this.repo.save(order);
+  }
+}
+```
+
+```typescript
+// Not flagged: the wrapper changes the abstraction by renaming the operation
+class OrderService {
+  constructor(private repo: OrderRepository) {}
+
+  findOrder(id: string): Promise<Order> {
+    return this.repo.loadById(id);
   }
 }
 ```
@@ -25,13 +47,28 @@ Free functions are intentionally excluded from this check. A standalone function
 
 ## How
 
-Looks for class methods whose entire body is a single call to an object the class owns, passing the method's own parameters through unchanged and in the same order. Any method that transforms an argument, adds logic, or does anything beyond the delegation is excluded.
+Looks for class methods that match all of these conditions:
+
+- The method is public by TypeScript/JavaScript syntax: not `private`, not `protected`, and not `#private`. An underscore prefix such as `_save()` is only a naming convention, so it does not suppress a candidate.
+- The method body is exactly one `return collaborator.method(args)`, `return await collaborator.method(args)`, or expression-call statement.
+- The receiver is a collaborator owned by the class, such as `this.repo.save(...)`, not direct self-delegation like `this.save(...)`.
+- The forwarded arguments are the declared parameters, unchanged and in the same order.
+- The callee name equals or shares a leading stem with the wrapper name, such as `invalidate()` forwarding to `invalidateKey()`.
+
+Any method that transforms an argument, reorders arguments, adds logic, calls through `this` directly, or delegates to an unrelated operation name is excluded.
+
+Each finding includes class-surface evidence. The evidence is marked as concentrated when a class has at least 3 pass-through public methods or more than 50% of its public method surface is pass-through. Severity remains `candidate`; concentration is review evidence, not an automatic verdict.
 
 ## When a finding may be acceptable
 
-- **Interface conformance with future intent**: a method required by an interface may delegate to an inner collaborator as a placeholder, with the expectation that logic will accumulate. The finding is accurate but premature; the correct time to add the method is when the logic arrives.
-- **Adapter facades over unstable internals**: if the inner object's type or name is expected to change, a forwarding method decouples callers from the change. This is a legitimate use of indirection, though it should accumulate real logic as the design stabilises.
+- **Interface conformance with real polymorphism**: a method required by an interface may delegate to an inner collaborator when the interface has multiple meaningful implementations. The finding is still a prompt to review whether this implementation contributes behaviour.
+- **Adapter facades over unstable internals**: if the inner object's type or name is expected to change, a forwarding method can decouple callers from the change. This is legitimate when the adapter hides a real decision, not merely a renamed field.
+- **Dispatchers and decorators**: dispatchers can route a common API to different implementations, and decorators can add behaviour around a call. If they only forward most methods, concentration evidence should push the reviewer to ask whether the extra layer earns its surface.
 
 ---
 
-**See also:** [`passThroughVariable`](pass-through-variable.md) — the same plumbing-layer problem expressed through parameters rather than method delegation.
+**See also:**
+
+- [`passThroughVariable`](pass-through-variable.md) — the same plumbing-layer problem expressed through parameters rather than method delegation.
+- [`shallowModule`](shallow-module.md) — the broader surface-to-substance problem; `passThroughMethod` is one method-level way a class becomes shallow.
+- [`uniqueImplementation`](unique-implementation.md) — catches speculative interfaces separately; `passThroughMethod` does not try to prove whether an interface has real polymorphism payoff.

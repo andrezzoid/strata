@@ -62,7 +62,7 @@ const RULES: SarifRule[] = [
   rule(
     "passThroughMethod",
     "Pass-through method",
-    "Class method delegates to instance state with the same arguments.",
+    "Public class method only forwards same-order arguments to a collaborator.",
   ),
   rule(
     "passThroughVariable",

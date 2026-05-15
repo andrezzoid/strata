@@ -32,7 +32,7 @@ export const DETECTOR_DEFINITIONS = [
     id: "passThroughMethod",
     kind: "single",
     description:
-      "Suspicious when a method only forwards to another object; the layer may add API surface without hiding useful complexity.",
+      "Suspicious when a method only forwards same-order args to a collaborator; the layer may add API surface without hiding useful complexity.",
     detect: detectPassThroughMethod,
   },
   {

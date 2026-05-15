@@ -77,7 +77,7 @@ tasks:
     description: >
       Update detector documentation and public summaries so they describe the
       refined same-abstraction forwarding signal and its review exceptions.
-    status: pending
+    status: done
     context: |
       Keep docs honest about mechanical limits: this version stays class-method scoped.
       Free-function wrappers remain a follow-up unless a concrete false-negative justifies expanding scope.
@@ -184,3 +184,21 @@ log:
       reported 0 findings. Manual complexity review found the detector still
       owns its AST-shape knowledge locally and does not introduce a shallow
       helper module.
+
+  - id: log-006
+    timestamp: 2026-05-15T12:02:18Z
+    command: apply
+    task: align-detector-docs
+    summary: >
+      Updated `docs/detectors/pass-through-method.md` to describe the refined
+      class-method-only contract: public syntax, `return await`, collaborator
+      receivers, same-order args, name equality/stemming, concentration
+      evidence, and adapter/dispatcher/decorator/interface judgment calls.
+      Updated README examples and detector table plus registry and SARIF
+      summaries to match the refined signal. Related detector boundaries are
+      called out through `passThroughVariable`, `shallowModule`, and
+      `uniqueImplementation` references. Acceptance evidence: `bun test
+      test/cli.test.ts` passed with 41 tests, 0 failures; `bun test
+      test/action.test.ts` passed with 13 tests, 0 failures; `bun run
+      typecheck` passed; `bun run test` passed with 127 tests, 0 failures;
+      source self-scan with `--only passThroughMethod` reported 0 findings.

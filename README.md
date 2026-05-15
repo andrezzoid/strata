@@ -89,13 +89,15 @@ Top files:
   4  case.ts
 
 passThroughMethod
-  Suspicious when a method only forwards to another object; the layer may add API surface without hiding useful complexity.
+  Suspicious when a method only forwards same-order args to a collaborator; the layer may add API surface without hiding useful complexity.
 
   case.ts:7
     class method delegates to instance state with same args - layer without logic
+    evidence: 2/3 public methods in UserService are pass-through (67%)
 
   case.ts:11
     class method delegates to instance state with same args - layer without logic
+    evidence: 2/3 public methods in UserService are pass-through (67%)
 ```
 
 Introduced-only text answers a different review question: which candidate identities did this change create?
@@ -122,7 +124,7 @@ Top files:
   1  src/new-service.ts
 
 passThroughMethod
-  Suspicious when a method only forwards to another object; the layer may add API surface without hiding useful complexity.
+  Suspicious when a method only forwards same-order args to a collaborator; the layer may add API surface without hiding useful complexity.
 
   src/new-service.ts:3
     class method delegates to instance state with same args - layer without logic
@@ -184,7 +186,16 @@ strata . --format json
       "file": "src/user-service.ts",
       "line": 8,
       "message": "class method delegates to instance state with same args — layer without logic",
-      "metadata": {}
+      "metadata": {
+        "className": "UserService",
+        "methodName": "getUser",
+        "receiver": "this.repo",
+        "callee": "this.repo.getUser",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 2,
+        "passThroughRatio": 0.5,
+        "concentrated": false
+      }
     }
   ]
 }
@@ -306,7 +317,7 @@ Each detector targets a design failure that AI-assisted workflows reliably intro
 | [`shallowModule`](docs/detectors/shallow-module.md)               | file    | API surface is large relative to body lines.                            |
 | [`wideModule`](docs/detectors/wide-module.md)                     | file    | Too many top-level exports.                                             |
 | [`wideSignature`](docs/detectors/wide-signature.md)               | file    | Function, method, or constructor has too many required parameters.      |
-| [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Class method delegates to instance state with the same arguments.       |
+| [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Public class method only forwards same-order args to a collaborator.    |
 | [`passThroughVariable`](docs/detectors/pass-through-variable.md)  | file    | Several parameters are only forwarded through calls.                    |
 | [`genericNaming`](docs/detectors/generic-naming.md)               | file    | Type/class names end with vague suffixes such as `Manager` or `Helper`. |
 | [`tsEscapeHatch`](docs/detectors/ts-escape-hatch.md)              | file    | `as any`, `@ts-ignore`, or `@ts-expect-error`.                          |
