@@ -150,9 +150,6 @@ function evidenceLines(finding: Finding): string[] {
   if (finding.flag === "genericNaming" && typeof finding.metadata.name === "string") {
     return [`evidence: generic name: ${finding.metadata.name}`];
   }
-  if (finding.flag === "tsEscapeHatch" && typeof finding.metadata.kind === "string") {
-    return [`evidence: ${finding.metadata.kind}`];
-  }
   if (
     finding.flag === "uniqueImplementation" &&
     typeof finding.metadata.implementerCount === "number"

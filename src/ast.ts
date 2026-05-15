@@ -18,8 +18,6 @@ export type Ctx = {
   source: string;
   /** oxc-parser program node. */
   ast: Node;
-  /** Parser comments, used by comment-based detectors such as tsEscapeHatch. */
-  comments: Array<{ type: "Line" | "Block"; value: string; start: number; end: number }>;
   /** Maps byte offsets to one-based line numbers. */
   lineOf: LineOf;
 };
@@ -82,7 +80,6 @@ export async function parseContexts(root: string, files: string[]): Promise<Ctx[
       file,
       source,
       ast: parsed.program,
-      comments: parsed.comments ?? [],
       lineOf: buildLineOf(source),
     });
   }

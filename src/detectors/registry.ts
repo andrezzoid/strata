@@ -7,7 +7,6 @@ import { detectGenericNaming } from "./generic-naming.ts";
 import { detectOrphanFile } from "./orphan-file.ts";
 import { detectPassThroughMethod } from "./pass-through-method.ts";
 import { detectShallowModule } from "./shallow-module.ts";
-import { detectTsEscapeHatches } from "./ts-escape-hatches.ts";
 import { detectUniqueImplementation } from "./unique-implementation.ts";
 import { detectWideModule } from "./wide-module.ts";
 import { detectWideSignature } from "./wide-signature.ts";
@@ -54,13 +53,6 @@ export const DETECTOR_DEFINITIONS = [
     description:
       "Suspicious when declarations use vague suffixes; generic names often hide an unfocused responsibility.",
     detect: detectGenericNaming,
-  },
-  {
-    id: "tsEscapeHatch",
-    kind: "single",
-    description:
-      "Suspicious when TypeScript checks are bypassed; safety assumptions move from the compiler into reviewer memory.",
-    detect: detectTsEscapeHatches,
   },
   {
     id: "wideModule",

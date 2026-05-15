@@ -9,7 +9,6 @@ import { detectGenericNaming } from "../src/detectors/generic-naming.ts";
 import { detectOrphanFile } from "../src/detectors/orphan-file.ts";
 import { detectPassThroughMethod } from "../src/detectors/pass-through-method.ts";
 import { detectShallowModule } from "../src/detectors/shallow-module.ts";
-import { detectTsEscapeHatches } from "../src/detectors/ts-escape-hatches.ts";
 import { detectUniqueImplementation } from "../src/detectors/unique-implementation.ts";
 import { detectWideModule } from "../src/detectors/wide-module.ts";
 import { detectWideSignature } from "../src/detectors/wide-signature.ts";
@@ -23,7 +22,6 @@ function parseInline(file: string, source: string): Ctx {
     file,
     source: text,
     ast: parsed.program,
-    comments: parsed.comments ?? [],
     lineOf: buildLineOf(text),
   };
 }
@@ -94,7 +92,6 @@ describe("finding fingerprints", () => {
       } catch (error) {}
       `,
     );
-    expectSingleFingerprintStable(detectTsEscapeHatches, "const value = input as any;\n");
     expectCrossFingerprintStable(detectDuplicateSymbol, {
       "src/a.ts": "export const API_URL = 'https://api.example';",
       "src/b.ts": "export const API_URL = 'https://api.example';",
@@ -102,15 +99,6 @@ describe("finding fingerprints", () => {
   });
 
   it("keeps same-detector findings in one file distinct", () => {
-    const escapeFindings = runSingle(
-      detectTsEscapeHatches,
-      `
-      // @ts-ignore legacy API
-      callOne();
-      // @ts-ignore legacy API
-      callTwo();
-      `,
-    );
     const catchFindings = runSingle(
       detectEmptyCatch,
       `
@@ -119,8 +107,6 @@ describe("finding fingerprints", () => {
       `,
     );
 
-    expect(escapeFindings).toHaveLength(2);
-    expect(new Set(escapeFindings.map((finding) => finding.fingerprint)).size).toBe(2);
     expect(catchFindings).toHaveLength(2);
     expect(new Set(catchFindings.map((finding) => finding.fingerprint)).size).toBe(2);
   });
@@ -354,37 +340,6 @@ describe("detectGenericNaming", () => {
 
   it("ignores specific domain names", () => {
     const findings = runSingle(detectGenericNaming, "type RequestEnvelope = { id: string };");
-
-    expect(findings).toEqual([]);
-  });
-});
-
-describe("detectTsEscapeHatches", () => {
-  it("flags any-casts and TypeScript suppression comments", () => {
-    const findings = runSingle(
-      detectTsEscapeHatches,
-      `
-      const value = input as any;
-      // @ts-expect-error legacy API
-      callMissing(value);
-      `,
-    );
-
-    expect(findings.map((finding) => finding.metadata.kind).sort()).toEqual([
-      "@ts-expect-error",
-      "asAny",
-    ]);
-  });
-
-  it("ignores non-any casts and normal TypeScript comments", () => {
-    const findings = runSingle(
-      detectTsEscapeHatches,
-      `
-      const value = input as unknown;
-      // @ts-check
-      use(value);
-      `,
-    );
 
     expect(findings).toEqual([]);
   });

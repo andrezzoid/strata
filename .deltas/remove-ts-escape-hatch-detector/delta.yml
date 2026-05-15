@@ -1,0 +1,80 @@
+goal: >
+  Remove the `tsEscapeHatch` detector from strata's public detector set.
+
+acceptance:
+  - "`tsEscapeHatch` is no longer registered, runnable through `--only`, emitted in SARIF rules, or listed in public detector docs."
+  - Source, test, fixture, and detector-doc files dedicated only to `tsEscapeHatch` are removed.
+  - Remaining detector behavior and CLI selection continue to pass the relevant tests and typecheck.
+
+context: |
+  This is a removal, not a semantic refinement. Do not preserve the detector behind a compatibility alias without a concrete external contract.
+  The detector registry is the public catalog for CLI/API filtering; removing the registry entry intentionally makes `--only tsEscapeHatch` invalid.
+  Formatter and SARIF special cases should only describe detectors that can still be emitted.
+
+refs:
+  - src/detectors/registry.ts
+  - src/sarif.ts
+  - src/format.ts
+  - src/ast.ts
+  - test/detectors.test.ts
+  - README.md
+  - docs/detectors/ts-escape-hatch.md
+
+open_questions: []
+
+tasks:
+  - id: remove-ts-escape-hatch-detector
+    description: >
+      Remove the detector implementation, public registry entry, detector-specific
+      formatting/SARIF/docs references, and tests/fixtures that only validate
+      `tsEscapeHatch` behavior.
+    status: done
+    context: |
+      Follow the same public-removal shape as the existing pass-through-variable removal delta.
+      Keep parser comments on `Ctx` unless no remaining detector or caller needs them; this task should not broaden into parser API redesign.
+    acceptance:
+      - No production imports or registry definitions reference `detectTsEscapeHatches` or `tsEscapeHatch`.
+      - Dedicated `ts-escape-hatches` source, fixture, detector doc, and unit tests are gone.
+      - README detector list and SARIF rule catalog no longer advertise `tsEscapeHatch`.
+      - Relevant tests, typecheck, and self-scan pass.
+    depends_on: []
+
+log:
+  - id: log-001
+    timestamp: 2026-05-15T15:11:24Z
+    command: plan
+    summary: >
+      Planned one vertical removal task because registry, docs, formatter, SARIF,
+      tests, and fixtures must change together for a coherent public detector
+      catalog. Baseline verified before planning: `bun run test` passed with
+      125 tests.
+  - id: log-002
+    timestamp: 2026-05-15T15:16:58Z
+    command: apply
+    task: remove-ts-escape-hatch-detector
+    summary: >
+      Removed the `tsEscapeHatch` detector implementation, public registry entry,
+      SARIF rule, text evidence branch, detector docs, unit coverage, fixture, and
+      now-unused parser-comment field from `Ctx`. Verified removal by grepping
+      `src/`, `test/`, `docs/`, and `README.md` for detector references; only
+      changelog/delta history remains. `bun src/cli.ts --only tsEscapeHatch
+      --format json && exit 1 || test $? -eq 2` passed and listed valid detectors
+      without `tsEscapeHatch`. Verification passed: `bun run typecheck`, `bun run
+      test` (122 pass), `bun run test:coverage` (87.66% >= 85%), `bun run lint`,
+      `bun run scan:ci`, `bun run scan:sarif`, and `bun run package:check`.
+      `bun run format:check` is blocked by pre-existing untracked
+      `docs/research/red-flags-source.md`; targeted `bunx oxfmt --check` on touched
+      files passed.
+  - id: log-003
+    timestamp: 2026-05-15T15:17:34Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. `tsEscapeHatch`
+      is absent from production source, tests, detector docs, and README; the
+      dedicated source/doc/fixture paths no longer exist; `--only tsEscapeHatch`
+      exits through the unknown-detector path with the valid detector list;
+      SARIF output lists the remaining detector rules only. Regression checks
+      passed: typecheck, tests, coverage, lint, self-scan, SARIF generation, and
+      package dry run. Full `format:check` remains blocked only by the unrelated
+      pre-existing untracked `docs/research/red-flags-source.md`; touched-file
+      formatting passed. No Verify failures found.
