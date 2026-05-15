@@ -19,6 +19,7 @@ refs:
   - test/detectors.test.ts
   - test/fixtures/pass-through-variable/
   - README.md
+  - CHANGELOG.md
   - docs/detectors/pass-through-variable.md
   - docs/detectors/pass-through-method.md
 
@@ -84,3 +85,13 @@ log:
       unknown detector with the valid list excluding it; relevant tests and
       typecheck passed; full tests and lint passed; source self-scan reported 0
       findings. No regressions detected. Delta is complete.
+
+  - id: log-004
+    timestamp: 2026-05-15T15:07:29Z
+    command: apply
+    task: remove-pass-through-variable-detector
+    summary: >
+      Added the missed `CHANGELOG.md` entry for the release-surface change after
+      review pointed out the omission. This is documentation-only; staged-file
+      format/lint hooks are expected to cover the follow-up commit path, and the
+      prior implementation verification still applies.

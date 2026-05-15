@@ -5,6 +5,7 @@ All notable changes to `strata` will be documented here.
 ## 0.3.1 - Unreleased
 
 - Refines `passThroughMethod` detection to focus on public class methods that forward same-order arguments to collaborators, adds `return await` support, excludes direct self-delegation and unrelated operation names, and reports class-surface concentration evidence without changing candidate severity.
+- Removes the `passThroughVariable` detector from the public detector set, including CLI filtering, SARIF metadata, docs, fixtures, and tests.
 
 ## 0.3.0 - 2026-05-12
 
