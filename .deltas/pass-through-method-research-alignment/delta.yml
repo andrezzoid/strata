@@ -61,7 +61,7 @@ tasks:
     description: >
       Add class-level pass-through surface evidence to each method finding
       instead of introducing detector severity levels.
-    status: pending
+    status: done
     context: |
       `Finding.severity` is fixed to `candidate`; concentration belongs in metadata and review-facing text.
       Count public non-constructor methods and refined pass-through candidates within the containing class.
@@ -162,3 +162,25 @@ log:
       before the detector change, then `bun test test/detectors.test.ts` passed
       with 29 tests, 0 failures; `bun test test/fixtures.test.ts` passed with
       13 tests, 0 failures; `bun run typecheck` passed.
+
+  - id: log-005
+    timestamp: 2026-05-15T10:44:13Z
+    command: apply
+    task: add-concentration-evidence
+    summary: >
+      Added class-level pass-through surface evidence to each
+      `passThroughMethod` finding without changing the fixed `candidate`
+      severity or adding class-level duplicate findings. The detector now emits
+      stable metadata for class name, wrapper method, receiver, callee,
+      pass-through method count, public method count, ratio, and whether the
+      class crosses the concentration threshold. Text output shows class-surface
+      evidence only for concentrated classes. Acceptance evidence: RED tests
+      failed before implementation for missing metadata and missing text
+      evidence; after implementation `bun test test/detectors.test.ts` passed
+      with 30 tests, 0 failures; `bun test test/cli.test.ts` passed with 41
+      tests, 0 failures; `bun test test/fixtures.test.ts` passed with 13 tests,
+      0 failures; `bun run typecheck` passed; `bun run test` passed with 127
+      tests, 0 failures; source self-scan with `--only passThroughMethod`
+      reported 0 findings. Manual complexity review found the detector still
+      owns its AST-shape knowledge locally and does not introduce a shallow
+      helper module.

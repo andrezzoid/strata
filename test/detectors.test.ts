@@ -193,6 +193,46 @@ describe("detectPassThroughMethod", () => {
     expect(findings).toHaveLength(1);
   });
 
+  it("adds class-surface evidence to each pass-through method finding", () => {
+    const findings = runSingle(
+      detectPassThroughMethod,
+      `
+      class UserService {
+        repo: any;
+        getUser(id: string) {
+          return this.repo.getUser(id);
+        }
+        deleteUser(id: string) {
+          return this.repo.deleteUser(id);
+        }
+        saveUser(user: User) {
+          return this.repo.saveUser(user);
+        }
+        hydrateUser(id: string) {
+          return { id };
+        }
+      }
+      `,
+    );
+
+    expect(findings).toHaveLength(3);
+    for (const finding of findings) {
+      expect(finding.severity).toBe("candidate");
+      expect(finding.metadata).toMatchObject({
+        className: "UserService",
+        passThroughMethodCount: 3,
+        publicMethodCount: 4,
+        passThroughRatio: 0.75,
+        concentrated: true,
+      });
+    }
+    expect(findings[0].metadata).toMatchObject({
+      methodName: "getUser",
+      receiver: "this.repo",
+      callee: "this.repo.getUser",
+    });
+  });
+
   it("ignores wrappers that add behavior before delegating", () => {
     const findings = runSingle(
       detectPassThroughMethod,

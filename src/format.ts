@@ -133,6 +133,7 @@ function textMessage(message: string): string {
 
 function evidenceLines(finding: Finding): string[] {
   if (finding.flag === "duplicateSymbol") return duplicateSymbolEvidence(finding);
+  if (finding.flag === "passThroughMethod") return passThroughMethodEvidence(finding);
   if (finding.flag === "passThroughVariable") {
     const params = finding.metadata.passThroughParams;
     if (Array.isArray(params) && params.length > 0) {
@@ -165,6 +166,25 @@ function evidenceLines(finding: Finding): string[] {
     return [`evidence: implementer count: ${finding.metadata.implementerCount}`];
   }
   return [];
+}
+
+function passThroughMethodEvidence(finding: Finding): string[] {
+  if (finding.metadata.concentrated !== true) return [];
+  const count = finding.metadata.passThroughMethodCount;
+  const publicCount = finding.metadata.publicMethodCount;
+  const ratio = finding.metadata.passThroughRatio;
+  const className = finding.metadata.className;
+  if (
+    typeof count !== "number" ||
+    typeof publicCount !== "number" ||
+    typeof ratio !== "number" ||
+    typeof className !== "string"
+  ) {
+    return [];
+  }
+  return [
+    `evidence: ${count}/${publicCount} public methods in ${className} are pass-through (${Math.round(ratio * 100)}%)`,
+  ];
 }
 
 function duplicateSymbolEvidence(finding: Finding): string[] {

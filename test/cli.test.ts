@@ -320,6 +320,9 @@ describe("CLI", () => {
     expect(result.stdout).toContain("candidate signals, not automated design verdicts");
     expect(result.stdout).toContain("passThroughMethod\n  Suspicious when a method only forwards");
     expect(result.stdout).toContain("  case.ts:7\n    class method delegates");
+    expect(result.stdout).toContain(
+      "evidence: 2/3 public methods in UserService are pass-through (67%)",
+    );
     expect(result.stdout).not.toContain("strata:v1:");
   });
 
