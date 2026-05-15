@@ -8,7 +8,6 @@ import { detectDuplicateSymbol } from "../src/detectors/duplicate-symbol.ts";
 import { detectGenericNaming } from "../src/detectors/generic-naming.ts";
 import { detectOrphanFile } from "../src/detectors/orphan-file.ts";
 import { detectPassThroughMethod } from "../src/detectors/pass-through-method.ts";
-import { detectPassThroughVariable } from "../src/detectors/pass-through-variable.ts";
 import { detectShallowModule } from "../src/detectors/shallow-module.ts";
 import { detectTsEscapeHatches } from "../src/detectors/ts-escape-hatches.ts";
 import { detectUniqueImplementation } from "../src/detectors/unique-implementation.ts";
@@ -273,43 +272,6 @@ describe("detectPassThroughMethod", () => {
         findUser(id: string) {
           return this.repo.loadById(id);
         }
-      }
-      `,
-    );
-
-    expect(findings).toEqual([]);
-  });
-});
-
-describe("detectPassThroughVariable", () => {
-  it("flags plumbing functions whose params are only forwarded together", () => {
-    const findings = runSingle(
-      detectPassThroughVariable,
-      `
-      function handle(request: Request, config: Config, logger: Logger, metrics: Metrics) {
-        authenticate(request, config, logger, metrics);
-        authorize(request, config, logger, metrics);
-      }
-      `,
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0].metadata.passThroughParams).toEqual([
-      "request",
-      "config",
-      "logger",
-      "metrics",
-    ]);
-  });
-
-  it("ignores functions that read forwarded values locally", () => {
-    const findings = runSingle(
-      detectPassThroughVariable,
-      `
-      function handle(request: Request, config: Config, logger: Logger, metrics: Metrics) {
-        logger.info(config.mode);
-        authenticate(request, metrics);
-        return request.id;
       }
       `,
     );

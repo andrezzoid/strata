@@ -257,6 +257,14 @@ describe("CLI", () => {
     expect(parsed.summary.byFlag).toEqual({ passThroughMethod: parsed.summary.totalFindings });
   });
 
+  it("rejects the removed passThroughVariable detector filter", () => {
+    const result = runStrata([passThroughFixture, "--only", "passThroughVariable"]);
+
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("unknown detector: passThroughVariable");
+    expect(result.stderr).not.toContain("passThroughVariable, ");
+  });
+
   it("omits excluded detector findings", () => {
     const result = runStrata([
       passThroughFixture,

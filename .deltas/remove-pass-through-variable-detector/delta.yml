@@ -1,0 +1,86 @@
+goal: >
+  Remove the `passThroughVariable` detector from strata's public detector set.
+
+acceptance:
+  - "`passThroughVariable` is no longer registered, runnable through `--only`, emitted in SARIF rules, or listed in public detector docs."
+  - Source, test, fixture, and detector-doc files dedicated only to `passThroughVariable` are removed.
+  - Remaining detector behavior and CLI selection continue to pass the relevant tests and typecheck.
+
+context: |
+  This is a removal, not a semantic refinement. Do not preserve the detector behind a compatibility alias unless a concrete external contract requires it.
+  The registry is the public detector catalog for CLI/API filtering; removing the registry entry makes `--only passThroughVariable` invalid by design.
+  Formatter and SARIF special cases should only describe detectors that can still be emitted.
+
+refs:
+  - src/detectors/registry.ts
+  - src/detectors/pass-through-variable.ts
+  - src/format.ts
+  - src/sarif.ts
+  - test/detectors.test.ts
+  - test/fixtures/pass-through-variable/
+  - README.md
+  - docs/detectors/pass-through-variable.md
+  - docs/detectors/pass-through-method.md
+
+open_questions: []
+
+tasks:
+  - id: remove-pass-through-variable-detector
+    description: >
+      Remove the `passThroughVariable` detector end-to-end from code, tests,
+      fixtures, SARIF/text metadata, and public detector documentation.
+    status: done
+    context: |
+      Keep the existing detector registry as the single source of enabled detector IDs.
+      Delete dedicated detector artifacts rather than leaving dead code or stale docs.
+      Update adjacent docs that link to the removed detector, but do not broaden `passThroughMethod` to absorb parameter-threading behavior.
+    acceptance:
+      - The registry no longer imports or defines `passThroughVariable`.
+      - "`--only passThroughVariable` is rejected as an unknown detector."
+      - Dedicated detector tests, fixture expectations, SARIF rule, text evidence branch, README row, detector doc, and related links are removed or updated.
+      - "`bun test test/detectors.test.ts test/fixtures.test.ts test/cli.test.ts` and `bun run typecheck` pass."
+    depends_on: []
+
+log:
+  - id: log-001
+    timestamp: 2026-05-15T14:37:08Z
+    command: plan
+    summary: >
+      Planned a single vertical removal task because the detector has one public
+      catalog entry with dedicated implementation, tests, fixture, SARIF/text
+      evidence, and docs. Baseline before planning passed: `bun test
+      test/detectors.test.ts test/fixtures.test.ts test/cli.test.ts` reported
+      84 tests, 0 failures, 234 assertions.
+
+  - id: log-002
+    timestamp: 2026-05-15T14:40:33Z
+    command: apply
+    task: remove-pass-through-variable-detector
+    summary: >
+      Removed `passThroughVariable` from the detector registry, deleted its
+      detector source, unit tests, fixture, and detector doc, and removed its
+      SARIF/text evidence metadata plus public README/related-doc links. Added
+      a RED CLI test proving `--only passThroughVariable` was accepted before
+      removal and is now rejected as unknown. Acceptance evidence: `bun test
+      test/detectors.test.ts test/fixtures.test.ts test/cli.test.ts` passed
+      with 82 tests, 0 failures, 232 assertions; `bun run typecheck` passed;
+      `bun src/cli.ts test/fixtures/pass-through-method --only
+      passThroughVariable` exits with `unknown detector: passThroughVariable`
+      and a valid-detector list that excludes it; `bun run test` passed with
+      125 tests, 0 failures, 397 assertions; `bun run lint` passed with 0
+      warnings/errors; `bun src/cli.ts src --format json` reported 0 findings.
+      `bun run format:check` failed only in untouched
+      `docs/research/red-flags-source.md`, so no task-owned format regression
+      was found.
+
+  - id: log-003
+    timestamp: 2026-05-15T14:41:14Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass for the single
+      removal task. Verified active `src/`, `docs/`, and `README.md` contain no
+      `passThroughVariable` or `pass-through-variable` references; the dedicated
+      fixture files are gone; `--only passThroughVariable` is rejected as an
+      unknown detector with the valid list excluding it; relevant tests and
+      typecheck passed; full tests and lint passed; source self-scan reported 0
+      findings. No regressions detected. Delta is complete.

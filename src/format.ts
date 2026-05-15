@@ -134,12 +134,6 @@ function textMessage(message: string): string {
 function evidenceLines(finding: Finding): string[] {
   if (finding.flag === "duplicateSymbol") return duplicateSymbolEvidence(finding);
   if (finding.flag === "passThroughMethod") return passThroughMethodEvidence(finding);
-  if (finding.flag === "passThroughVariable") {
-    const params = finding.metadata.passThroughParams;
-    if (Array.isArray(params) && params.length > 0) {
-      return [`evidence: forwarded params: ${params.map(String).join(", ")}`];
-    }
-  }
   if (finding.flag === "shallowModule") {
     const surface = finding.metadata.surface;
     const bodyLines = finding.metadata.bodyLines;

@@ -318,7 +318,6 @@ Each detector targets a design failure that AI-assisted workflows reliably intro
 | [`wideModule`](docs/detectors/wide-module.md)                     | file    | Too many top-level exports.                                             |
 | [`wideSignature`](docs/detectors/wide-signature.md)               | file    | Function, method, or constructor has too many required parameters.      |
 | [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Public class method only forwards same-order args to a collaborator.    |
-| [`passThroughVariable`](docs/detectors/pass-through-variable.md)  | file    | Several parameters are only forwarded through calls.                    |
 | [`genericNaming`](docs/detectors/generic-naming.md)               | file    | Type/class names end with vague suffixes such as `Manager` or `Helper`. |
 | [`tsEscapeHatch`](docs/detectors/ts-escape-hatch.md)              | file    | `as any`, `@ts-ignore`, or `@ts-expect-error`.                          |
 | [`emptyCatch`](docs/detectors/empty-catch.md)                     | file    | `catch` clause has no executable statement.                             |

@@ -65,11 +65,6 @@ const RULES: SarifRule[] = [
     "Public class method only forwards same-order arguments to a collaborator.",
   ),
   rule(
-    "passThroughVariable",
-    "Pass-through variable",
-    "Parameters are forwarded through calls without adding local meaning.",
-  ),
-  rule(
     "genericNaming",
     "Generic naming",
     "Type or class name uses vague suffixes such as Manager or Helper.",
