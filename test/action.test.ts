@@ -158,7 +158,7 @@ describe("GitHub Action runner", () => {
     try {
       const run = runActionScript({
         STRATA_INPUT_PATH: "test/fixtures/pass-through-method",
-        STRATA_INPUT_ONLY: "catchRethrow",
+        STRATA_INPUT_ONLY: "genericNaming",
         GITHUB_STEP_SUMMARY: join(root, "summary.md"),
       });
 

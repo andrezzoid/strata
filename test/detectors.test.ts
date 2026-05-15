@@ -3,7 +3,6 @@ import { parseSync } from "oxc-parser";
 import { describe, expect, it } from "bun:test";
 
 import { buildLineOf, type CrossDetector, type Ctx, type SingleDetector } from "../src/ast.ts";
-import { detectCatchRethrow, detectEmptyCatch } from "../src/detectors/catch-handling.ts";
 import { detectDuplicateSymbol } from "../src/detectors/duplicate-symbol.ts";
 import { detectGenericNaming } from "../src/detectors/generic-naming.ts";
 import { detectOrphanFile } from "../src/detectors/orphan-file.ts";
@@ -84,31 +83,10 @@ describe("finding fingerprints", () => {
       }
       `,
     );
-    expectSingleFingerprintStable(
-      detectEmptyCatch,
-      `
-      try {
-        work();
-      } catch (error) {}
-      `,
-    );
     expectCrossFingerprintStable(detectDuplicateSymbol, {
       "src/a.ts": "export const API_URL = 'https://api.example';",
       "src/b.ts": "export const API_URL = 'https://api.example';",
     });
-  });
-
-  it("keeps same-detector findings in one file distinct", () => {
-    const catchFindings = runSingle(
-      detectEmptyCatch,
-      `
-      try { one(); } catch (error) {}
-      try { two(); } catch (error) {}
-      `,
-    );
-
-    expect(catchFindings).toHaveLength(2);
-    expect(new Set(catchFindings.map((finding) => finding.fingerprint)).size).toBe(2);
   });
 });
 
@@ -258,70 +236,6 @@ describe("detectPassThroughMethod", () => {
         findUser(id: string) {
           return this.repo.loadById(id);
         }
-      }
-      `,
-    );
-
-    expect(findings).toEqual([]);
-  });
-});
-
-describe("catch-handling detectors", () => {
-  it("flags catches with no executable body, including comments-only bodies", () => {
-    const findings = runSingle(
-      detectEmptyCatch,
-      `
-      try {
-        work();
-      } catch (error) {
-        // intentionally swallowed
-      }
-      `,
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0].flag).toBe("emptyCatch");
-  });
-
-  it("ignores catches that do useful work", () => {
-    const findings = runSingle(
-      detectEmptyCatch,
-      `
-      try {
-        work();
-      } catch (error) {
-        report(error);
-      }
-      `,
-    );
-
-    expect(findings).toEqual([]);
-  });
-
-  it("flags catches whose only behavior is rethrowing the same error", () => {
-    const findings = runSingle(
-      detectCatchRethrow,
-      `
-      try {
-        work();
-      } catch (error) {
-        throw error;
-      }
-      `,
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0].flag).toBe("catchRethrow");
-  });
-
-  it("ignores catches that wrap the error before throwing", () => {
-    const findings = runSingle(
-      detectCatchRethrow,
-      `
-      try {
-        work();
-      } catch (error) {
-        throw new Error(String(error));
       }
       `,
     );

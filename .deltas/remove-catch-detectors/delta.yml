@@ -1,0 +1,83 @@
+goal: >
+  Remove the `emptyCatch` and `catchRethrow` detectors from the scanner's
+  supported detector set.
+
+acceptance:
+  - Scanner output no longer emits or documents `emptyCatch` findings.
+  - Scanner output no longer emits or documents `catchRethrow` findings.
+  - CLI detector filters reject both removed detector IDs as unknown names.
+
+context: |
+  `DETECTOR_DEFINITIONS` is the scanner's source of truth for supported detector IDs.
+  Removing detector support also means removing docs, SARIF rule descriptors,
+  fixtures, and tests that advertise or directly exercise the deleted detectors.
+
+refs:
+  - src/detectors/registry.ts
+  - src/sarif.ts
+  - test/detectors.test.ts
+  - test/cli.test.ts
+  - test/action.test.ts
+  - README.md
+
+tasks:
+  - id: remove-catch-detectors
+    description: >
+      Remove `emptyCatch` and `catchRethrow` from the supported detector surface
+      and delete their now-unused implementation, docs, fixtures, and tests.
+    status: done
+    context: |
+      Follow the earlier removed-detector pattern in `test/cli.test.ts`.
+      Keep `scanProject()` and CLI filtering driven by the registry instead of
+      adding compatibility paths for removed detector names.
+    acceptance:
+      - "`emptyCatch` and `catchRethrow` are absent from the detector registry and SARIF rules."
+      - Removed detector names are rejected by CLI filtering rather than silently accepted.
+      - Documentation and test fixtures no longer advertise or exercise the removed detectors.
+      - Relevant tests pass after the removal.
+    depends_on: []
+
+notes:
+  - >
+    Full `bun run format:check` still fails on pre-existing formatting in
+    `docs/research/red-flags-source.md`; touched files pass `bunx oxfmt --check`.
+
+log:
+  - id: log-001
+    timestamp: 2026-05-15T16:31:50Z
+    command: plan
+    summary: >
+      Planned one vertical removal task after confirming the current detector and
+      action tests pass with `bun test test/detectors.test.ts test/action.test.ts`.
+      The registry is the source of truth, so removing these IDs there will also
+      make CLI detector filters reject the deleted names.
+  - id: log-002
+    timestamp: 2026-05-15T16:37:09Z
+    command: apply
+    task: remove-catch-detectors
+    summary: >
+      Removed the catch-handling detector implementation, registry entries,
+      SARIF rules, README rows, detector docs, fixtures, and direct detector
+      tests. Added CLI coverage proving `emptyCatch` and `catchRethrow` are now
+      rejected detector filters, and adjusted the action zero-candidate test to
+      use a remaining detector. Verification: initial red test
+      `bun test test/cli.test.ts` failed with status 0 for removed filters;
+      focused suite `bun test test/cli.test.ts test/detectors.test.ts
+      test/fixtures.test.ts test/action.test.ts` passed 86 tests; full
+      `bun test` passed 116 tests; `bun run typecheck` passed; `bun run lint`
+      passed with 0 issues; touched-file `bunx oxfmt --check ...` passed;
+      source/docs/fixture grep found no active references; direct CLI checks
+      reject both names; introduced-change strata scan emitted 0 findings.
+  - id: log-003
+    timestamp: 2026-05-15T16:37:55Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Verified the
+      registry/SARIF/docs/fixture absence criteria by grep over `src`, `docs`,
+      `README.md`, and `test/fixtures`; verified CLI rejection with direct
+      `bun src/cli.ts ... --only emptyCatch` and `--only catchRethrow` checks;
+      verified regressions with `bun test` (116 pass), `bun run typecheck`,
+      `bun run lint`, and introduced-change `bun src/cli.ts . --new-since HEAD
+      --format json` (0 findings). No delta issues found. Residual unrelated
+      issue: full `bun run format:check` fails on unmodified
+      `docs/research/red-flags-source.md`; touched files pass formatting.

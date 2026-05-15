@@ -319,8 +319,6 @@ Each detector targets a design failure that AI-assisted workflows reliably intro
 | [`wideSignature`](docs/detectors/wide-signature.md)               | file    | Function, method, or constructor has too many required parameters.      |
 | [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Public class method only forwards same-order args to a collaborator.    |
 | [`genericNaming`](docs/detectors/generic-naming.md)               | file    | Type/class names end with vague suffixes such as `Manager` or `Helper`. |
-| [`emptyCatch`](docs/detectors/empty-catch.md)                     | file    | `catch` clause has no executable statement.                             |
-| [`catchRethrow`](docs/detectors/catch-rethrow.md)                 | file    | `catch` only rethrows the caught value.                                 |
 | [`duplicateSymbol`](docs/detectors/duplicate-symbol.md)           | project | Named declarations with identical structure are repeated.               |
 | [`uniqueImplementation`](docs/detectors/unique-implementation.md) | project | Interface or abstract class has no real polymorphism payoff.            |
 | [`orphanFile`](docs/detectors/orphan-file.md)                     | project | File is not imported by any other scanned file.                         |

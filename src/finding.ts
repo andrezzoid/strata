@@ -40,22 +40,6 @@ export function createFinding(input: FindingInput): Finding {
   };
 }
 
-/**
- * Tracks repeated identical anchors inside one detector pass without falling back to line numbers.
- *
- * Detectors should pass their semantic anchor first; this helper appends a stable
- * occurrence ordinal only when that same anchor appears again in the same file scan.
- */
-export function createIdentityTracker(): (identity: FindingIdentity) => FindingIdentity {
-  const counts = new Map<string, number>();
-  return (identity) => {
-    const key = canonicalize(identity);
-    const occurrence = (counts.get(key) ?? 0) + 1;
-    counts.set(key, occurrence);
-    return occurrence === 1 ? identity : [...identity, occurrence];
-  };
-}
-
 function canonicalize(value: IdentityValue): string {
   if (value === null) return "null";
   if (Array.isArray(value)) return `[${value.map(canonicalize).join(",")}]`;

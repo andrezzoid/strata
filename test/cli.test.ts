@@ -265,6 +265,16 @@ describe("CLI", () => {
     expect(result.stderr).not.toContain("passThroughVariable, ");
   });
 
+  it("rejects the removed catch-handling detector filters", () => {
+    for (const detector of ["emptyCatch", "catchRethrow"]) {
+      const result = runStrata([passThroughFixture, "--only", detector]);
+
+      expect(result.status).toBe(2);
+      expect(result.stderr).toContain(`unknown detector: ${detector}`);
+      expect(result.stderr).not.toContain(`${detector}, `);
+    }
+  });
+
   it("omits excluded detector findings", () => {
     const result = runStrata([
       passThroughFixture,

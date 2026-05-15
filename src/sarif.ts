@@ -69,8 +69,6 @@ const RULES: SarifRule[] = [
     "Generic naming",
     "Type or class name uses vague suffixes such as Manager or Helper.",
   ),
-  rule("emptyCatch", "Empty catch", "Catch clause ignores failures without executable handling."),
-  rule("catchRethrow", "Catch rethrow", "Catch clause only rethrows the caught value."),
   rule(
     "duplicateSymbol",
     "Duplicate symbol",
