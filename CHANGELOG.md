@@ -4,6 +4,8 @@ All notable changes to `strata` will be documented here.
 
 ## 0.3.1 - Unreleased
 
+- Refines `passThroughMethod` detection to focus on public class methods that forward same-order arguments to collaborators, adds `return await` support, excludes direct self-delegation and unrelated operation names, and reports class-surface concentration evidence without changing candidate severity.
+
 ## 0.3.0 - 2026-05-12
 
 - Adds `strata --version` and shows the installed package version at the top of `strata --help`.
