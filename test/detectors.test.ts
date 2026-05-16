@@ -7,7 +7,6 @@ import { detectDuplicateSymbol } from "../src/detectors/duplicate-symbol.ts";
 import { detectGenericNaming } from "../src/detectors/generic-naming.ts";
 import { detectOrphanFile } from "../src/detectors/orphan-file.ts";
 import { detectPassThroughMethod } from "../src/detectors/pass-through-method.ts";
-import { detectShallowModule } from "../src/detectors/shallow-module.ts";
 import { detectUniqueImplementation } from "../src/detectors/unique-implementation.ts";
 import { detectWideSignature } from "../src/detectors/wide-signature.ts";
 
@@ -59,14 +58,6 @@ function expectCrossFingerprintStable(detect: CrossDetector, sources: Record<str
 
 describe("finding fingerprints", () => {
   it("keeps representative detector fingerprints stable across harmless line shifts", () => {
-    expectSingleFingerprintStable(
-      detectShallowModule,
-      `
-      export const one = 1;
-      export const two = 2;
-      export const three = 3;
-      `,
-    );
     expectSingleFingerprintStable(
       detectWideSignature,
       "function connect(a: A, b: B, c: C, d: D, e: E) {}\n",
@@ -253,42 +244,6 @@ describe("detectGenericNaming", () => {
 
   it("ignores specific domain names", () => {
     const findings = runSingle(detectGenericNaming, "type RequestEnvelope = { id: string };");
-
-    expect(findings).toEqual([]);
-  });
-});
-
-describe("module surface detectors", () => {
-  it("flags modules whose exported surface dominates their body", () => {
-    const findings = runSingle(
-      detectShallowModule,
-      `
-      export const one = 1;
-      export const two = 2;
-      export const three = 3;
-      `,
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0].metadata).toEqual({ surface: 3, bodyLines: 3 });
-  });
-
-  it("ignores modules with a small caller-facing surface", () => {
-    const findings = runSingle(
-      detectShallowModule,
-      `
-      export function calculate(items: number[]) {
-        let total = 0;
-        for (const item of items) {
-          total += item;
-        }
-        if (total > 100) {
-          total -= 10;
-        }
-        return total;
-      }
-      `,
-    );
 
     expect(findings).toEqual([]);
   });

@@ -1,0 +1,121 @@
+goal: >
+  Remove the `shallowModule` detector from strata's public detector set.
+
+acceptance:
+  - "`shallowModule` is no longer registered, runnable through `--only`, emitted in SARIF rules, or listed in public detector docs."
+  - Source, test, fixture, and detector-doc files dedicated only to `shallowModule` are removed.
+  - Remaining detector behavior and CLI selection continue to pass the relevant tests and typecheck.
+
+context: |
+  This is a removal, not a threshold or semantics change. Do not preserve the detector behind a compatibility alias without a concrete external contract.
+  The detector registry is the public catalog for CLI/API filtering; removing the registry entry intentionally makes `--only shallowModule` invalid.
+  Shared module-surface counting may be removed only if no remaining detector imports it.
+
+refs:
+  - src/detectors/registry.ts
+  - src/detectors/shallow-module.ts
+  - src/detectors/module-surface.ts
+  - src/format.ts
+  - src/sarif.ts
+  - test/detectors.test.ts
+  - test/fixtures/shallow-module/
+  - test/cli.test.ts
+  - README.md
+  - CHANGELOG.md
+  - docs/detectors/shallow-module.md
+
+open_questions: []
+
+tasks:
+  - id: remove-shallow-module-detector
+    description: >
+      Remove the `shallowModule` detector end-to-end from code, tests, fixtures,
+      SARIF/text metadata, and public detector documentation.
+    status: done
+    context: |
+      Follow the public-removal shape used by the wide-module detector removal.
+      Remove shared module-surface counting if this detector is its last consumer.
+      Add CLI coverage proving the former detector filter is rejected by the registry-backed valid-detector list.
+    acceptance:
+      - The registry no longer imports or defines `detectShallowModule` or `shallowModule`.
+      - "`--only shallowModule` is rejected as an unknown detector."
+      - Dedicated detector tests, fixture expectations, SARIF rule, text evidence branch, README row, detector doc, and related links are removed or updated.
+      - "`bun test test/detectors.test.ts test/fixtures.test.ts test/cli.test.ts` and `bun run typecheck` pass."
+    depends_on: []
+
+log:
+  - id: log-001
+    timestamp: 2026-05-16T13:03:26Z
+    command: plan
+    summary: >
+      Planned one vertical removal task because registry, CLI selection, SARIF/text
+      metadata, detector unit tests, fixtures, and public docs must change together
+      for a coherent detector catalog. Baseline before planning passed: `bun test
+      test/detectors.test.ts test/fixtures.test.ts test/cli.test.ts` reported 71
+      tests, 0 failures, 216 assertions.
+
+  - id: log-002
+    timestamp: 2026-05-16T13:08:49Z
+    command: apply
+    task: remove-shallow-module-detector
+    summary: >
+      Removed the `shallowModule` implementation, registry entry, SARIF rule, text
+      evidence branch, detector docs, fixture, detector unit coverage, README row,
+      and related doc link; removed `module-surface.ts` because no remaining code
+      imports shared surface counting. Added a RED CLI test that failed while the
+      detector was still registered and now proves `--only shallowModule` is
+      rejected; SARIF CLI coverage now also asserts `shallowModule` is absent from
+      generated rules. Acceptance evidence: `bun test test/detectors.test.ts
+      test/fixtures.test.ts test/cli.test.ts` passed with 69 tests, 0 failures,
+      214 assertions; `bun test test/detectors.test.ts test/fixtures.test.ts
+      test/cli.test.ts test/action.test.ts` passed with 82 tests, 0 failures, 266
+      assertions; `bun run typecheck` passed; active `src/` contains no
+      `shallowModule`, `detectShallowModule`, `shallow-module`, or `Shallow module`
+      references; deleted `shallow-module` file paths no longer exist; direct CLI
+      output rejects `unknown detector: shallowModule` with the valid-detector list
+      excluding it; generated SARIF rules exclude `shallowModule`. Broader gates
+      passed: `bun run test` (112 pass), `bun run test:coverage` (86.81% >= 85%),
+      `bun run lint`, `bun run scan:ci`, `bun run scan:sarif`, and `bun run
+      package:check`. Full `bun run format:check` remains blocked only by unrelated
+      `docs/research/red-flags-source.md`; touched test files were formatted with
+      `bunx oxfmt test/cli.test.ts test/action.test.ts`.
+
+  - id: log-003
+    timestamp: 2026-05-16T13:09:42Z
+    command: verify
+    summary: >
+      Task-level acceptance failed. Failures: [bug]
+      remove-shallow-module-detector: `test/fixtures/shallow-module/deep.ts`
+      remained as a dedicated negative-control fixture after the detector and main
+      fixture expectation were removed. Expected all dedicated shallow-module
+      fixture files to be gone; actual glob found the leftover path. Task returned
+      to `in_progress` for Apply.
+
+  - id: log-004
+    timestamp: 2026-05-16T13:10:14Z
+    command: apply
+    task: remove-shallow-module-detector
+    summary: >
+      Fixed the verify bug by deleting leftover
+      `test/fixtures/shallow-module/deep.ts`. Acceptance evidence: globbing
+      `test/fixtures/shallow-module/**` found no files, and `bun test
+      test/fixtures.test.ts test/cli.test.ts` passed with 52 tests, 0 failures,
+      184 assertions.
+
+  - id: log-005
+    timestamp: 2026-05-16T13:11:09Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Verified active
+      `src/`, `README.md`, and detector docs contain no public `shallowModule`,
+      `detectShallowModule`, `shallow-module`, or `Shallow module` references;
+      dedicated source, helper, detector-doc, and fixture paths no longer exist;
+      `--only shallowModule` is covered as an unknown detector; generated SARIF
+      rules exclude `shallowModule`; and the public detector docs no longer list
+      it. Required gates passed: `bun test test/detectors.test.ts
+      test/fixtures.test.ts test/cli.test.ts` (69 pass, 0 fail, 214 assertions)
+      and `bun run typecheck`. Regression gates passed: `bun run test` (112 pass),
+      `bun run test:coverage` (86.81% >= 85%), `bun run lint`, `bun run scan:ci`,
+      `bun run scan:sarif`, and `bun run package:check`. Full `bun run
+      format:check` still fails only on unrelated `docs/research/red-flags-source.md`.
+      No Verify failures remain. Delta is complete.

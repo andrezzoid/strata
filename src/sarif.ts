@@ -49,11 +49,6 @@ const SARIF_SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json";
 
 const RULES: SarifRule[] = [
   rule(
-    "shallowModule",
-    "Shallow module",
-    "API surface is large relative to the implementation it hides.",
-  ),
-  rule(
     "wideSignature",
     "Wide signature",
     "Function, method, or constructor has too many required parameters.",

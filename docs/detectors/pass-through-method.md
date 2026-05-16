@@ -69,5 +69,4 @@ Each finding includes class-surface evidence. The evidence is marked as concentr
 
 **See also:**
 
-- [`shallowModule`](shallow-module.md) — the broader surface-to-substance problem; `passThroughMethod` is one method-level way a class becomes shallow.
 - [`uniqueImplementation`](unique-implementation.md) — catches speculative interfaces separately; `passThroughMethod` does not try to prove whether an interface has real polymorphism payoff.

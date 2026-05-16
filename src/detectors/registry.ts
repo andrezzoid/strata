@@ -5,7 +5,6 @@ import { detectDuplicateSymbol } from "./duplicate-symbol.ts";
 import { detectGenericNaming } from "./generic-naming.ts";
 import { detectOrphanFile } from "./orphan-file.ts";
 import { detectPassThroughMethod } from "./pass-through-method.ts";
-import { detectShallowModule } from "./shallow-module.ts";
 import { detectUniqueImplementation } from "./unique-implementation.ts";
 import { detectWideSignature } from "./wide-signature.ts";
 
@@ -17,13 +16,6 @@ type DetectorDefinition =
 
 /** Public detector catalog; CLI/API filtering names come from this single ordered list. */
 export const DETECTOR_DEFINITIONS = [
-  {
-    id: "shallowModule",
-    kind: "single",
-    description:
-      "Suspicious when a module exposes a large interface relative to its implementation; readers pay API cost without much hidden complexity.",
-    detect: detectShallowModule,
-  },
   {
     id: "passThroughMethod",
     kind: "single",

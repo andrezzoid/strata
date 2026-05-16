@@ -75,7 +75,7 @@ strata complexity candidates
 Mode: full scan
 Target: .
 
-Found 4 review candidates.
+Found 3 review candidates.
 
 These are candidate signals, not automated design verdicts. Review whether
 each finding actually makes the system harder to understand or modify.
@@ -83,10 +83,9 @@ each finding actually makes the system harder to understand or modify.
 By detector:
   orphanFile         1
   passThroughMethod  2
-  shallowModule      1
 
 Top files:
-  4  case.ts
+  3  case.ts
 
 passThroughMethod
   Suspicious when a method only forwards same-order args to a collaborator; the layer may add API surface without hiding useful complexity.
@@ -314,7 +313,6 @@ Each detector targets a design failure that AI-assisted workflows reliably intro
 
 | Flag                                                              | Scope   | Signal                                                                  |
 | ----------------------------------------------------------------- | ------- | ----------------------------------------------------------------------- |
-| [`shallowModule`](docs/detectors/shallow-module.md)               | file    | API surface is large relative to body lines.                            |
 | [`wideSignature`](docs/detectors/wide-signature.md)               | file    | Function, method, or constructor has too many required parameters.      |
 | [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Public class method only forwards same-order args to a collaborator.    |
 | [`genericNaming`](docs/detectors/generic-naming.md)               | file    | Type/class names end with vague suffixes such as `Manager` or `Helper`. |

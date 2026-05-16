@@ -144,7 +144,7 @@ describe("GitHub Action runner", () => {
       expect(run.stdout).toContain(
         "strata complexity candidates\nMode: full scan\nTarget: test/fixtures/pass-through-method\n",
       );
-      expect(run.stdout).toContain("Found 4 review candidates.");
+      expect(run.stdout).toContain("Found 3 review candidates.");
       expect(run.stdout).toContain("GitHub job summary: written");
       expect(run.stdout).toContain("::warning file=test/fixtures/pass-through-method/case.ts");
       expect(await Bun.file(summaryPath).text()).toContain("# strata complexity candidates");
@@ -184,7 +184,7 @@ describe("GitHub Action runner", () => {
       });
 
       expect(run.status).toBe(1);
-      expect(run.stdout).toContain("Found 4 review candidates.");
+      expect(run.stdout).toContain("Found 3 review candidates.");
       expect(run.stdout).toContain("GitHub job summary: written");
       expect(run.stdout).toContain("::warning file=test/fixtures/pass-through-method/case.ts");
       expect(run.stderr).toBe("");

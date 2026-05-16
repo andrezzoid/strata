@@ -225,7 +225,7 @@ describe("CLI", () => {
     expect(result.stdout).toStartWith(
       `strata complexity candidates\nMode: full scan\nTarget: ${passThroughFixture}\n`,
     );
-    expect(result.stdout).toContain("Found 4 review candidates.");
+    expect(result.stdout).toContain("Found 3 review candidates.");
     expect(result.stdout).toContain("candidate signals, not automated design verdicts");
   });
 
@@ -283,6 +283,14 @@ describe("CLI", () => {
     expect(result.stderr).not.toContain("wideModule, ");
   });
 
+  it("rejects the removed shallowModule detector filter", () => {
+    const result = runStrata([passThroughFixture, "--only", "shallowModule"]);
+
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("unknown detector: shallowModule");
+    expect(result.stderr).not.toContain("shallowModule, ");
+  });
+
   it("omits excluded detector findings", () => {
     const result = runStrata([
       passThroughFixture,
@@ -306,14 +314,14 @@ describe("CLI", () => {
     const result = runStrata([passThroughFixture]);
 
     expect(result.status).toBe(0);
-    expect(result.stdout).toContain("Found 4 review candidates.");
+    expect(result.stdout).toContain("Found 3 review candidates.");
   });
 
   it("fails with default text output when requested and findings exist", () => {
     const result = runStrata([passThroughFixture, "--fail-on-findings"]);
 
     expect(result.status).toBe(1);
-    expect(result.stdout).toContain("Found 4 review candidates.");
+    expect(result.stdout).toContain("Found 3 review candidates.");
   });
 
   it("fails with explicit JSON output when requested and findings exist", () => {
@@ -342,7 +350,7 @@ describe("CLI", () => {
     expect(result.stdout).toStartWith(
       `strata complexity candidates\nMode: full scan\nTarget: ${passThroughFixture}\n`,
     );
-    expect(result.stdout).toContain("Found 4 review candidates.");
+    expect(result.stdout).toContain("Found 3 review candidates.");
     expect(result.stdout).toContain("candidate signals, not automated design verdicts");
     expect(result.stdout).toContain("passThroughMethod\n  Suspicious when a method only forwards");
     expect(result.stdout).toContain("  case.ts:7\n    class method delegates");
@@ -513,6 +521,9 @@ describe("CLI", () => {
         (finding: { ruleId: string }) => finding.ruleId === "passThroughMethod",
       ),
     ).toBe(true);
+    expect(
+      sarif.runs[0].tool.driver.rules.some((rule: { id: string }) => rule.id === "shallowModule"),
+    ).toBe(false);
   });
 
   it("can fail on findings after writing SARIF", () => {
