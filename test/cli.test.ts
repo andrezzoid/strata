@@ -275,6 +275,14 @@ describe("CLI", () => {
     }
   });
 
+  it("rejects the removed wideModule detector filter", () => {
+    const result = runStrata([passThroughFixture, "--only", "wideModule"]);
+
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("unknown detector: wideModule");
+    expect(result.stderr).not.toContain("wideModule, ");
+  });
+
   it("omits excluded detector findings", () => {
     const result = runStrata([
       passThroughFixture,

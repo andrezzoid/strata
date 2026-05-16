@@ -44,7 +44,3 @@ Compares how much a file exposes against how much it implements. The exported su
 
 - **Pure type files**: a file that exports only TypeScript type declarations has a high surface/body ratio by design. Types are the product, not incidental to it.
 - **Intentionally thin adapters**: a legitimate adapter over a third-party dependency may have little logic by design. The question to ask is whether the adapter hides a meaningful decision — if it does, the shallow ratio is earned.
-
----
-
-**See also:** [`wideModule`](wide-module.md) — measures the same surface from a different angle: too many exports rather than too few implementation lines.

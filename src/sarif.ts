@@ -53,7 +53,6 @@ const RULES: SarifRule[] = [
     "Shallow module",
     "API surface is large relative to the implementation it hides.",
   ),
-  rule("wideModule", "Wide module", "Module exposes too many top-level exports."),
   rule(
     "wideSignature",
     "Wide signature",

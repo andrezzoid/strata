@@ -1,0 +1,92 @@
+goal: >
+  Remove the `wideModule` detector from strata's public detector set.
+
+acceptance:
+  - "`wideModule` is no longer registered, runnable through `--only`, emitted in SARIF rules, or listed in public detector docs."
+  - Source, test, fixture, and detector-doc files dedicated only to `wideModule` are removed.
+  - Remaining detector behavior and CLI selection continue to pass the relevant tests and typecheck.
+
+context: |
+  This is a removal, not a threshold or semantics change. Do not preserve the detector behind a compatibility alias without a concrete external contract.
+  The detector registry is the public catalog for CLI/API filtering; removing the registry entry intentionally makes `--only wideModule` invalid.
+  `shallowModule` still owns exported surface ratio analysis and continues to use shared module-surface counting.
+
+refs:
+  - src/detectors/registry.ts
+  - src/detectors/wide-module.ts
+  - src/detectors/module-surface.ts
+  - src/format.ts
+  - src/sarif.ts
+  - test/detectors.test.ts
+  - test/fixtures/wide-module/
+  - test/cli.test.ts
+  - README.md
+  - CHANGELOG.md
+  - docs/detectors/wide-module.md
+  - docs/detectors/shallow-module.md
+
+open_questions: []
+
+tasks:
+  - id: remove-wide-module-detector
+    description: >
+      Remove the `wideModule` detector end-to-end from code, tests, fixtures,
+      SARIF/text metadata, and public detector documentation.
+    status: done
+    context: |
+      Follow the same public-removal shape as the prior pass-through-variable, ts-escape-hatch, and catch-handling removals.
+      Keep `countModuleSurface()` if `shallowModule` still uses it; remove only wide-module-specific source and metadata.
+      Add CLI coverage proving the former detector filter is rejected by the registry-backed valid-detector list.
+    acceptance:
+      - The registry no longer imports or defines `detectWideModule` or `wideModule`.
+      - "`--only wideModule` is rejected as an unknown detector."
+      - Dedicated detector tests, fixture expectations, SARIF rule, text evidence branch, README row, detector doc, and related links are removed or updated.
+      - "`bun test test/detectors.test.ts test/fixtures.test.ts test/cli.test.ts` and `bun run typecheck` pass."
+    depends_on: []
+
+log:
+  - id: log-001
+    timestamp: 2026-05-16T08:58:26Z
+    command: plan
+    summary: >
+      Planned one vertical removal task because registry, CLI selection, SARIF/text
+      metadata, detector unit tests, fixtures, and public docs must change together
+      for a coherent detector catalog. Baseline before planning passed: `bun test
+      test/detectors.test.ts test/fixtures.test.ts test/cli.test.ts` reported 73
+      tests, 0 failures, 218 assertions.
+
+  - id: log-002
+    timestamp: 2026-05-16T09:02:38Z
+    command: apply
+    task: remove-wide-module-detector
+    summary: >
+      Removed the `wideModule` detector implementation, public registry entry,
+      SARIF rule, text evidence branch, detector docs, unit coverage, fixture, and
+      README link; added a RED CLI test that failed while the detector was still
+      registered and now proves `--only wideModule` is rejected. Verified active
+      `src/`, `docs/`, and `README.md` contain no `wideModule`, `wide-module`, or
+      `detectWideModule` references; remaining test/changelog references document
+      the removal. Acceptance evidence: `bun test test/detectors.test.ts
+      test/fixtures.test.ts test/cli.test.ts` passed with 71 tests, 0 failures,
+      216 assertions; `bun run typecheck` passed; direct CLI check exits through
+      `unknown detector: wideModule` with a valid-detector list excluding it;
+      generated SARIF rules exclude `wideModule`; touched-file format check
+      passed. Broader gates passed: `bun run test` (114 pass), `bun run
+      test:coverage` (87.13% >= 85%), `bun run lint`, `bun run scan:ci`, `bun run
+      scan:sarif`, and `bun run package:check`. Full `bun run format:check`
+      remains blocked only by unrelated `docs/research/red-flags-source.md`.
+
+  - id: log-003
+    timestamp: 2026-05-16T09:03:40Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass for the single
+      removal task. Verified the dedicated detector source, detector doc, and
+      fixture paths no longer exist; active `src/`, `docs/`, and `README.md`
+      contain no `wideModule`, `wide-module`, `Wide module`, or `detectWideModule`
+      references; `--only wideModule` is rejected as an unknown detector with the
+      valid detector list excluding it; generated SARIF rules exclude `wideModule`;
+      targeted tests and typecheck pass. Regression checks passed: full tests,
+      coverage, lint, package dry run, and source self-scan. Full format check
+      still fails only on unrelated `docs/research/red-flags-source.md`; touched
+      files pass formatting. No Verify failures found. Delta is complete.

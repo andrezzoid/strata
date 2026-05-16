@@ -9,7 +9,6 @@ import { detectOrphanFile } from "../src/detectors/orphan-file.ts";
 import { detectPassThroughMethod } from "../src/detectors/pass-through-method.ts";
 import { detectShallowModule } from "../src/detectors/shallow-module.ts";
 import { detectUniqueImplementation } from "../src/detectors/unique-implementation.ts";
-import { detectWideModule } from "../src/detectors/wide-module.ts";
 import { detectWideSignature } from "../src/detectors/wide-signature.ts";
 
 // Inline sources still pass through the real parser and Ctx shape; tests assert
@@ -288,48 +287,6 @@ describe("module surface detectors", () => {
         }
         return total;
       }
-      `,
-    );
-
-    expect(findings).toEqual([]);
-  });
-
-  it("flags modules with more than ten top-level exports", () => {
-    const findings = runSingle(
-      detectWideModule,
-      `
-      export const v1 = 1;
-      export const v2 = 2;
-      export const v3 = 3;
-      export const v4 = 4;
-      export const v5 = 5;
-      export const v6 = 6;
-      export const v7 = 7;
-      export const v8 = 8;
-      export const v9 = 9;
-      export const v10 = 10;
-      export const v11 = 11;
-      `,
-    );
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0].metadata.exports).toBe(11);
-  });
-
-  it("keeps ten top-level exports below the wide-module threshold", () => {
-    const findings = runSingle(
-      detectWideModule,
-      `
-      export const v1 = 1;
-      export const v2 = 2;
-      export const v3 = 3;
-      export const v4 = 4;
-      export const v5 = 5;
-      export const v6 = 6;
-      export const v7 = 7;
-      export const v8 = 8;
-      export const v9 = 9;
-      export const v10 = 10;
       `,
     );
 

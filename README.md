@@ -315,7 +315,6 @@ Each detector targets a design failure that AI-assisted workflows reliably intro
 | Flag                                                              | Scope   | Signal                                                                  |
 | ----------------------------------------------------------------- | ------- | ----------------------------------------------------------------------- |
 | [`shallowModule`](docs/detectors/shallow-module.md)               | file    | API surface is large relative to body lines.                            |
-| [`wideModule`](docs/detectors/wide-module.md)                     | file    | Too many top-level exports.                                             |
 | [`wideSignature`](docs/detectors/wide-signature.md)               | file    | Function, method, or constructor has too many required parameters.      |
 | [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Public class method only forwards same-order args to a collaborator.    |
 | [`genericNaming`](docs/detectors/generic-naming.md)               | file    | Type/class names end with vague suffixes such as `Manager` or `Helper`. |

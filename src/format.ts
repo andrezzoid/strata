@@ -141,9 +141,6 @@ function evidenceLines(finding: Finding): string[] {
       return [`evidence: ${surface} surface elements, ${bodyLines} body lines`];
     }
   }
-  if (finding.flag === "wideModule" && typeof finding.metadata.exports === "number") {
-    return [`evidence: ${finding.metadata.exports} top-level exports`];
-  }
   if (finding.flag === "wideSignature" && typeof finding.metadata.requiredParams === "number") {
     return [`evidence: ${finding.metadata.requiredParams} required parameters`];
   }

@@ -7,7 +7,6 @@ import { detectOrphanFile } from "./orphan-file.ts";
 import { detectPassThroughMethod } from "./pass-through-method.ts";
 import { detectShallowModule } from "./shallow-module.ts";
 import { detectUniqueImplementation } from "./unique-implementation.ts";
-import { detectWideModule } from "./wide-module.ts";
 import { detectWideSignature } from "./wide-signature.ts";
 
 export type CrossProjectDetector = (ctxs: Ctx[], imports: ImportResolver) => Finding[];
@@ -38,13 +37,6 @@ export const DETECTOR_DEFINITIONS = [
     description:
       "Suspicious when declarations use vague suffixes; generic names often hide an unfocused responsibility.",
     detect: detectGenericNaming,
-  },
-  {
-    id: "wideModule",
-    kind: "single",
-    description:
-      "Suspicious when a module exports many top-level names; callers must understand a broad surface before using it.",
-    detect: detectWideModule,
   },
   {
     id: "wideSignature",

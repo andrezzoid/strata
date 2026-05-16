@@ -8,6 +8,7 @@ All notable changes to `strata` will be documented here.
 - Removes the `passThroughVariable` detector from the public detector set, including CLI filtering, SARIF metadata, docs, fixtures, and tests.
 - Removes the `tsEscapeHatch` detector from the public detector set, including CLI filtering, SARIF metadata, docs, fixtures, and tests.
 - Removes the `emptyCatch` and `catchRethrow` detectors from the public detector set, including CLI filtering, SARIF metadata, docs, fixtures, and tests.
+- Removes the `wideModule` detector from the public detector set, including CLI filtering, SARIF metadata, docs, fixtures, and tests.
 
 ## 0.3.0 - 2026-05-12
 
