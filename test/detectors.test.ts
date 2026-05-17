@@ -4,6 +4,7 @@ import { describe, expect, it } from "bun:test";
 
 import { buildLineOf, type CrossDetector, type Ctx, type SingleDetector } from "../src/ast.ts";
 import { detectDuplicateSymbol } from "../src/detectors/duplicate-symbol.ts";
+import { detectForcedRareOption } from "../src/detectors/forced-rare-option.ts";
 import { detectPassThroughExport } from "../src/detectors/pass-through-export.ts";
 import { detectPassThroughMethod } from "../src/detectors/pass-through-method.ts";
 import { detectUniqueImplementation } from "../src/detectors/unique-implementation.ts";
@@ -82,6 +83,16 @@ describe("finding fingerprints", () => {
       }
       `,
     );
+    expectCrossFingerprintStable(detectForcedRareOption, {
+      "src/response.ts":
+        "export function createHttpResponse(request: Request, version: string, status: number, headers: Headers, body: Body) {}",
+      "src/calls.ts": `
+        import { createHttpResponse } from "./response";
+        createHttpResponse(req, "HTTP/1.1", 200, {}, body);
+        createHttpResponse(req, "HTTP/1.1", 404, {}, body);
+        createHttpResponse(req, "HTTP/1.1", 201, {}, body);
+      `,
+    });
     expectCrossFingerprintStable(detectDuplicateSymbol, {
       "src/a.ts": "export const API_URL = 'https://api.example';",
       "src/b.ts": "export const API_URL = 'https://api.example';",
@@ -384,6 +395,119 @@ describe("detectWideSignature", () => {
     );
 
     expect(findings).toEqual([]);
+  });
+});
+
+describe("detectForcedRareOption", () => {
+  it("flags exported function params whose callers repeatedly pass literals or empty objects", () => {
+    const findings = runCross(detectForcedRareOption, {
+      "src/response.ts": `
+        export function createHttpResponse(request: Request, version: string, status: number, headers: Headers, body: Body) {}
+      `,
+      "src/calls.ts": `
+        import { createHttpResponse } from "./response";
+
+        createHttpResponse(req, "HTTP/1.1", 200, {}, body);
+        createHttpResponse(req, "HTTP/1.1", 404, {}, body);
+        createHttpResponse(req, "HTTP/1.1", 201, {}, body);
+        createHttpResponse(req, "HTTP/1.1", 500, {}, body);
+      `,
+    });
+
+    expect(findings).toHaveLength(2);
+    expect(findings.map((finding) => finding.metadata)).toEqual([
+      expect.objectContaining({
+        apiName: "createHttpResponse",
+        kind: "parameter",
+        parameterName: "version",
+        repeatedCount: 4,
+        callCount: 4,
+      }),
+      expect.objectContaining({
+        apiName: "createHttpResponse",
+        kind: "parameter",
+        parameterName: "headers",
+        repeatedCount: 4,
+        callCount: 4,
+      }),
+    ]);
+  });
+
+  it("flags options object keys that repeat default-like values", () => {
+    const findings = runCross(detectForcedRareOption, {
+      "src/render.ts": `
+        export type RenderOptions = {
+          mode?: "full" | "compact";
+          cache?: boolean;
+          debug?: boolean;
+          retries?: number;
+          locale?: string;
+        };
+
+        export function renderPage(page: Page, options: RenderOptions) {}
+      `,
+      "src/calls.ts": `
+        import { renderPage } from "./render";
+
+        renderPage(page, { mode: "full", cache, debug, retries, locale });
+        renderPage(page, { mode: "full", cache, debug, retries, locale });
+        renderPage(page, { mode: "full", cache, debug, retries, locale });
+        renderPage(page, { mode: "full", cache, debug, retries, locale });
+      `,
+    });
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0].metadata).toMatchObject({
+      apiName: "renderPage",
+      kind: "option",
+      parameterName: "options",
+      optionName: "mode",
+      repeatedCount: 4,
+      callCount: 4,
+    });
+  });
+
+  it("reports placeholder arguments at the call site", () => {
+    const findings = runCross(detectForcedRareOption, {
+      "src/modal.ts": `
+        export function openModal(title: string, size?: Size, position?: Position, autofocus?: boolean) {}
+      `,
+      "src/calls.ts": `
+        import { openModal } from "./modal";
+
+        openModal("Delete account", undefined, undefined, true);
+      `,
+    });
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0]).toMatchObject({ file: "src/calls.ts", line: 3 });
+    expect(findings[0].metadata).toMatchObject({
+      apiName: "openModal",
+      kind: "placeholderArgs",
+      placeholderPositions: [1, 2],
+    });
+  });
+
+  it("checks exported class constructors", () => {
+    const findings = runCross(detectForcedRareOption, {
+      "src/response.ts": `
+        export class HttpResponse {
+          constructor(request: Request, version: string, status: number, headers: Headers, body: Body) {}
+        }
+      `,
+      "src/calls.ts": `
+        import { HttpResponse } from "./response";
+
+        new HttpResponse(req, "HTTP/1.1", 200, {}, body);
+        new HttpResponse(req, "HTTP/1.1", 404, {}, body);
+        new HttpResponse(req, "HTTP/1.1", 201, {}, body);
+      `,
+    });
+
+    expect(findings.map((finding) => finding.metadata.parameterName)).toEqual([
+      "version",
+      "headers",
+    ]);
   });
 });
 

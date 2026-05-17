@@ -2,6 +2,7 @@ import type { Ctx, SingleDetector } from "../ast.ts";
 import type { ImportResolver } from "../scope.ts";
 import type { Finding } from "../types.ts";
 import { detectDuplicateSymbol } from "./duplicate-symbol.ts";
+import { detectForcedRareOption } from "./forced-rare-option.ts";
 import { detectPassThroughExport } from "./pass-through-export.ts";
 import { detectPassThroughMethod } from "./pass-through-method.ts";
 import { detectUniqueImplementation } from "./unique-implementation.ts";
@@ -35,6 +36,13 @@ export const DETECTOR_DEFINITIONS = [
     description:
       "Suspicious when a function requires many positional parameters; callers must know too much ordering and context.",
     detect: detectWideSignature,
+  },
+  {
+    id: "forcedRareOption",
+    kind: "cross",
+    description:
+      "Suspicious when most callers pass the same literal, placeholder, or default-like option; common usage may be paying for rare flexibility.",
+    detect: detectForcedRareOption,
   },
   {
     id: "duplicateSymbol",

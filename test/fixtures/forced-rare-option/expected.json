@@ -1,0 +1,7 @@
+{
+  "findings": [
+    { "flag": "forcedRareOption", "file": "case.ts", "line": 9 },
+    { "flag": "forcedRareOption", "file": "case.ts", "line": 9 },
+    { "flag": "forcedRareOption", "file": "case.ts", "line": 18 }
+  ]
+}

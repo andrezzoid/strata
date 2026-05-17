@@ -64,6 +64,11 @@ const RULES: SarifRule[] = [
     "Exported function only forwards same-order arguments to another callable.",
   ),
   rule(
+    "forcedRareOption",
+    "Forced rare option",
+    "Most callers pass the same literal, placeholder, or default-like option to an exported API.",
+  ),
+  rule(
     "duplicateSymbol",
     "Duplicate symbol",
     "Named declarations with identical structure are repeated across the project.",

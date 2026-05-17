@@ -1,0 +1,113 @@
+goal: >
+  Add a `forcedRareOption` detector for exported APIs whose callers mostly pass
+  placeholder, default-like, or rarely varied parameters/options that should be
+  hidden behind the abstraction.
+
+context: |
+  Design A: a cross-project detector indexes exported callable APIs and resolves
+  direct project call sites through existing import scope logic. Design B: extend
+  wideSignature with local call heuristics. Choose A because the smell is caller
+  pressure, so the detector needs project call-site evidence without widening
+  single-file detector responsibilities.
+  Keep the signal conservative: exported declarations/classes only, direct local
+  names only, and 80% agreement across at least three calls.
+
+refs:
+  - src/detectors/registry.ts
+  - src/detectors/wide-signature.ts
+  - src/scope.ts
+  - test/detectors.test.ts
+  - test/fixtures.test.ts
+  - README.md
+  - CHANGELOG.md
+
+acceptance:
+  - "`forcedRareOption` flags exported functions or constructors when common callers repeatedly pass the same literal, `undefined`, `null`, empty object, or default-like option value."
+  - "Placeholder argument call sites such as `fn(a, undefined, undefined, true)` are reported."
+  - "Documentation and detector listings describe the detector and its intended overexposure scope."
+
+tasks:
+  - id: add-forced-rare-option-detector
+    description: >
+      Add `forcedRareOption` as a cross-project detector with tests, fixture
+      coverage, registry wiring, and user-facing documentation.
+    status: done
+    context: |
+      Reuse existing parser contexts, import-scope resolution, finding creation,
+      and fixture conventions. The detector should report the exported API once
+      per repeated forced argument/option, with call-site evidence in metadata.
+      Do not make scanProject callers orchestrate collection or analysis steps.
+    acceptance:
+      - "Unit tests cover repeated literal/default-like params, options-object keys, placeholder arguments, and constructor cases."
+      - "Fixture scan for `forcedRareOption` emits the expected line-anchored findings."
+      - "Registry, README, detector docs, and changelog expose the new detector without changing existing detector semantics."
+      - "Relevant Bun tests, format, lint, typecheck, and self-scan verification pass or any residual findings are recorded."
+    depends_on: []
+
+log:
+  - id: log-001
+    timestamp: 2026-05-17T13:32Z
+    command: plan
+    summary: >
+      Planned one vertical slice after reading the DDD schema, project guidance,
+      detector registry, existing exported-surface and cross-project patterns,
+      test fixtures, README, changelog, backlog, and repo research notes on
+      overexposure/information hiding. Baseline `bun test` passed: 118 tests.
+      Chose a cross-project exported-API/call-site design over extending
+      `wideSignature` because the requested signal depends on what callers are
+      forced to repeat.
+  - id: log-002
+    timestamp: 2026-05-17T14:07Z
+    command: apply
+    task: add-forced-rare-option-detector
+    summary: >
+      Implemented `forcedRareOption` as a cross-project detector. It indexes
+      exported functions and constructors, resolves direct project call sites
+      through existing import-scope logic, reports 80% repeated literal/default
+      parameters or options across at least 3 calls, and reports placeholder
+      call sites.
+
+      Added unit coverage for repeated positional values, options-object keys,
+      placeholder arguments, constructor calls, and stable fingerprints. Added
+      fixture coverage, registry/SARIF wiring, detector docs, README table
+      entry, and changelog entry.
+
+      Verified: `bun test test/detectors.test.ts` 24/24; `bun test
+      test/fixtures.test.ts` 7/7; `bun test` 123/123; `bun run typecheck`
+      passed; `bun run lint` passed; changed-file `bunx oxfmt --check ...`
+      passed; `bun run scan:ci` emitted no source findings; `bun run
+      test:coverage` passed at 88.06%; `bun run package:check` passed.
+      Full `bun run format:check` still fails on pre-existing untracked
+      `docs/research/red-flags-source.md`; this task left that user-owned file
+      untouched.
+  - id: log-003
+    timestamp: 2026-05-17T14:07Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Verified unit
+      tests cover repeated positional literals/default-like values,
+      options-object keys, placeholder arguments, constructors, and stable
+      fingerprints. Fixture scan and direct CLI run on
+      `test/fixtures/forced-rare-option --only forcedRareOption --format json`
+      emitted exactly 3 findings: repeated `"HTTP/1.1"`, repeated `{}`, and
+      the placeholder call site.
+
+      Regression checks passed: `bun test` 123/123, `bun run typecheck`, `bun
+      run lint`, changed-file `bunx oxfmt --check ...`, `bun run scan:ci`, `bun
+      run test:coverage` at 88.06%, and `bun run package:check`. No bugs,
+      design gaps, or context gaps found for this delta. The only remaining
+      non-delta issue is full `bun run format:check` failing on pre-existing
+      untracked `docs/research/red-flags-source.md`.
+  - id: log-004
+    timestamp: 2026-05-17T14:18Z
+    command: apply
+    task: add-forced-rare-option-detector
+    summary: >
+      Adjusted detector scope after review so category-specific policy is not
+      built into the default detector. Verified: `bun test test/detectors.test.ts`
+      24/24; `bun test test/fixtures.test.ts` 7/7; `bun test` 123/123; `bun run
+      typecheck`, `bun run lint`, changed-file `bunx oxfmt --check ...`, `bun
+      run scan:ci`, `bun run test:coverage` at 88.06%, and `bun run
+      package:check` passed. Full `bun run format:check` still reports only the
+      pre-existing untracked `docs/research/red-flags-source.md` formatting
+      issue.
