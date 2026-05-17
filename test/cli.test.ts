@@ -291,6 +291,14 @@ describe("CLI", () => {
     expect(result.stderr).not.toContain("shallowModule, ");
   });
 
+  it("rejects the removed genericNaming detector filter", () => {
+    const result = runStrata([passThroughFixture, "--only", "genericNaming"]);
+
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("unknown detector: genericNaming");
+    expect(result.stderr).not.toContain("genericNaming, ");
+  });
+
   it("omits excluded detector findings", () => {
     const result = runStrata([
       passThroughFixture,

@@ -137,9 +137,6 @@ function evidenceLines(finding: Finding): string[] {
   if (finding.flag === "wideSignature" && typeof finding.metadata.requiredParams === "number") {
     return [`evidence: ${finding.metadata.requiredParams} required parameters`];
   }
-  if (finding.flag === "genericNaming" && typeof finding.metadata.name === "string") {
-    return [`evidence: generic name: ${finding.metadata.name}`];
-  }
   if (
     finding.flag === "uniqueImplementation" &&
     typeof finding.metadata.implementerCount === "number"

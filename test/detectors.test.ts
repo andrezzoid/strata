@@ -4,7 +4,6 @@ import { describe, expect, it } from "bun:test";
 
 import { buildLineOf, type CrossDetector, type Ctx, type SingleDetector } from "../src/ast.ts";
 import { detectDuplicateSymbol } from "../src/detectors/duplicate-symbol.ts";
-import { detectGenericNaming } from "../src/detectors/generic-naming.ts";
 import { detectOrphanFile } from "../src/detectors/orphan-file.ts";
 import { detectPassThroughMethod } from "../src/detectors/pass-through-method.ts";
 import { detectUniqueImplementation } from "../src/detectors/unique-implementation.ts";
@@ -229,21 +228,6 @@ describe("detectPassThroughMethod", () => {
       }
       `,
     );
-
-    expect(findings).toEqual([]);
-  });
-});
-
-describe("detectGenericNaming", () => {
-  it("flags type declarations with catch-all suffixes", () => {
-    const findings = runSingle(detectGenericNaming, "type RequestHelper = { id: string };");
-
-    expect(findings).toHaveLength(1);
-    expect(findings[0].metadata.name).toBe("RequestHelper");
-  });
-
-  it("ignores specific domain names", () => {
-    const findings = runSingle(detectGenericNaming, "type RequestEnvelope = { id: string };");
 
     expect(findings).toEqual([]);
   });

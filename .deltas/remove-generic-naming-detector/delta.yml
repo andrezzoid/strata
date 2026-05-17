@@ -1,0 +1,93 @@
+goal: >
+  Remove the `genericNaming` detector from strata's public detector set.
+
+acceptance:
+  - "`genericNaming` is no longer registered, runnable through `--only`, emitted in SARIF rules, or listed in public detector docs."
+  - Source, test, and detector-doc files dedicated only to `genericNaming` are removed.
+  - Remaining detector behavior, CLI selection, action output, and typecheck continue to pass.
+
+context: |
+  This is a detector removal, not a refinement of the vague-name heuristic.
+  `DETECTOR_DEFINITIONS` remains the public catalog for supported detector IDs; removing the registry entry intentionally makes `--only genericNaming` invalid.
+  Formatter and SARIF metadata should only describe detectors that can still be emitted.
+
+refs:
+  - src/detectors/registry.ts
+  - src/format.ts
+  - src/sarif.ts
+  - test/detectors.test.ts
+  - test/fixtures/generic-naming/
+  - test/cli.test.ts
+  - test/action.test.ts
+  - README.md
+  - CHANGELOG.md
+  - docs/detectors/generic-naming.md
+
+open_questions: []
+
+tasks:
+  - id: remove-generic-naming-detector
+    description: >
+      Remove the `genericNaming` detector end-to-end from code, tests, SARIF/text
+      metadata, action fixture selection, and public detector documentation.
+    status: done
+    context: |
+      Follow the existing removed-detector pattern: delete dedicated artifacts instead of leaving dead code or compatibility aliases.
+      Update the action zero-candidate test to use a remaining detector so it still covers successful empty reports.
+      Add CLI coverage proving `--only genericNaming` is now rejected by registry-driven selection.
+    acceptance:
+      - The registry no longer imports or defines `genericNaming`.
+      - "`--only genericNaming` is rejected as an unknown detector."
+      - Dedicated detector implementation, unit tests, fixture, text evidence branch, SARIF rule, README row/example, detector doc, and changelog surface are removed or updated.
+      - Focused tests and typecheck pass after the removal.
+    depends_on: []
+
+log:
+  - id: log-001
+    timestamp: 2026-05-17T10:22:05Z
+    command: plan
+    summary: >
+      Planned one vertical removal task after confirming the current focused
+      suite passes: `bun test test/detectors.test.ts test/cli.test.ts
+      test/action.test.ts` reported 75 tests, 0 failures. The detector has one
+      public registry entry plus dedicated implementation, unit tests, SARIF/text
+      metadata, action test selection, README row/example, changelog surface, and
+      detector doc, so those must change together to keep the catalog coherent.
+  - id: log-002
+    timestamp: 2026-05-17T10:26:17Z
+    command: apply
+    task: remove-generic-naming-detector
+    summary: >
+      Removed `genericNaming` from the detector registry, deleted its detector
+      source, unit tests, fixture, and detector doc, removed its text evidence
+      and SARIF rule metadata, and updated README usage/table plus the changelog.
+      Added a RED CLI test proving `--only genericNaming` was accepted before
+      removal and is now rejected as unknown; the initial `bun test
+      test/cli.test.ts` failed with expected status 2 and received status 0.
+      Updated the GitHub Action zero-candidate test to use remaining detector
+      `wideSignature`. Acceptance evidence: `bun test test/detectors.test.ts
+      test/fixtures.test.ts test/cli.test.ts test/action.test.ts` passed with
+      80 tests; `bun run typecheck` passed; direct CLI check rejects
+      `genericNaming` and lists valid detectors without it; `bun run test`
+      passed with 110 tests; `bun run lint`, `bun run test:coverage` (86.44% >=
+      85%), `bun run scan:ci`, `bun run scan:sarif`, and `bun run
+      package:check` passed. Full `bun run format:check` is blocked only by
+      unrelated untracked `docs/research/red-flags-source.md`; touched-file
+      `bunx oxfmt --check` passed.
+  - id: log-003
+    timestamp: 2026-05-17T10:27:16Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Verified the
+      registry/SARIF/text/docs/README absence criteria by grep over `src`,
+      `docs`, and `README.md`; only the intentional CLI rejection test and delta
+      history mention `genericNaming`. Verified the dedicated source, detector
+      doc, and fixture paths no longer exist. Verified CLI rejection with
+      `bun src/cli.ts test/fixtures/pass-through-method --only genericNaming &&
+      exit 1 || test $? -eq 2`; the valid detector list excludes
+      `genericNaming`. Regression checks passed: focused tests (80 pass), full
+      `bun run test` (110 pass), `bun run typecheck`, `bun run lint`, coverage
+      threshold (86.44% >= 85%), `bun run scan:ci`, `bun run scan:sarif`, and
+      `bun run package:check`. Touched-file formatting passed. No Verify
+      failures found; delta is complete. Residual unrelated issue: full `bun run
+      format:check` fails only on untracked `docs/research/red-flags-source.md`.

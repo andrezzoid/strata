@@ -59,11 +59,6 @@ const RULES: SarifRule[] = [
     "Public class method only forwards same-order arguments to a collaborator.",
   ),
   rule(
-    "genericNaming",
-    "Generic naming",
-    "Type or class name uses vague suffixes such as Manager or Helper.",
-  ),
-  rule(
     "duplicateSymbol",
     "Duplicate symbol",
     "Named declarations with identical structure are repeated across the project.",

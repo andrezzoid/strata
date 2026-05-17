@@ -33,7 +33,7 @@ strata [PATH] --format json
 strata [PATH] --format text
 strata [PATH] --format sarif
 strata [PATH] --only passThroughMethod,duplicateSymbol
-strata [PATH] --exclude orphanFile,genericNaming
+strata [PATH] --exclude orphanFile,wideSignature
 strata [PATH] --fail-on-findings
 strata --version
 ```
@@ -311,14 +311,13 @@ SARIF `partialFingerprints.primaryLocationLineHash` uses the same value as JSON 
 
 Each detector targets a design failure that AI-assisted workflows reliably introduce and that cyclomatic-complexity or style tools do not see.
 
-| Flag                                                              | Scope   | Signal                                                                  |
-| ----------------------------------------------------------------- | ------- | ----------------------------------------------------------------------- |
-| [`wideSignature`](docs/detectors/wide-signature.md)               | file    | Function, method, or constructor has too many required parameters.      |
-| [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Public class method only forwards same-order args to a collaborator.    |
-| [`genericNaming`](docs/detectors/generic-naming.md)               | file    | Type/class names end with vague suffixes such as `Manager` or `Helper`. |
-| [`duplicateSymbol`](docs/detectors/duplicate-symbol.md)           | project | Named declarations with identical structure are repeated.               |
-| [`uniqueImplementation`](docs/detectors/unique-implementation.md) | project | Interface or abstract class has no real polymorphism payoff.            |
-| [`orphanFile`](docs/detectors/orphan-file.md)                     | project | File is not imported by any other scanned file.                         |
+| Flag                                                              | Scope   | Signal                                                               |
+| ----------------------------------------------------------------- | ------- | -------------------------------------------------------------------- |
+| [`wideSignature`](docs/detectors/wide-signature.md)               | file    | Function, method, or constructor has too many required parameters.   |
+| [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Public class method only forwards same-order args to a collaborator. |
+| [`duplicateSymbol`](docs/detectors/duplicate-symbol.md)           | project | Named declarations with identical structure are repeated.            |
+| [`uniqueImplementation`](docs/detectors/unique-implementation.md) | project | Interface or abstract class has no real polymorphism payoff.         |
+| [`orphanFile`](docs/detectors/orphan-file.md)                     | project | File is not imported by any other scanned file.                      |
 
 Notably absent: long-function detection, cyclomatic complexity scoring. Both are well-served by existing tools. Strata occupies the gap they leave — the design layer between "this function is complex" and "this module is not earning its abstraction."
 

@@ -2,7 +2,6 @@ import type { Ctx, SingleDetector } from "../ast.ts";
 import type { ImportResolver } from "../scope.ts";
 import type { Finding } from "../types.ts";
 import { detectDuplicateSymbol } from "./duplicate-symbol.ts";
-import { detectGenericNaming } from "./generic-naming.ts";
 import { detectOrphanFile } from "./orphan-file.ts";
 import { detectPassThroughMethod } from "./pass-through-method.ts";
 import { detectUniqueImplementation } from "./unique-implementation.ts";
@@ -22,13 +21,6 @@ export const DETECTOR_DEFINITIONS = [
     description:
       "Suspicious when a method only forwards same-order args to a collaborator; the layer may add API surface without hiding useful complexity.",
     detect: detectPassThroughMethod,
-  },
-  {
-    id: "genericNaming",
-    kind: "single",
-    description:
-      "Suspicious when declarations use vague suffixes; generic names often hide an unfocused responsibility.",
-    detect: detectGenericNaming,
   },
   {
     id: "wideSignature",
