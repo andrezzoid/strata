@@ -310,12 +310,12 @@ SARIF `partialFingerprints.primaryLocationLineHash` uses the same value as JSON 
 
 Each detector targets a design failure that AI-assisted workflows reliably introduce and that cyclomatic-complexity or style tools do not see.
 
-| Flag                                                              | Scope   | Signal                                                               |
-| ----------------------------------------------------------------- | ------- | -------------------------------------------------------------------- |
-| [`wideSignature`](docs/detectors/wide-signature.md)               | file    | Function, method, or constructor has too many required parameters.   |
-| [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Public class method only forwards same-order args to a collaborator. |
-| [`duplicateSymbol`](docs/detectors/duplicate-symbol.md)           | project | Named declarations with identical structure are repeated.            |
-| [`uniqueImplementation`](docs/detectors/unique-implementation.md) | project | Interface or abstract class has no real polymorphism payoff.         |
+| Flag                                                              | Scope   | Signal                                                                              |
+| ----------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------- |
+| [`wideSignature`](docs/detectors/wide-signature.md)               | file    | Exported function or public exported-class member has too many required parameters. |
+| [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Public class method only forwards same-order args to a collaborator.                |
+| [`duplicateSymbol`](docs/detectors/duplicate-symbol.md)           | project | Named declarations with identical structure are repeated.                           |
+| [`uniqueImplementation`](docs/detectors/unique-implementation.md) | project | Interface or abstract class has no real polymorphism payoff.                        |
 
 Notably absent: long-function detection, cyclomatic complexity scoring. Both are well-served by existing tools. Strata occupies the gap they leave — the design layer between "this function is complex" and "this module is not earning its abstraction."
 

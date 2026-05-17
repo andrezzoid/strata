@@ -1,0 +1,84 @@
+goal: >
+  Tighten the wideSignature detector so it reports only public/exported API
+  boundaries, aligning the signal with research on verbose interfaces.
+
+context: |
+  wideSignature should identify caller-facing overexposure, not private helper
+  implementation details. Preserve existing threshold semantics; narrow only the
+  declarations considered eligible.
+  Design choice: prefer local syntactic export eligibility over a cross-file
+  symbol model. The detector is single-file and only needs boundary visibility,
+  so project-level export resolution would add interface surface without
+  improving the signal.
+
+refs:
+  - src/detectors/wide-signature.ts
+  - test/detectors.test.ts
+  - docs/detectors/wide-signature.md
+
+acceptance:
+  - Non-exported/private functions and methods with wide signatures are not reported.
+  - Exported declarations and public class methods with wide signatures are still reported.
+  - Detector tests, typecheck, and lint pass.
+
+tasks:
+  - id: restrict-wide-signature-scope
+    description: >
+      Update wideSignature to count only exported top-level functions and public
+      members of exported classes, then update regression coverage and detector
+      documentation for the narrowed signal.
+    status: done
+    context: |
+      Keep the >4 required parameter threshold unchanged. Treat constructors as
+      public class surface when the class is exported; exclude private/protected
+      methods and non-exported helper declarations.
+    acceptance:
+      - Private/non-exported wide functions and methods are covered by failing-first tests and no longer emit findings.
+      - Exported functions, exported-class constructors, and public exported-class methods with >4 required params still emit findings.
+      - "`bun test test/detectors.test.ts` passes after the implementation."
+    depends_on: []
+
+log:
+  - id: log-001
+    timestamp: 2026-05-17T10:47Z
+    command: plan
+    summary: >
+      Planned one vertical detector slice: tests, implementation, fixture/docs,
+      and focused verification stay together because each acceptance criterion is
+      about the integrated detector contract. Baseline evidence before planning:
+      `bun test test/detectors.test.ts` passed with 14 tests. Considered two
+      designs: (A) local AST eligibility around exported declarations/classes;
+      (B) a two-pass exported-symbol index. Chose A because it preserves the
+      single-detector interface and hides less fake machinery while still
+      matching the research-backed public-boundary signal.
+  - id: log-002
+    timestamp: 2026-05-17T10:53Z
+    command: apply
+    task: restrict-wide-signature-scope
+    summary: >
+      Implemented public/exported-only eligibility for wideSignature: exported
+      functions, direct/named/default exported classes, exported class
+      expressions, and public exported-class members remain eligible; private,
+      protected, non-exported, and #private implementation signatures are
+      ignored. Added failing-first unit coverage for internal/private signatures
+      and public exported-class members, extended the fixture with skipped
+      internal examples, and updated detector docs, README, and CHANGELOG.
+      Evidence: new test failed before implementation with 6 unwanted findings;
+      after implementation `bun test test/detectors.test.ts` passed 16/16,
+      `bun test test/fixtures.test.ts` passed 5/5, full `bun test` passed 111/111,
+      `bun run typecheck` passed, `bun run lint` passed, touched-file
+      `bunx oxfmt --check ...` passed, and `bun src/cli.ts src --format json`
+      reported 0 findings. Full `bun run format:check` still fails only on
+      unrelated untracked `docs/research/red-flags-source.md`.
+  - id: log-003
+    timestamp: 2026-05-17T10:53Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Verified the
+      fixture as an integrated scan: `bun src/cli.ts test/fixtures/wide-signature
+      --format json` reported exactly 3 wideSignature findings at exported
+      boundaries (lines 5, 15, 26), ignoring appended internal/private wide
+      signatures. Regression evidence: `bun test` passed 111/111, `bun run
+      typecheck` passed, `bun run lint` passed, touched-file `bunx oxfmt --check
+      ...` passed, and full `bun run format:check` still fails only on unrelated
+      untracked `docs/research/red-flags-source.md`. Delta is complete.

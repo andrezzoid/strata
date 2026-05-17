@@ -38,3 +38,21 @@ export class Small {
     return [a, b, c];
   }
 }
+
+// Internal implementation surface is skipped even when the signature is wide.
+function internalHelper(a: string, b: string, c: string, d: string, e: string) {
+  return [a, b, c, d, e];
+}
+
+class InternalService {
+  constructor(a: string, b: string, c: string, d: string, e: string) {}
+  publish(a: string, b: string, c: string, d: string, e: string) {
+    return [a, b, c, d, e];
+  }
+}
+
+export class PublicWithInternals {
+  private build(a: string, b: string, c: string, d: string, e: string) {
+    return [a, b, c, d, e];
+  }
+}

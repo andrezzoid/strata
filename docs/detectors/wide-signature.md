@@ -2,11 +2,11 @@
 
 ## What
 
-A function, method, or constructor that requires more than 4 positional parameters.
+An exported function, or a public method/constructor on an exported class, that requires more than 4 positional parameters.
 
 ```typescript
 // Flagged: 5 required parameters
-function createUser(
+export function createUser(
   name: string,
   email: string,
   role: string,
@@ -25,9 +25,11 @@ The positional nature of parameters compounds the problem: unlike named properti
 
 ## How
 
-Counts required positional parameters on functions, methods, and constructors. Optional parameters, rest parameters, and destructured parameters are excluded — only parameters the caller must always supply are counted. A finding fires when the required count exceeds 4.
+Counts required positional parameters on exported top-level functions and public members of exported classes. Optional parameters, rest parameters, and destructured parameters are excluded — only parameters the external caller must always supply are counted. A finding fires when the required count exceeds 4.
+
+Internal helpers, non-exported classes, private methods, and protected methods are skipped. The detector is aimed at caller-facing API surface, not implementation details hidden inside a module.
 
 ## When a finding may be acceptable
 
 - **Framework-mandated signatures**: middleware functions, event handlers, and lifecycle callbacks often have fixed arities imposed by the framework that cannot be changed.
-- **Internal utilities with a single call site**: a private helper called in exactly one place may have many parameters without adding cognitive burden, since the call site is its own documentation.
+- **Boundary adapters**: exported glue code at framework or protocol edges may need to mirror another API exactly. Consider documenting why the wide signature is fixed rather than reshaping it locally.

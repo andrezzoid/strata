@@ -58,7 +58,7 @@ describe("finding fingerprints", () => {
   it("keeps representative detector fingerprints stable across harmless line shifts", () => {
     expectSingleFingerprintStable(
       detectWideSignature,
-      "function connect(a: A, b: B, c: C, d: D, e: E) {}\n",
+      "export function connect(a: A, b: B, c: C, d: D, e: E) {}\n",
     );
     expectSingleFingerprintStable(
       detectPassThroughMethod,
@@ -233,20 +233,59 @@ describe("detectPassThroughMethod", () => {
 });
 
 describe("detectWideSignature", () => {
-  it("flags functions with more than four required positional params", () => {
+  it("flags exported functions with more than four required positional params", () => {
     const findings = runSingle(
       detectWideSignature,
-      "function connect(a: A, b: B, c: C, d: D, e: E) {}\n",
+      "export function connect(a: A, b: B, c: C, d: D, e: E) {}\n",
     );
 
     expect(findings).toHaveLength(1);
     expect(findings[0].metadata).toEqual({ name: "connect", requiredParams: 5 });
   });
 
+  it("ignores non-exported and private implementation signatures", () => {
+    const findings = runSingle(
+      detectWideSignature,
+      `
+      function buildConnection(a: A, b: B, c: C, d: D, e: E) {}
+
+      class InternalService {
+        constructor(a: A, b: B, c: C, d: D, e: E) {}
+        publish(a: A, b: B, c: C, d: D, e: E) {}
+      }
+
+      export class PublicService {
+        private build(a: A, b: B, c: C, d: D, e: E) {}
+        protected prepare(a: A, b: B, c: C, d: D, e: E) {}
+        #secret(a: A, b: B, c: C, d: D, e: E) {}
+      }
+      `,
+    );
+
+    expect(findings).toEqual([]);
+  });
+
+  it("flags public members on exported classes", () => {
+    const findings = runSingle(
+      detectWideSignature,
+      `
+      export class PublicService {
+        constructor(a: A, b: B, c: C, d: D, e: E) {}
+        publish(a: A, b: B, c: C, d: D, e: E) {}
+      }
+      `,
+    );
+
+    expect(findings.map((finding) => finding.metadata)).toEqual([
+      { name: "constructor", requiredParams: 5 },
+      { name: "method publish", requiredParams: 5 },
+    ]);
+  });
+
   it("does not count optional and default params as required surface", () => {
     const findings = runSingle(
       detectWideSignature,
-      "function configure(a: A, b: B, c: C, d: D, optional?: E, mode = 'safe') {}\n",
+      "export function configure(a: A, b: B, c: C, d: D, optional?: E, mode = 'safe') {}\n",
     );
 
     expect(findings).toEqual([]);
