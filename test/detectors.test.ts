@@ -4,6 +4,7 @@ import { describe, expect, it } from "bun:test";
 
 import { buildLineOf, type CrossDetector, type Ctx, type SingleDetector } from "../src/ast.ts";
 import { detectDuplicateSymbol } from "../src/detectors/duplicate-symbol.ts";
+import { detectPassThroughExport } from "../src/detectors/pass-through-export.ts";
 import { detectPassThroughMethod } from "../src/detectors/pass-through-method.ts";
 import { detectUniqueImplementation } from "../src/detectors/unique-implementation.ts";
 import { detectWideSignature } from "../src/detectors/wide-signature.ts";
@@ -71,10 +72,104 @@ describe("finding fingerprints", () => {
       }
       `,
     );
+    expectSingleFingerprintStable(
+      detectPassThroughExport,
+      `
+      import { parseConfig } from "./config-parser";
+
+      export function parseConfigFile(path: string) {
+        return parseConfig(path);
+      }
+      `,
+    );
     expectCrossFingerprintStable(detectDuplicateSymbol, {
       "src/a.ts": "export const API_URL = 'https://api.example';",
       "src/b.ts": "export const API_URL = 'https://api.example';",
     });
+  });
+});
+
+describe("detectPassThroughExport", () => {
+  it("flags exported function declarations that only forward same-order args", () => {
+    const findings = runSingle(
+      detectPassThroughExport,
+      `
+      import { parseConfig } from "./config-parser";
+
+      export function parseConfigFile(path: string) {
+        return parseConfig(path);
+      }
+      `,
+    );
+
+    expect(findings).toHaveLength(1);
+    expect(findings[0].flag).toBe("passThroughExport");
+    expect(findings[0].metadata).toMatchObject({
+      functionName: "parseConfigFile",
+      callee: "parseConfig",
+      paramCount: 1,
+    });
+  });
+
+  it("flags exported const arrows and await-only forwarding", () => {
+    const findings = runSingle(
+      detectPassThroughExport,
+      `
+      import { parseConfig } from "./config-parser";
+      import { loadConfig } from "./config-loader";
+
+      export const parseConfigFile = (path: string) => parseConfig(path);
+
+      export async function loadConfigFile(path: string) {
+        return await loadConfig(path);
+      }
+      `,
+    );
+
+    expect(findings).toHaveLength(2);
+    expect(findings.map((finding) => finding.metadata.functionName)).toEqual([
+      "parseConfigFile",
+      "loadConfigFile",
+    ]);
+  });
+
+  it("ignores plain barrel re-exports", () => {
+    const findings = runSingle(
+      detectPassThroughExport,
+      `
+      export { Button } from "./button";
+      export { Dialog as ModalDialog } from "./dialog";
+      `,
+    );
+
+    expect(findings).toEqual([]);
+  });
+
+  it("ignores non-exported, transformed, reordered, and unrelated delegation", () => {
+    const findings = runSingle(
+      detectPassThroughExport,
+      `
+      import { copyFile, loadById, parseConfig } from "./internals";
+
+      function parseConfigFile(path: string) {
+        return parseConfig(path);
+      }
+
+      export function parseConfigFileSafe(path: string) {
+        return parseConfig(path.trim());
+      }
+
+      export function copyFileTo(from: string, to: string) {
+        return copyFile(to, from);
+      }
+
+      export function findUser(id: string) {
+        return loadById(id);
+      }
+      `,
+    );
+
+    expect(findings).toEqual([]);
   });
 });
 

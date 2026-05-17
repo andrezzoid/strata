@@ -43,7 +43,7 @@ Martin Fowler named this the _Middle Man_ smell: a class that does nothing but d
 
 The cost compounds over time. Every maintenance pass must traverse the delegation chain to understand what actually happens. If `OrderService` has five such methods, the reader must track five pairs of names to understand one underlying object. The class presents a surface without a substance.
 
-Free functions are intentionally excluded from this check. A standalone function that wraps a call can legitimately serve as a named abstraction, a typed facade over an untyped dependency, or a stable public name for an unstable internal.
+Free functions are intentionally excluded from this check so class-method and module-export surfaces stay separate. Exported callable wrappers are covered by [`passThroughExport`](pass-through-export.md); non-exported free functions remain implementation details unless another detector matches them.
 
 ## How
 
@@ -70,3 +70,4 @@ Each finding includes class-surface evidence. The evidence is marked as concentr
 **See also:**
 
 - [`uniqueImplementation`](unique-implementation.md) — catches speculative interfaces separately; `passThroughMethod` does not try to prove whether an interface has real polymorphism payoff.
+- [`passThroughExport`](pass-through-export.md) - catches exported function wrappers without adding class-method assumptions.

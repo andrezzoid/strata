@@ -14,6 +14,7 @@ const here = dirname(Bun.fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
 const cli = join(repoRoot, "src/cli.ts");
 const bin = join(repoRoot, "bin/strata.js");
+const passThroughExportFixture = join(repoRoot, "test/fixtures/pass-through-export");
 const passThroughFixture = join(repoRoot, "test/fixtures/pass-through-method");
 
 type TestDetectorDefinition =
@@ -389,6 +390,20 @@ describe("CLI", () => {
     expect(result.stdout).not.toContain("By detector:");
   });
 
+  it("prints text evidence for pass-through exported functions", () => {
+    const result = runStrata([
+      passThroughExportFixture,
+      "--only",
+      "passThroughExport",
+      "--format",
+      "text",
+    ]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain("passThroughExport\n  Suspicious when an exported function");
+    expect(result.stdout).toContain("evidence: parseConfigFile forwards 1 arg to parseConfig");
+  });
+
   it("prints introduced-only text output with base-ref context", async () => {
     const root = await createIntroducedPassThroughRepo(true);
     try {
@@ -563,6 +578,28 @@ describe("CLI", () => {
     expect(
       new Set(sarif.runs[0].results.map((finding: { ruleId: string }) => finding.ruleId)),
     ).toEqual(new Set(["passThroughMethod"]));
+  });
+
+  it("prints filtered SARIF for pass-through exported functions", () => {
+    const result = runStrata([
+      passThroughExportFixture,
+      "--only",
+      "passThroughExport",
+      "--format",
+      "sarif",
+    ]);
+
+    expect(result.status).toBe(0);
+    const sarif = JSON.parse(result.stdout);
+    expect(
+      new Set(sarif.runs[0].results.map((finding: { ruleId: string }) => finding.ruleId)),
+    ).toEqual(new Set(["passThroughExport"]));
+    expect(
+      sarif.runs[0].tool.driver.rules.some(
+        (rule: { id: string; name: string }) =>
+          rule.id === "passThroughExport" && rule.name === "Pass-through export",
+      ),
+    ).toBe(true);
   });
 
   it("prints JSON introduced since a git ref", async () => {

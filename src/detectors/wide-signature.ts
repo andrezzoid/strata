@@ -1,6 +1,7 @@
 import type { Ctx, Node } from "../ast.ts";
 import { createFinding } from "../finding.ts";
 import type { Finding } from "../types.ts";
+import { exportDeclaration, localExportedNames } from "./export-surface.ts";
 
 const WIDE_SIGNATURE_MAX = 4;
 
@@ -73,28 +74,6 @@ export function detectWideSignature({ file, ast, lineOf }: Ctx): Finding[] {
       }),
     );
   }
-}
-
-function exportDeclaration(node: Node): Node | null {
-  if (node.type !== "ExportNamedDeclaration" && node.type !== "ExportDefaultDeclaration")
-    return null;
-  return node.declaration ?? null;
-}
-
-function localExportedNames(ast: Node): Set<string> {
-  const names = new Set<string>();
-  for (const statement of ast.body ?? []) {
-    if (statement.type === "ExportNamedDeclaration") {
-      if (statement.source || statement.exportKind === "type") continue;
-      for (const specifier of statement.specifiers ?? []) {
-        if (specifier.exportKind === "type") continue;
-        if (typeof specifier.local?.name === "string") names.add(specifier.local.name);
-      }
-    } else if (statement.type === "ExportDefaultDeclaration") {
-      if (statement.declaration?.type === "Identifier") names.add(statement.declaration.name);
-    }
-  }
-  return names;
 }
 
 function publicMemberName(node: Node): string | null {

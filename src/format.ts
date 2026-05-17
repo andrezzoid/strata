@@ -133,6 +133,7 @@ function textMessage(message: string): string {
 
 function evidenceLines(finding: Finding): string[] {
   if (finding.flag === "duplicateSymbol") return duplicateSymbolEvidence(finding);
+  if (finding.flag === "passThroughExport") return passThroughExportEvidence(finding);
   if (finding.flag === "passThroughMethod") return passThroughMethodEvidence(finding);
   if (finding.flag === "wideSignature" && typeof finding.metadata.requiredParams === "number") {
     return [`evidence: ${finding.metadata.requiredParams} required parameters`];
@@ -144,6 +145,21 @@ function evidenceLines(finding: Finding): string[] {
     return [`evidence: implementer count: ${finding.metadata.implementerCount}`];
   }
   return [];
+}
+
+function passThroughExportEvidence(finding: Finding): string[] {
+  const functionName = finding.metadata.functionName;
+  const callee = finding.metadata.callee;
+  const paramCount = finding.metadata.paramCount;
+  if (
+    typeof functionName !== "string" ||
+    typeof callee !== "string" ||
+    typeof paramCount !== "number"
+  ) {
+    return [];
+  }
+  const noun = paramCount === 1 ? "arg" : "args";
+  return [`evidence: ${functionName} forwards ${paramCount} ${noun} to ${callee}`];
 }
 
 function passThroughMethodEvidence(finding: Finding): string[] {

@@ -314,6 +314,7 @@ Each detector targets a design failure that AI-assisted workflows reliably intro
 | ----------------------------------------------------------------- | ------- | ----------------------------------------------------------------------------------- |
 | [`wideSignature`](docs/detectors/wide-signature.md)               | file    | Exported function or public exported-class member has too many required parameters. |
 | [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Public class method only forwards same-order args to a collaborator.                |
+| [`passThroughExport`](docs/detectors/pass-through-export.md)      | file    | Exported function only forwards same-order args to another callable.                |
 | [`duplicateSymbol`](docs/detectors/duplicate-symbol.md)           | project | Named declarations with identical structure are repeated.                           |
 | [`uniqueImplementation`](docs/detectors/unique-implementation.md) | project | Interface or abstract class has no real polymorphism payoff.                        |
 

@@ -1,0 +1,6 @@
+{
+  "findings": [
+    { "flag": "passThroughExport", "file": "case.ts", "line": 4 },
+    { "flag": "passThroughExport", "file": "case.ts", "line": 9 }
+  ]
+}

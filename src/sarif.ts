@@ -59,6 +59,11 @@ const RULES: SarifRule[] = [
     "Public class method only forwards same-order arguments to a collaborator.",
   ),
   rule(
+    "passThroughExport",
+    "Pass-through export",
+    "Exported function only forwards same-order arguments to another callable.",
+  ),
+  rule(
     "duplicateSymbol",
     "Duplicate symbol",
     "Named declarations with identical structure are repeated across the project.",

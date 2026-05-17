@@ -1,0 +1,164 @@
+goal: >
+  Add a `passThroughExport` detector for exported callable wrappers that only
+  forward same-order arguments to an imported or top-level collaborator, while
+  leaving plain barrel re-exports out of the signal.
+
+context: |
+  This is the explicit follow-up deferred by the completed `passThroughMethod`
+  realignment: class methods stay scoped there, exported free-function wrappers
+  get their own flag. Keep the default conservative: only callable local exports
+  with one forwarding statement count; `export { X } from "..."` barrels are
+  export declarations, not wrappers. Follow the existing single-detector path so
+  CLI filtering, JSON, text, and SARIF all use the registry catalog.
+
+refs:
+  - src/detectors/pass-through-method.ts
+  - src/detectors/wide-signature.ts
+  - src/detectors/registry.ts
+  - src/format.ts
+  - src/sarif.ts
+  - test/detectors.test.ts
+  - test/fixtures/
+  - docs/detectors/pass-through-method.md
+  - README.md
+  - CHANGELOG.md
+
+acceptance:
+  - "`passThroughExport` flags exported function declarations that only return or await a same-order call to another callable."
+  - "`passThroughExport` does not flag non-exported helpers, transformed or reordered arguments, unrelated callee names, or plain barrel re-exports."
+  - The detector is selectable through the public detector registry and appears correctly in JSON/text/SARIF output.
+  - Detector behavior and release surface are documented.
+
+open_questions: []
+
+tasks:
+  - id: add-export-wrapper-detector
+    description: >
+      Add the focused `passThroughExport` detector, registry integration, and
+      tests for callable exported wrappers versus non-wrappers.
+    status: done
+    context: |
+      Prefer a separate detector over expanding `passThroughMethod`; the flags
+      represent different public surfaces. Reuse the same conservative wrapper
+      shape: simple identifier params, exact same-order forwarded args, direct
+      call or `return await`, and name equality/stemming. Barrel re-exports have
+      no local function body and should be naturally ignored.
+    acceptance:
+      - Unit tests cover a flagged exported wrapper and plain barrel re-exports as a negative case.
+      - Negative tests cover non-exported helpers, transformed/reordered args, and unrelated callee names.
+      - Fixture coverage records expected `passThroughExport` findings.
+      - Registry, text evidence, and SARIF rule metadata know the new detector id.
+    depends_on: []
+
+  - id: document-export-wrapper-detector
+    description: >
+      Document the new detector's scope and public detector table/release notes.
+    status: done
+    context: |
+      Keep the docs clear that callable wrappers are the target, not API-curation
+      barrels. Update public docs where users discover detector ids and release
+      behavior.
+    acceptance:
+      - A detector doc explains what is flagged, why it matters, how detection works, and acceptable cases.
+      - README detector table includes `passThroughExport` with the correct scope and signal.
+      - CHANGELOG records the new unreleased detector.
+    depends_on:
+      - add-export-wrapper-detector
+
+log:
+  - id: log-001
+    timestamp: 2026-05-17T11:49:53Z
+    command: plan
+    summary: >
+      Created a separate delta because the completed pass-through-method delta
+      explicitly deferred exported free-function wrappers. Planned two dependent
+      vertical slices: first add the detector behavior with tests and registry
+      output, then document the public surface. Baseline before planning:
+      `bun test test/detectors.test.ts` passed with 16 tests, 0 failures.
+
+  - id: log-002
+    timestamp: 2026-05-17T11:56:11Z
+    command: apply
+    task: add-export-wrapper-detector
+    summary: >
+      Added `passThroughExport` as a separate single-file detector and factored
+      shared pass-through call-shape recognition into `pass-through-shape.ts` so
+      method and export detectors share same-order argument and name-stem rules
+      without merging their public-surface boundaries. Added unit tests for
+      exported function declarations, exported const arrows, `return await`,
+      barrel re-export negatives, non-exported helpers, transformed/reordered
+      args, and unrelated callee names. Added fixture coverage and registry,
+      text-evidence, and SARIF metadata integration. RED evidence: the new
+      detector tests initially failed because the module did not exist and the
+      fixture emitted no findings. Acceptance evidence after implementation:
+      `bun test test/detectors.test.ts test/fixtures.test.ts test/cli.test.ts`
+      passed with 75 tests, 0 failures.
+
+  - id: log-003
+    timestamp: 2026-05-17T11:57:53Z
+    command: apply
+    task: document-export-wrapper-detector
+    summary: >
+      Added `docs/detectors/pass-through-export.md` covering flagged callable
+      wrappers, barrel re-export exclusions, detection mechanics, and acceptable
+      facade/typing/entrypoint cases. Updated the `passThroughMethod` docs to
+      point exported free-function wrappers at the new detector, added the
+      README detector-table row, and recorded the unreleased changelog entry.
+      Acceptance evidence: documentation acceptance checked by file review;
+      `bun test test/cli.test.ts` passed with 49 tests, 0 failures.
+
+  - id: log-004
+    timestamp: 2026-05-17T11:58:45Z
+    command: verify
+    summary: >
+      Verification found regressions before delta completion. Passed evidence:
+      `bun run test` passed with 118 tests, 0 failures; `bun run typecheck`
+      passed; `bun run lint` passed; fixture JSON scan with
+      `--only passThroughExport` emitted exactly 2 findings at lines 4 and 9;
+      source scan with `--only passThroughExport` emitted 0 findings; text and
+      SARIF fixture scans exposed the new detector id and evidence/rule metadata.
+
+      Failures:
+      - [bug] add-export-wrapper-detector: `bun run format:check` reported
+        formatting issues in `src/detectors/pass-through-export.ts` and
+        `src/detectors/pass-through-method.ts`. It also still reports the
+        pre-existing unrelated `docs/research/red-flags-source.md` issue.
+      - [bug] add-export-wrapper-detector: full source self-scan with
+        `bun src/cli.ts src --format json` emitted a `duplicateSymbol` finding
+        because `localExportedNames()` was re-declared in
+        `pass-through-export.ts` and `wide-signature.ts`.
+
+  - id: log-005
+    timestamp: 2026-05-17T12:00:25Z
+    command: apply
+    task: add-export-wrapper-detector
+    summary: >
+      Fixed verification failures from log-004. Extracted shared export-surface
+      AST helpers into `src/detectors/export-surface.ts` and reused them from
+      `wide-signature.ts` and `pass-through-export.ts`, removing the duplicated
+      `localExportedNames()` implementation. Formatted changed files directly.
+      Acceptance evidence: `bun test test/detectors.test.ts test/fixtures.test.ts
+      test/cli.test.ts` passed with 75 tests, 0 failures; `bun run typecheck`
+      passed; `bun run lint` passed; full source self-scan with
+      `bun src/cli.ts src --format json` emitted 0 findings. `bun run
+      format:check` now reports only the pre-existing unrelated
+      `docs/research/red-flags-source.md` formatting issue.
+
+  - id: log-006
+    timestamp: 2026-05-17T12:03:00Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Verified unit,
+      fixture, CLI text, CLI SARIF, registry selection, docs, README, and
+      changelog coverage. Evidence: `bun run test` passed with 118 tests, 0
+      failures; `bun run typecheck` passed; `bun run lint` passed; full source
+      self-scan with `bun src/cli.ts src --format json` emitted 0 findings;
+      `bun src/cli.ts test/fixtures/pass-through-export --only
+      passThroughExport --format json` emitted exactly 2 findings at lines 4 and
+      9; text output showed `passThroughExport` evidence for both wrappers;
+      SARIF output included the `passThroughExport` rule and results. Manual
+      complexity review found no new duplicate detector knowledge after
+      extracting `export-surface.ts`, no shallow pass-through detector layer, and
+      no broad customizability surface. Residual unrelated issue: `bun run
+      format:check` fails only on pre-existing `docs/research/red-flags-source.md`.
+      Delta is complete.
