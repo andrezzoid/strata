@@ -4,7 +4,6 @@ import { describe, expect, it } from "bun:test";
 
 import { buildLineOf, type CrossDetector, type Ctx, type SingleDetector } from "../src/ast.ts";
 import { detectDuplicateSymbol } from "../src/detectors/duplicate-symbol.ts";
-import { detectOrphanFile } from "../src/detectors/orphan-file.ts";
 import { detectPassThroughMethod } from "../src/detectors/pass-through-method.ts";
 import { detectUniqueImplementation } from "../src/detectors/unique-implementation.ts";
 import { detectWideSignature } from "../src/detectors/wide-signature.ts";
@@ -277,20 +276,6 @@ describe("detectDuplicateSymbol", () => {
     });
 
     expect(findings).toEqual([]);
-  });
-});
-
-describe("detectOrphanFile", () => {
-  it("flags unimported project files while preserving entrypoint, test, and generated skips", () => {
-    const findings = runCross(detectOrphanFile, {
-      "src/index.ts": "import './used';",
-      "src/used.ts": "export const used = true;",
-      "src/unused.ts": "export const unused = true;",
-      "test/helper.ts": "export const helper = true;",
-      "src/generated/unused.ts": "export const generated = true;",
-    });
-
-    expect(findings.map((finding) => finding.file)).toEqual(["src/unused.ts"]);
   });
 });
 

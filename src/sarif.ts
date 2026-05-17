@@ -68,7 +68,6 @@ const RULES: SarifRule[] = [
     "Unique implementation",
     "Interface or abstract class appears to have no polymorphism payoff.",
   ),
-  rule("orphanFile", "Orphan file", "File is not imported by any other scanned file."),
 ];
 
 /**

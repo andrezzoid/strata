@@ -1,0 +1,61 @@
+goal: >
+  Remove the orphanFile detector from Strata's public detector catalog and scanning output.
+
+context: |
+  The detector is exposed through DETECTOR_DEFINITIONS, CLI selection, README detector docs, SARIF rule metadata, and tests.
+  Historical changelog/delta mentions can remain as record, but current release surface should stop advertising orphanFile.
+  Baseline verified before planning: `bun test` passed with 110 tests.
+
+refs:
+  - src/detectors/registry.ts
+  - src/detectors/orphan-file.ts
+  - src/sarif.ts
+  - test/detectors.test.ts
+  - test/core.test.ts
+  - test/cli.test.ts
+  - README.md
+  - docs/detectors/orphan-file.md
+
+acceptance:
+  - The default scanner no longer runs or emits orphanFile findings.
+  - Detector selection surfaces no longer accept or list orphanFile as an available detector.
+  - Current README/docs/release notes no longer advertise orphanFile as a supported detector.
+  - Relevant tests and typecheck pass after removal.
+
+tasks:
+  - id: remove-orphan-file-surface
+    description: >
+      Remove orphanFile from detector registration, public metadata, tests, fixtures, and current documentation so the project no longer exposes it as a supported detector.
+    status: done
+    context: |
+      Keep historical changelog and old delta references unless they describe current behavior.
+      Preserve cross-file detector behavior for duplicateSymbol and uniqueImplementation.
+      Update tests before implementation where assertions currently require orphanFile.
+    acceptance:
+      - DETECTOR_DEFINITIONS and derived detector IDs do not include orphanFile.
+      - Tests no longer import or select detectOrphanFile and default scans assert only remaining detector behavior.
+      - README, detector docs, and SARIF rule metadata no longer list orphanFile as supported.
+      - "`bun test` and `bun run typecheck` pass."
+    depends_on: []
+
+notes:
+  - >
+    Full `bun run format:check` still fails on pre-existing untracked `docs/research/red-flags-source.md`; touched files pass direct oxfmt checks.
+
+log:
+  - id: log-001
+    timestamp: 2026-05-17T10:32Z
+    command: plan
+    summary: >
+      Planned one vertical removal slice because orphanFile's behavior is exposed through one detector catalog and its release surface; splitting code and docs would create unverified intermediate states. Baseline `bun test` passed before planning: 110 tests.
+  - id: log-002
+    timestamp: 2026-05-17T10:39Z
+    command: apply
+    task: remove-orphan-file-surface
+    summary: >
+      Removed orphanFile from detector registration, SARIF rule metadata, unit/core/CLI/action tests, fixtures, README detector listings, changelog, backlog wording, and detector docs. Deleted the standalone detector implementation and orphan-file fixture/docs. Acceptance evidence: `bun test` passed with 109 tests; `bun run typecheck` passed; `bun run lint` passed; direct oxfmt check on touched files passed. Full `bun run format:check` reports only unrelated untracked `docs/research/red-flags-source.md`. Commit was not created because commits require an explicit user request in this environment.
+  - id: log-003
+    timestamp: 2026-05-17T10:40Z
+    command: verify
+    summary: >
+      All task-level and delta-level acceptance criteria pass. Verified source detector catalog by grepping `src/` for orphanFile with no matches. Verified current docs/release surface by grepping `README.md` and `docs/` with no orphanFile/orphan-file matches; changelog only records the removal and historical 0.2.0 behavior. Verified integrated CLI behavior: JSON scan of `test/fixtures/pass-through-method` emits only two passThroughMethod findings; `--only orphanFile` exits as an unknown detector and valid detectors are passThroughMethod, wideSignature, duplicateSymbol, uniqueImplementation; SARIF rules/results omit orphanFile. Regression evidence: `bun test` 109/109 passing, `bun run typecheck` passing, `bun run lint` passing, touched-file oxfmt check passing, source self-scan reports 0 candidates. Full `bun run format:check` still fails only on unrelated untracked `docs/research/red-flags-source.md`. Delta is complete.

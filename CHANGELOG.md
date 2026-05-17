@@ -11,6 +11,7 @@ All notable changes to `strata` will be documented here.
 - Removes the `wideModule` detector from the public detector set, including CLI filtering, SARIF metadata, docs, fixtures, and tests.
 - Removes the `shallowModule` detector from the public detector set, including CLI filtering, SARIF metadata, docs, fixtures, and tests.
 - Removes the `genericNaming` detector from the public detector set, including CLI filtering, SARIF metadata, docs, fixtures, and tests.
+- Removes the `orphanFile` detector from the public detector set, including CLI filtering, SARIF metadata, docs, fixtures, and tests.
 
 ## 0.3.0 - 2026-05-12
 

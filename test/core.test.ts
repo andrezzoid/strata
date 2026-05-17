@@ -59,6 +59,10 @@ function worktreePaths(cwd: string): string[] {
     .map((line) => line.slice("worktree ".length));
 }
 
+function passThroughSource(className: string, methodName: string): string {
+  return `export class ${className} { repo: any; ${methodName}(id: string) { return this.repo.${methodName}(id); } }\n`;
+}
+
 describe("buildLineOf", () => {
   it("maps parser offsets to one-based source lines", () => {
     const lineOf = buildLineOf("first\nsecond\n\nfourth");
@@ -205,12 +209,12 @@ describe("formatResult", () => {
       {
         summary: {
           totalFindings: 1,
-          byFlag: { orphanFile: 1 },
+          byFlag: { duplicateSymbol: 1 },
           topFiles: [{ file: "src/a.ts", count: 1 }],
         },
         findings: [
           {
-            flag: "orphanFile",
+            flag: "duplicateSymbol",
             severity: "candidate",
             fingerprint: "strata:v1:unicode-sample",
             file: "src/a.ts",
@@ -315,7 +319,7 @@ describe("collectAllProjectFiles", () => {
 });
 
 describe("scanProject import graph resolution", () => {
-  it("uses scan-root tsconfig aliases for orphan and declaration-site analysis", async () => {
+  it("uses scan-root tsconfig aliases for declaration-site analysis", async () => {
     const root = mkdtempSync(join(tmpdir(), "strata-scan-aliases-"));
     try {
       mkdirSync(join(root, "src", "impl"), { recursive: true });
@@ -343,15 +347,9 @@ describe("scanProject import graph resolution", () => {
         join(root, "src", "impl", "adapter.ts"),
         "import { Port } from '@contracts'; export class Adapter implements Port { send(value: string) {} }",
       );
-      await Bun.write(join(root, "src", "unused.ts"), "export const unused = true;");
 
       const result = await scanProject({ target: root });
 
-      expect(
-        result.findings
-          .filter((finding) => finding.flag === "orphanFile")
-          .map((finding) => finding.file),
-      ).toEqual(["src/unused.ts"]);
       expect(
         result.findings
           .filter((finding) => finding.flag === "uniqueImplementation")
@@ -369,27 +367,33 @@ describe("scanProject base snapshots", () => {
     try {
       mkdirSync(join(root, "src"), { recursive: true });
       await Bun.write(join(root, "src", "index.ts"), "export const entry = true;\n");
-      await Bun.write(join(root, "src", "base-only.ts"), "export const baseOnly = true;\n");
+      await Bun.write(join(root, "src", "base-only.ts"), passThroughSource("BaseOnly", "getBase"));
       runGit(root, ["init"]);
       commitAll(root, "base");
 
-      await Bun.write(join(root, "src", "staged-only.ts"), "export const stagedOnly = true;\n");
+      await Bun.write(
+        join(root, "src", "staged-only.ts"),
+        passThroughSource("StagedOnly", "getStaged"),
+      );
       runGit(root, ["add", "src/staged-only.ts"]);
-      await Bun.write(join(root, "src", "unstaged-only.ts"), "export const unstagedOnly = true;\n");
+      await Bun.write(
+        join(root, "src", "unstaged-only.ts"),
+        passThroughSource("UnstagedOnly", "getUnstaged"),
+      );
       await Bun.write(
         join(root, "src", "untracked-only.ts"),
-        "export const untrackedOnly = true;\n",
+        passThroughSource("UntrackedOnly", "getUntracked"),
       );
 
       const current = await scanProject({
         target: join(root, "src"),
-        detectorSelection: { kind: "only", ids: ["orphanFile"] },
+        detectorSelection: { kind: "only", ids: ["passThroughMethod"] },
       });
       const beforeWorktrees = worktreePaths(root);
       const base = await scanProjectAtGitRef({
         target: join(root, "src"),
         ref: "HEAD",
-        detectorSelection: { kind: "only", ids: ["orphanFile"] },
+        detectorSelection: { kind: "only", ids: ["passThroughMethod"] },
       });
 
       expect(current.findings.map((finding) => finding.file).sort()).toEqual([
@@ -412,12 +416,12 @@ describe("scanProject base snapshots", () => {
       runGit(root, ["init"]);
       commitAll(root, "base");
       mkdirSync(join(root, "new-src"), { recursive: true });
-      await Bun.write(join(root, "new-src", "new-file.ts"), "export const newFile = true;\n");
+      await Bun.write(join(root, "new-src", "new-file.ts"), passThroughSource("NewFile", "getNew"));
 
       const result = await scanProjectAtGitRef({
         target: join(root, "new-src"),
         ref: "HEAD",
-        detectorSelection: { kind: "only", ids: ["orphanFile"] },
+        detectorSelection: { kind: "only", ids: ["passThroughMethod"] },
       });
 
       expect(result).toEqual({
@@ -594,7 +598,9 @@ describe("scanProject detector selection", () => {
     const result = await scanProject({ target: passThroughFixture });
 
     expect(result.findings.some((finding) => finding.flag === "passThroughMethod")).toBe(true);
-    expect(result.findings.some((finding) => finding.flag === "orphanFile")).toBe(true);
+    expect(new Set(result.findings.map((finding) => finding.flag))).toEqual(
+      new Set(["passThroughMethod"]),
+    );
   });
 
   it("runs only requested detectors", async () => {
@@ -616,7 +622,7 @@ describe("scanProject detector selection", () => {
     });
 
     expect(result.findings.some((finding) => finding.flag === "passThroughMethod")).toBe(false);
-    expect(result.findings.some((finding) => finding.flag === "orphanFile")).toBe(true);
+    expect(result.summary.totalFindings).toBe(0);
   });
 
   it("can select cross-project detectors", async () => {
@@ -636,8 +642,14 @@ describe("scanProject detector selection", () => {
     try {
       mkdirSync(join(root, "src"), { recursive: true });
       await Bun.write(join(root, "src", "index.ts"), "export const entry = true;\n");
-      await Bun.write(join(root, "src", "orphan-a.ts"), "export const a = true;\n");
-      await Bun.write(join(root, "src", "orphan-b.ts"), "export const b = true;\n");
+      await Bun.write(
+        join(root, "src", "copy-a.ts"),
+        "export const API_URL = 'https://api.example';\n",
+      );
+      await Bun.write(
+        join(root, "src", "copy-b.ts"),
+        "export const API_URL = 'https://api.example';\n",
+      );
 
       runGit(root, ["init"]);
       runGit(root, ["add", "."]);
@@ -650,16 +662,19 @@ describe("scanProject detector selection", () => {
         "-m",
         "base",
       ]);
-      await Bun.write(join(root, "src", "orphan-b.ts"), "export const b = false;\n");
+      await Bun.write(
+        join(root, "src", "copy-b.ts"),
+        "export const API_URL = 'https://api.example';\nexport const touched = true;\n",
+      );
 
       const result = await scanProject({
         target: root,
         touchedSinceRef: "HEAD",
-        detectorSelection: { kind: "only", ids: ["orphanFile"] },
+        detectorSelection: { kind: "only", ids: ["duplicateSymbol"] },
       });
 
       expect(result.findings.map((finding) => `${finding.flag}:${finding.file}`)).toEqual([
-        "orphanFile:src/orphan-b.ts",
+        "duplicateSymbol:src/copy-a.ts",
       ]);
     } finally {
       rmSync(root, { recursive: true, force: true });

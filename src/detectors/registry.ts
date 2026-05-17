@@ -2,7 +2,6 @@ import type { Ctx, SingleDetector } from "../ast.ts";
 import type { ImportResolver } from "../scope.ts";
 import type { Finding } from "../types.ts";
 import { detectDuplicateSymbol } from "./duplicate-symbol.ts";
-import { detectOrphanFile } from "./orphan-file.ts";
 import { detectPassThroughMethod } from "./pass-through-method.ts";
 import { detectUniqueImplementation } from "./unique-implementation.ts";
 import { detectWideSignature } from "./wide-signature.ts";
@@ -42,13 +41,6 @@ export const DETECTOR_DEFINITIONS = [
     description:
       "Suspicious when an interface or abstract class has only one implementation; abstraction cost may not buy polymorphism.",
     detect: detectUniqueImplementation,
-  },
-  {
-    id: "orphanFile",
-    kind: "cross",
-    description:
-      "Suspicious when a source file is not imported by the scanned project; it may be dead code, forgotten exploration, or an entrypoint the scanner cannot infer.",
-    detect: detectOrphanFile,
   },
 ] as const satisfies readonly DetectorDefinition[];
 

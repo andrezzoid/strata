@@ -33,7 +33,7 @@ strata [PATH] --format json
 strata [PATH] --format text
 strata [PATH] --format sarif
 strata [PATH] --only passThroughMethod,duplicateSymbol
-strata [PATH] --exclude orphanFile,wideSignature
+strata [PATH] --exclude wideSignature
 strata [PATH] --fail-on-findings
 strata --version
 ```
@@ -75,17 +75,16 @@ strata complexity candidates
 Mode: full scan
 Target: .
 
-Found 3 review candidates.
+Found 2 review candidates.
 
 These are candidate signals, not automated design verdicts. Review whether
 each finding actually makes the system harder to understand or modify.
 
 By detector:
-  orphanFile         1
   passThroughMethod  2
 
 Top files:
-  3  case.ts
+  2  case.ts
 
 passThroughMethod
   Suspicious when a method only forwards same-order args to a collaborator; the layer may add API surface without hiding useful complexity.
@@ -291,7 +290,7 @@ Focus CI annotations or gates on detector families your team is ready to review:
 
 ```bash
 strata . --new-since origin/main --only passThroughMethod,duplicateSymbol --format sarif > strata.sarif
-strata . --new-since origin/main --exclude orphanFile --fail-on-findings
+strata . --new-since origin/main --exclude wideSignature --fail-on-findings
 ```
 
 Example GitHub Actions upload step:
@@ -317,7 +316,6 @@ Each detector targets a design failure that AI-assisted workflows reliably intro
 | [`passThroughMethod`](docs/detectors/pass-through-method.md)      | file    | Public class method only forwards same-order args to a collaborator. |
 | [`duplicateSymbol`](docs/detectors/duplicate-symbol.md)           | project | Named declarations with identical structure are repeated.            |
 | [`uniqueImplementation`](docs/detectors/unique-implementation.md) | project | Interface or abstract class has no real polymorphism payoff.         |
-| [`orphanFile`](docs/detectors/orphan-file.md)                     | project | File is not imported by any other scanned file.                      |
 
 Notably absent: long-function detection, cyclomatic complexity scoring. Both are well-served by existing tools. Strata occupies the gap they leave — the design layer between "this function is complex" and "this module is not earning its abstraction."
 

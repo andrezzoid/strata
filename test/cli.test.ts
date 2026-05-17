@@ -225,7 +225,7 @@ describe("CLI", () => {
     expect(result.stdout).toStartWith(
       `strata complexity candidates\nMode: full scan\nTarget: ${passThroughFixture}\n`,
     );
-    expect(result.stdout).toContain("Found 3 review candidates.");
+    expect(result.stdout).toContain("Found 2 review candidates.");
     expect(result.stdout).toContain("candidate signals, not automated design verdicts");
   });
 
@@ -299,6 +299,14 @@ describe("CLI", () => {
     expect(result.stderr).not.toContain("genericNaming, ");
   });
 
+  it("rejects the removed orphanFile detector filter", () => {
+    const result = runStrata([passThroughFixture, "--only", "orphanFile"]);
+
+    expect(result.status).toBe(2);
+    expect(result.stderr).toContain("unknown detector: orphanFile");
+    expect(result.stderr).not.toContain("orphanFile, ");
+  });
+
   it("omits excluded detector findings", () => {
     const result = runStrata([
       passThroughFixture,
@@ -313,23 +321,21 @@ describe("CLI", () => {
     expect(
       parsed.findings.some((finding: { flag: string }) => finding.flag === "passThroughMethod"),
     ).toBe(false);
-    expect(parsed.findings.some((finding: { flag: string }) => finding.flag === "orphanFile")).toBe(
-      true,
-    );
+    expect(parsed.summary.totalFindings).toBe(0);
   });
 
   it("keeps default scans report-only when findings exist", () => {
     const result = runStrata([passThroughFixture]);
 
     expect(result.status).toBe(0);
-    expect(result.stdout).toContain("Found 3 review candidates.");
+    expect(result.stdout).toContain("Found 2 review candidates.");
   });
 
   it("fails with default text output when requested and findings exist", () => {
     const result = runStrata([passThroughFixture, "--fail-on-findings"]);
 
     expect(result.status).toBe(1);
-    expect(result.stdout).toContain("Found 3 review candidates.");
+    expect(result.stdout).toContain("Found 2 review candidates.");
   });
 
   it("fails with explicit JSON output when requested and findings exist", () => {
@@ -358,7 +364,7 @@ describe("CLI", () => {
     expect(result.stdout).toStartWith(
       `strata complexity candidates\nMode: full scan\nTarget: ${passThroughFixture}\n`,
     );
-    expect(result.stdout).toContain("Found 3 review candidates.");
+    expect(result.stdout).toContain("Found 2 review candidates.");
     expect(result.stdout).toContain("candidate signals, not automated design verdicts");
     expect(result.stdout).toContain("passThroughMethod\n  Suspicious when a method only forwards");
     expect(result.stdout).toContain("  case.ts:7\n    class method delegates");
@@ -379,7 +385,8 @@ describe("CLI", () => {
 
     expect(result.status).toBe(0);
     expect(result.stdout).not.toContain("[passThroughMethod]");
-    expect(result.stdout).toContain("orphanFile");
+    expect(result.stdout).toContain("No review candidates were emitted for this scan.");
+    expect(result.stdout).not.toContain("By detector:");
   });
 
   it("prints introduced-only text output with base-ref context", async () => {
@@ -545,7 +552,7 @@ describe("CLI", () => {
     const result = runStrata([
       passThroughFixture,
       "--only",
-      "orphanFile",
+      "passThroughMethod",
       "--format",
       "sarif",
       "--fail-on-findings",
@@ -555,7 +562,7 @@ describe("CLI", () => {
     const sarif = JSON.parse(result.stdout);
     expect(
       new Set(sarif.runs[0].results.map((finding: { ruleId: string }) => finding.ruleId)),
-    ).toEqual(new Set(["orphanFile"]));
+    ).toEqual(new Set(["passThroughMethod"]));
   });
 
   it("prints JSON introduced since a git ref", async () => {
@@ -780,7 +787,7 @@ describe("CLI", () => {
   });
 
   it("rejects empty detector list entries", () => {
-    const result = runStrata([passThroughFixture, "--exclude", "orphanFile,"]);
+    const result = runStrata([passThroughFixture, "--exclude", "passThroughMethod,"]);
 
     expect(result.status).toBe(2);
     expect(result.stderr).toContain("empty detector in --exclude list");
@@ -792,7 +799,7 @@ describe("CLI", () => {
       "--only",
       "passThroughMethod",
       "--exclude",
-      "orphanFile",
+      "wideSignature",
     ]);
 
     expect(result.status).toBe(2);

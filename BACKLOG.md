@@ -33,7 +33,7 @@ Future work should earn its complexity. Each item below should be implemented on
 ## Detector Ideas
 
 - Circular dependency detection: cycles are the structural form of knowledge encoded in the wrong place — a PoSD violation that no existing detector covers and that AI-generated wiring reliably introduces.
-- Unused export detection: a symbol-level replacement for `orphanFile` that surfaces dead interface surface rather than dead files; more precise and catches the speculative-API pattern AI models favour.
+- Unused export detection: a symbol-level successor to the removed file-level orphan detector that surfaces dead interface surface rather than dead files; more precise and catches the speculative-API pattern AI models favour.
 - Layer-boundary enforcement once a real project supplies stable layer rules.
 - Multi-representation duplication detection for TS types plus runtime schemas.
 - Type-aware leakage detection for internal types exposed through public APIs.
