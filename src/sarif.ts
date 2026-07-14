@@ -64,6 +64,11 @@ const RULES: SarifRule[] = [
     "Exported function only forwards same-order arguments to another callable.",
   ),
   rule(
+    "exposedMutableRepresentation",
+    "Exposed mutable representation",
+    "Exported class returns a private mutable field through a public member.",
+  ),
+  rule(
     "forcedRareOption",
     "Forced rare option",
     "Most callers pass the same literal, placeholder, or default-like option to an exported API.",

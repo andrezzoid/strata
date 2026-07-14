@@ -14,6 +14,10 @@ const here = dirname(Bun.fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
 const cli = join(repoRoot, "src/cli.ts");
 const bin = join(repoRoot, "bin/strata.js");
+const exposedMutableRepresentationFixture = join(
+  repoRoot,
+  "test/fixtures/exposed-mutable-representation",
+);
 const passThroughExportFixture = join(repoRoot, "test/fixtures/pass-through-export");
 const passThroughFixture = join(repoRoot, "test/fixtures/pass-through-method");
 
@@ -241,6 +245,65 @@ describe("CLI", () => {
     ).toBe(true);
   });
 
+  it("includes exposedMutableRepresentation in default JSON output", () => {
+    const result = runStrata([exposedMutableRepresentationFixture, "--format", "json"]);
+
+    expect(result.status).toBe(0);
+    const parsed = JSON.parse(result.stdout);
+    expect(parsed.summary).toEqual({
+      totalFindings: 1,
+      byFlag: { exposedMutableRepresentation: 1 },
+      topFiles: [{ file: "case.ts", count: 1 }],
+    });
+    expect(parsed.findings).toHaveLength(1);
+    expect(parsed.findings[0]).toMatchObject({
+      flag: "exposedMutableRepresentation",
+      file: "case.ts",
+      line: 4,
+      metadata: {
+        className: "SessionCache",
+        fieldName: "entries",
+        fieldLine: 2,
+        mutableFamily: "Map",
+        accessors: [
+          { name: "entriesView", kind: "method", line: 4 },
+          { name: "entriesReference", kind: "getter", line: 8 },
+        ],
+      },
+    });
+  });
+
+  it("accepts exposedMutableRepresentation as the only detector", () => {
+    const result = runStrata([
+      exposedMutableRepresentationFixture,
+      "--only",
+      "exposedMutableRepresentation",
+      "--format",
+      "json",
+    ]);
+
+    expect(result.status).toBe(0);
+    const parsed = JSON.parse(result.stdout);
+    expect(new Set(parsed.findings.map((finding: { flag: string }) => finding.flag))).toEqual(
+      new Set(["exposedMutableRepresentation"]),
+    );
+  });
+
+  it("accepts exposedMutableRepresentation as an excluded detector", () => {
+    const result = runStrata([
+      exposedMutableRepresentationFixture,
+      "--exclude",
+      "exposedMutableRepresentation",
+      "--format",
+      "json",
+    ]);
+
+    expect(result.status).toBe(0);
+    const parsed = JSON.parse(result.stdout);
+    expect(parsed.summary.totalFindings).toBe(0);
+    expect(parsed.findings).toEqual([]);
+  });
+
   it("prints only requested detector findings", () => {
     const result = runStrata([
       passThroughFixture,
@@ -402,6 +465,24 @@ describe("CLI", () => {
     expect(result.status).toBe(0);
     expect(result.stdout).toContain("passThroughExport\n  Suspicious when an exported function");
     expect(result.stdout).toContain("evidence: parseConfigFile forwards 1 arg to parseConfig");
+  });
+
+  it("prints text evidence for exposed mutable representation", () => {
+    const result = runStrata([
+      exposedMutableRepresentationFixture,
+      "--only",
+      "exposedMutableRepresentation",
+      "--format",
+      "text",
+    ]);
+
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain(
+      "exposedMutableRepresentation\n  Suspicious when an exported class returns a private mutable field directly",
+    );
+    expect(result.stdout).toContain(
+      "evidence: private field 'entries'; mutable family: Map; exposing members: 2",
+    );
   });
 
   it("prints introduced-only text output with base-ref context", async () => {
@@ -600,6 +681,42 @@ describe("CLI", () => {
           rule.id === "passThroughExport" && rule.name === "Pass-through export",
       ),
     ).toBe(true);
+  });
+
+  it("prints filtered SARIF for exposed mutable representation", () => {
+    const args = [exposedMutableRepresentationFixture, "--only", "exposedMutableRepresentation"];
+    const jsonResult = runStrata([...args, "--format", "json"]);
+    const sarifResult = runStrata([...args, "--format", "sarif"]);
+
+    expect(jsonResult.status).toBe(0);
+    expect(sarifResult.status).toBe(0);
+    const finding = JSON.parse(jsonResult.stdout).findings[0];
+    const sarif = JSON.parse(sarifResult.stdout);
+    const run = sarif.runs[0];
+    const ruleIndex = run.tool.driver.rules.findIndex(
+      (rule: { id: string }) => rule.id === "exposedMutableRepresentation",
+    );
+    expect(ruleIndex).toBeGreaterThanOrEqual(0);
+    expect(run.tool.driver.rules[ruleIndex].name).toBe("Exposed mutable representation");
+    expect(run.results).toEqual([
+      {
+        ruleId: "exposedMutableRepresentation",
+        ruleIndex,
+        level: "warning",
+        message: {
+          text: "SessionCache exposes private mutable Map field 'entries' through 2 public members",
+        },
+        locations: [
+          {
+            physicalLocation: {
+              artifactLocation: { uri: "case.ts" },
+              region: { startLine: 4 },
+            },
+          },
+        ],
+        partialFingerprints: { primaryLocationLineHash: finding.fingerprint },
+      },
+    ]);
   });
 
   it("prints JSON introduced since a git ref", async () => {

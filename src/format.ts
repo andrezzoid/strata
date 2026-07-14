@@ -133,6 +133,9 @@ function textMessage(message: string): string {
 
 function evidenceLines(finding: Finding): string[] {
   if (finding.flag === "duplicateSymbol") return duplicateSymbolEvidence(finding);
+  if (finding.flag === "exposedMutableRepresentation") {
+    return exposedMutableRepresentationEvidence(finding);
+  }
   if (finding.flag === "passThroughExport") return passThroughExportEvidence(finding);
   if (finding.flag === "passThroughMethod") return passThroughMethodEvidence(finding);
   if (finding.flag === "wideSignature" && typeof finding.metadata.requiredParams === "number") {
@@ -145,6 +148,22 @@ function evidenceLines(finding: Finding): string[] {
     return [`evidence: implementer count: ${finding.metadata.implementerCount}`];
   }
   return [];
+}
+
+function exposedMutableRepresentationEvidence(finding: Finding): string[] {
+  const fieldName = finding.metadata.fieldName;
+  const mutableFamily = finding.metadata.mutableFamily;
+  const accessors = finding.metadata.accessors;
+  if (
+    typeof fieldName !== "string" ||
+    typeof mutableFamily !== "string" ||
+    !Array.isArray(accessors)
+  ) {
+    return [];
+  }
+  return [
+    `evidence: private field '${fieldName}'; mutable family: ${mutableFamily}; exposing members: ${accessors.length}`,
+  ];
 }
 
 function passThroughExportEvidence(finding: Finding): string[] {

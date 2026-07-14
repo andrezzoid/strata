@@ -2,6 +2,7 @@ import type { Ctx, SingleDetector } from "../ast.ts";
 import type { ImportResolver } from "../scope.ts";
 import type { Finding } from "../types.ts";
 import { detectDuplicateSymbol } from "./duplicate-symbol.ts";
+import { detectExposedMutableRepresentation } from "./exposed-mutable-representation.ts";
 import { detectForcedRareOption } from "./forced-rare-option.ts";
 import { detectPassThroughExport } from "./pass-through-export.ts";
 import { detectPassThroughMethod } from "./pass-through-method.ts";
@@ -29,6 +30,13 @@ export const DETECTOR_DEFINITIONS = [
     description:
       "Suspicious when an exported function only forwards same-order args to another callable; the public name may add surface without behavior.",
     detect: detectPassThroughExport,
+  },
+  {
+    id: "exposedMutableRepresentation",
+    kind: "single",
+    description:
+      "Suspicious when an exported class returns a private mutable field directly; the declared API permits representation mutation outside the class.",
+    detect: detectExposedMutableRepresentation,
   },
   {
     id: "wideSignature",

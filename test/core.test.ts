@@ -283,6 +283,37 @@ describe("formatResult", () => {
       },
     ]);
   });
+
+  it("always emits the stable exposedMutableRepresentation SARIF rule", () => {
+    const output = formatResult(
+      { summary: { totalFindings: 0, byFlag: {}, topFiles: [] }, findings: [] },
+      "sarif",
+    );
+    const sarif = JSON.parse(output);
+    const descriptor = sarif.runs[0].tool.driver.rules.find(
+      (rule: { id: string }) => rule.id === "exposedMutableRepresentation",
+    );
+
+    expect(descriptor).toEqual({
+      id: "exposedMutableRepresentation",
+      name: "Exposed mutable representation",
+      shortDescription: {
+        text: "Exported class returns a private mutable field through a public member.",
+      },
+      fullDescription: {
+        text: "Exported class returns a private mutable field through a public member.",
+      },
+      defaultConfiguration: { level: "warning" },
+      help: {
+        text: "Exported class returns a private mutable field through a public member. Strata reports this as a candidate for human or AI review, not as an automatic verdict.",
+      },
+      properties: {
+        tags: ["maintainability", "posd"],
+        precision: "medium",
+        "problem.severity": "recommendation",
+      },
+    });
+  });
 });
 
 describe("collectAllProjectFiles", () => {
@@ -591,8 +622,41 @@ describe("scanProject introduced-only filtering", () => {
 });
 
 describe("scanProject detector selection", () => {
+  const exposedMutableRepresentationFixture = join(fixturesRoot, "exposed-mutable-representation");
   const passThroughFixture = join(fixturesRoot, "pass-through-method");
   const uniqueImplementationFixture = join(fixturesRoot, "unique-implementation");
+
+  it("runs exposedMutableRepresentation in default scans", async () => {
+    const result = await scanProject({ target: exposedMutableRepresentationFixture });
+
+    expect(result.findings.map((finding) => finding.flag)).toEqual([
+      "exposedMutableRepresentation",
+    ]);
+  });
+
+  it("selects only exposedMutableRepresentation", async () => {
+    const result = await scanProject({
+      target: exposedMutableRepresentationFixture,
+      detectorSelection: { kind: "only", ids: ["exposedMutableRepresentation"] },
+    });
+
+    expect(result.findings.map((finding) => finding.flag)).toEqual([
+      "exposedMutableRepresentation",
+    ]);
+    expect(result.summary.byFlag).toEqual({ exposedMutableRepresentation: 1 });
+  });
+
+  it("excludes exposedMutableRepresentation", async () => {
+    const result = await scanProject({
+      target: exposedMutableRepresentationFixture,
+      detectorSelection: { kind: "exclude", ids: ["exposedMutableRepresentation"] },
+    });
+
+    expect(result.findings.some((finding) => finding.flag === "exposedMutableRepresentation")).toBe(
+      false,
+    );
+    expect(result.summary.totalFindings).toBe(0);
+  });
 
   it("runs every detector when no detector selection is provided", async () => {
     const result = await scanProject({ target: passThroughFixture });

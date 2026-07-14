@@ -1,0 +1,3 @@
+{
+  "findings": [{ "flag": "exposedMutableRepresentation", "file": "case.ts", "line": 4 }]
+}
