@@ -2,7 +2,9 @@
 
 All notable changes to `strata` will be documented here.
 
-## 0.3.1 - Unreleased
+## 0.4.1 - Unreleased
+
+## 0.4.0 - 2026-07-14
 
 - Adds `forcedRareOption` detection for exported APIs whose callers repeatedly pass the same literal, placeholder, or default-like option.
 - Adds `passThroughExport` detection for exported function wrappers that only forward same-order arguments, while leaving plain barrel re-exports out of the default signal.
