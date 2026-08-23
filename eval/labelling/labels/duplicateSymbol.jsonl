@@ -1,0 +1,60 @@
+{"id": "cloudflare-agents/packages/agents/src#strata:v1:19vapbs", "verdict": "reject", "cause": "parallel-by-design", "note": "Three error predicates over distinct regex patterns with documented distinct retry semantics."}
+{"id": "cloudflare-agents/packages/agents/src#strata:v1:1eqd2ms", "verdict": "accept", "cause": null, "note": "Identical mutableRequest helper duplicated verbatim across two modules."}
+{"id": "cloudflare-agents/packages/agents/src#strata:v1:9o1uh4", "verdict": "accept", "cause": null, "note": "Three type-tag predicates differing only in a string literal; one isChunkOfType helper covers all."}
+{"id": "continue/core#strata:v1:1k9cgbf", "verdict": "reject", "cause": "non-product-path", "note": "Vendored @xenova/transformers .d.ts; not the project's own source."}
+{"id": "continue/core#strata:v1:9rvw01", "verdict": "reject", "cause": "non-product-path", "note": "Vendored @xenova/transformers .d.ts; not the project's own source."}
+{"id": "continue/core#strata:v1:uobqrc", "verdict": "accept", "cause": null, "note": "Seven path helpers all doing join+mkdirSync-if-missing; a named ensureSubfolder is the missing abstraction."}
+{"id": "continue/gui/src#strata:v1:1fmdcrg", "verdict": "reject", "cause": "distinct-domain", "note": "Icon components: shared scaffolding, irreducible SVG bodies."}
+{"id": "continue/gui/src#strata:v1:fz5seq", "verdict": "depends", "cause": null, "note": "ConfigSection and ConfigSubsection look near-identical, but the sheet cuts off before the bodies diverge."}
+{"id": "continue/gui/src#strata:v1:s49t9z", "verdict": "accept", "cause": null, "note": "Same toolbar-options comparison duplicated in two files, one merely prefixed 'shallow'."}
+{"id": "continue/gui/src#strata:v1:vhwn8b", "verdict": "accept", "cause": null, "note": "Five identical icon props interfaces with no body at all; one exported IconProps."}
+{"id": "hono/src#strata:v1:152ecla", "verdict": "reject", "cause": "parallel-by-design", "note": "Symmetric request/response hook combinators; generifying would cost the typing."}
+{"id": "hono/src#strata:v1:afmwag", "verdict": "reject", "cause": "trivial-body", "note": "Two unrelated one-line regex predicates sharing only the arrow-returns-test shape."}
+{"id": "hono/src#strata:v1:cwkllc", "verdict": "reject", "cause": "intentional-duplication", "note": "Per-runtime adapter entry points (bun, deno); the duplication is the boundary."}
+{"id": "mcp-typescript-sdk/packages/server/src#strata:v1:vrmfx7", "verdict": "accept", "cause": null, "note": "The localhost allowlist literal lives in two files; the second's doc admits it mirrors the first."}
+{"id": "next/packages/next/src#strata:v1:13vgy4k", "verdict": "reject", "cause": "parallel-by-design", "note": "notImplemented() stubs standing in for a required API surface."}
+{"id": "next/packages/next/src#strata:v1:16bz7j1", "verdict": "reject", "cause": "parallel-by-design", "note": "Two documented named entry points over one impl with different flags and return types."}
+{"id": "next/packages/next/src#strata:v1:170w18b", "verdict": "reject", "cause": "trivial-body", "note": "Four `type X = Set<string>` aliases naming four unrelated domain concepts."}
+{"id": "next/packages/next/src#strata:v1:1c5w08e", "verdict": "reject", "cause": "parallel-by-design", "note": "formatRevalidate/formatExpire differ by one field name; the names carry the meaning."}
+{"id": "next/packages/next/src#strata:v1:1exfg5f", "verdict": "reject", "cause": "distinct-domain", "note": "Icon components: shared signature, irreducible SVG bodies."}
+{"id": "next/packages/next/src#strata:v1:1i48id4", "verdict": "accept", "cause": null, "note": "Identical isStaticRequire type guard duplicated across two modules."}
+{"id": "next/packages/next/src#strata:v1:1l7lxej", "verdict": "accept", "cause": null, "note": "formatRouteToRouteType duplicated; the copy's own comment says it matches the plugin logic exactly."}
+{"id": "next/packages/next/src#strata:v1:1qv7lct", "verdict": "reject", "cause": "parallel-by-design", "note": "Two adjacent dev-only placeholder bindings, deliberately paired."}
+{"id": "next/packages/next/src#strata:v1:1rhhn1t", "verdict": "accept", "cause": null, "note": "afterApplyUpdates duplicated verbatim across the app and pages hot reloaders."}
+{"id": "next/packages/next/src#strata:v1:1rhw95g", "verdict": "reject", "cause": "intentional-duplication", "note": "Vendored forks of css-loader and postcss-loader; duplication inherited from upstream."}
+{"id": "next/packages/next/src#strata:v1:1vthgdd", "verdict": "reject", "cause": "cross-name-collision", "note": "Three unrelated function type aliases sharing only arity and Promise<void>."}
+{"id": "next/packages/next/src#strata:v1:1wbxbug", "verdict": "accept", "cause": null, "note": "The same ignore rules (node_modules, next/dist, node:) and comment in the turbopack and webpack middleware."}
+{"id": "next/packages/next/src#strata:v1:1xdl6wh", "verdict": "reject", "cause": "distinct-domain", "note": "Three unrelated icon components; every icon is svg plus path."}
+{"id": "next/packages/next/src#strata:v1:967hau", "verdict": "reject", "cause": "distinct-domain", "note": "Two unrelated icon components."}
+{"id": "next/packages/next/src#strata:v1:gybdzc", "verdict": "depends", "cause": null, "note": "Sixteen SWC node guards; a generic type predicate is expressible but would push type arguments to every call site."}
+{"id": "next/packages/next/src#strata:v1:uunywm", "verdict": "accept", "cause": null, "note": "Three error-digest guards repeating the same object/null/digest preamble."}
+{"id": "next/packages/next/src#strata:v1:v16ysq", "verdict": "reject", "cause": "distinct-domain", "note": "Two unrelated icon components."}
+{"id": "next/packages/next/src#strata:v1:v2ugnw", "verdict": "reject", "cause": "trivial-body", "note": "Ten declarations whose whole body is `return null`."}
+{"id": "next/packages/next/src#strata:v1:zjp3l6", "verdict": "reject", "cause": "cross-name-collision", "note": "Two unrelated one-line template-string builders in unrelated modules."}
+{"id": "vercel-ai/packages/ai/src#strata:v1:170wdp8", "verdict": "reject", "cause": "parallel-by-design", "note": "Per-model-kind version adapters; the types differ throughout."}
+{"id": "workers-sdk/packages/miniflare/src#strata:v1:1s3g3l7", "verdict": "reject", "cause": "trivial-body", "note": "Two one-line partial applications of an existing errorResponse helper."}
+{"id": "workers-sdk/packages/miniflare/src#strata:v1:4xb6fc", "verdict": "reject", "cause": "parallel-by-design", "note": "The OmitRequest helper already exists; what repeats is applying it per schema."}
+{"id": "workers-sdk/packages/miniflare/src#strata:v1:56ds47", "verdict": "accept", "cause": null, "note": "`NonNullable<z.output<typeof X>[\"query\"]>` written out five times with no helper; a QueryOf alias names it."}
+{"id": "workers-sdk/packages/wrangler/src#strata:v1:10e0jwi", "verdict": "reject", "cause": "parallel-by-design", "note": "Explicit per-endpoint client functions; the shared part is two lines of auth-then-fetch."}
+{"id": "workers-sdk/packages/wrangler/src#strata:v1:13vju9r", "verdict": "reject", "cause": "cross-name-collision", "note": "Six unrelated template-string builders across unrelated modules."}
+{"id": "workers-sdk/packages/wrangler/src#strata:v1:1be2oxp", "verdict": "reject", "cause": "trivial-body", "note": "Three `{ success: boolean }` aliases; separate names document separate endpoints."}
+{"id": "workers-sdk/packages/wrangler/src#strata:v1:1g2bguq", "verdict": "accept", "cause": null, "note": "Account and AccountInfo are the same concept in two files. The group is contaminated by an unrelated R2 type, but a reviewer sent here finds a real duplicate."}
+{"id": "workers-sdk/packages/wrangler/src#strata:v1:1hxacme", "verdict": "accept", "cause": null, "note": "Three list-response interfaces repeating the same extends-plus-result_info shape; one generic ListResponse<T>."}
+{"id": "workers-sdk/packages/wrangler/src#strata:v1:1rwbk5v", "verdict": "accept", "cause": null, "note": "convertContainerAffinitiesForApi duplicated verbatim, doc comment included."}
+{"id": "workers-sdk/packages/wrangler/src#strata:v1:1sngedz", "verdict": "reject", "cause": "cross-name-collision", "note": "Two unrelated API calls sharing arity and a fetchResult body."}
+{"id": "workers-sdk/packages/wrangler/src#strata:v1:1wz6lsy", "verdict": "depends", "cause": null, "note": "Six event guards repeating `Boolean(event && \"x\" in event)`; same TypeScript narrowing question as the SWC guards."}
+{"id": "workers-sdk/packages/wrangler/src#strata:v1:4a3s8u", "verdict": "reject", "cause": "parallel-by-design", "note": "Explicit per-endpoint client functions in one file."}
+{"id": "workers-sdk/packages/wrangler/src#strata:v1:mrpxbp", "verdict": "accept", "cause": null, "note": "logBulkProgress duplicated across kv and r2 helpers, doc comment included, alongside a duplicated formatNumber."}
+{"id": "zod/packages/zod/src#strata:v1:12k2dhj", "verdict": "reject", "cause": "intentional-duplication", "note": "classic and mini are deliberately mirrored public surfaces; the file says so."}
+{"id": "zod/packages/zod/src#strata:v1:1372cfw", "verdict": "accept", "cause": null, "note": "Two modules both export globalConfig and an identical config(); looks like a migration artifact worth questioning."}
+{"id": "zod/packages/zod/src#strata:v1:15uu08q", "verdict": "reject", "cause": "parallel-by-design", "note": "Per-schema-type factories; the type-level distinctness is the point."}
+{"id": "zod/packages/zod/src#strata:v1:162t0em", "verdict": "reject", "cause": "intentional-duplication", "note": "classic and mini mirrored public surface."}
+{"id": "zod/packages/zod/src#strata:v1:17hu5zw", "verdict": "reject", "cause": "parallel-by-design", "note": "Per-schema-type factories with different type parameters."}
+{"id": "zod/packages/zod/src#strata:v1:1dkfeit", "verdict": "reject", "cause": "non-product-path", "note": "`const short = \"short\"` in two benchmark scripts."}
+{"id": "zod/packages/zod/src#strata:v1:1ps0ybb", "verdict": "reject", "cause": "intentional-duplication", "note": "classic and mini mirrored public surface."}
+{"id": "zod/packages/zod/src#strata:v1:1ts9nod", "verdict": "reject", "cause": "intentional-duplication", "note": "classic and mini mirrored public surface."}
+{"id": "zod/packages/zod/src#strata:v1:3nsdm0", "verdict": "reject", "cause": "intentional-duplication", "note": "classic and mini mirrored public surface."}
+{"id": "zod/packages/zod/src#strata:v1:p46vpe", "verdict": "reject", "cause": "parallel-by-design", "note": "Per-schema-type factories."}
+{"id": "zod/packages/zod/src#strata:v1:sxem27", "verdict": "reject", "cause": "intentional-duplication", "note": "classic and mini mirrored public surface."}
+{"id": "zod/packages/zod/src#strata:v1:vddxbs", "verdict": "reject", "cause": "parallel-by-design", "note": "One locale module per language, identical by construction."}
+{"id": "zod/packages/zod/src#strata:v1:z68v37", "verdict": "accept", "cause": null, "note": "mini's check() reimplements core's _check() instead of calling it."}

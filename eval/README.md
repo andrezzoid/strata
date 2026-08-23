@@ -36,15 +36,27 @@ A result file deliberately carries **no timing and no timestamp**. It must chang
 
 `bun run eval:report` prints three views: per target, per detector, and per agent-attribution band. The per-detector view is the one that matters most — it shows which detectors carry the output and which are effectively silent on real code.
 
+## Labelling
+
+The corpus answers _how much_. _How much of it is right_ is the labelling round, and it is the number that decides whether a candidate scanner is worth running.
+
+```bash
+bun run eval:sample duplicateSymbol   # draw the pre-registered sample, render a blind label sheet
+bun run eval:labels duplicateSymbol   # precision, CI, and the rejection-cause histogram
+```
+
+Method is fixed in advance in [`labelling/PREREGISTRATION.md`](labelling/PREREGISTRATION.md) — sample sizes, the question, the permitted rejection causes and the reported statistics, all committed before any sample was drawn. The sheet withholds strata's message, evidence and fingerprint, because the message asserts a cause and would anchor the answer.
+
+Results so far:
+
+| Round | Detector          | Precision                  |                                    |
+| ----- | ----------------- | -------------------------- | ---------------------------------- |
+| 1     | `duplicateSymbol` | 31.6% [21.0, 44.5], n = 57 | [ROUND-1.md](labelling/ROUND-1.md) |
+
+Every figure here is **provisional**: round 1 was labelled by the same agent that wrote the detector. A precision figure earns its way into the README or any external claim only once a human has blind-labelled a subset and the agreement rate is published.
+
 ## Next
 
-The corpus answers _how much_. It does not answer _how much of it is right_, which is the number that decides whether a candidate scanner is worth running. That needs labelling:
-
-- Stratified sample, fixed N per detector — a uniform sample is majority `duplicateSymbol` and measures little else.
-- The labeller sees the code with strata's message **hidden**; showing it anchors the answer.
-- Three-way judgement matching the scanner's contract: would changing this design make the code easier to understand or modify — yes / no / depends on context not visible here.
-- Record the _cause_ of each rejection, not just the verdict. A precision number is a metric; a cause histogram is a work list.
-- The unit is the finding. `duplicateSymbol` already emits one finding per duplicate group, with the group's members in `metadata.occurrences`, so no group-level de-duplication is needed.
-
-The sample size, the question, the rejection causes and the reported statistics are fixed in
-[`labelling/PREREGISTRATION.md`](labelling/PREREGISTRATION.md), committed before any sample was drawn.
+- Label the remaining six detectors under the same pre-registration.
+- Human-validate a 20-finding subset of round 1 and publish raw agreement plus Cohen's κ.
+- Act on the round-1 work list, then re-run the corpus and diff `eval/results/` to see the effect.

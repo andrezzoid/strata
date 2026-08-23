@@ -4,6 +4,8 @@ All notable changes to `strata` will be documented here.
 
 ## 0.4.1 - Unreleased
 
+- Adds a pre-registered precision labelling harness under `eval/labelling/`: a seeded stratified sampler, a blind label sheet that withholds strata's own message, and a report giving precision with a Wilson interval plus the rejection-cause histogram. Run with `bun run eval:sample <detector>` and `bun run eval:labels <detector>`.
+- Records round 1: `duplicateSymbol` precision 31.6% (95% CI 21.0-44.5, n = 57), with 56% of rejections caused by the detector not distinguishing rebuilt concepts from deliberately mirrored sibling declarations. Provisional pending human validation; see `eval/labelling/ROUND-1.md`.
 - Adds an evaluation corpus under `eval/`: eight TypeScript repositories pinned to exact commits, chosen for size and measured agent-attributed commit share, with committed scan results so detector threshold changes become diffable. Run with `bun run eval:run` and `bun run eval:report`; nothing under `eval/` ships to npm.
 
 ## 0.4.0 - 2026-07-14

@@ -2,5 +2,10 @@
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "semi": true,
   "sortPackageJson": false,
-  "ignorePatterns": [".deltas/**", "test/fixtures/**", "eval/results/**"]
+  "ignorePatterns": [
+    ".deltas/**",
+    "test/fixtures/**",
+    "eval/results/**",
+    "eval/labelling/sheets/**"
+  ]
 }

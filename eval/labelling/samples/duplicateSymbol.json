@@ -1,0 +1,650 @@
+{
+  "detector": "duplicateSymbol",
+  "seed": "strata-precision-round-1:duplicateSymbol",
+  "population": 461,
+  "drawn": 60,
+  "strata": [
+    {
+      "repo": "cloudflare-agents",
+      "population": 24,
+      "allocated": 3
+    },
+    {
+      "repo": "continue",
+      "population": 52,
+      "allocated": 7
+    },
+    {
+      "repo": "hono",
+      "population": 21,
+      "allocated": 3
+    },
+    {
+      "repo": "mcp-typescript-sdk",
+      "population": 5,
+      "allocated": 1
+    },
+    {
+      "repo": "next",
+      "population": 148,
+      "allocated": 19
+    },
+    {
+      "repo": "vercel-ai",
+      "population": 10,
+      "allocated": 1
+    },
+    {
+      "repo": "workers-sdk",
+      "population": 101,
+      "allocated": 13
+    },
+    {
+      "repo": "zod",
+      "population": 100,
+      "allocated": 13
+    }
+  ],
+  "findings": [
+    {
+      "id": "cloudflare-agents/packages/agents/src#strata:v1:19vapbs",
+      "repo": "cloudflare-agents",
+      "target": "packages/agents/src",
+      "commit": "a0e134bbc327fc8a519b5aa66cb8ce4038815d05",
+      "flag": "duplicateSymbol",
+      "file": "retries.ts",
+      "line": 267,
+      "fingerprint": "strata:v1:19vapbs"
+    },
+    {
+      "id": "cloudflare-agents/packages/agents/src#strata:v1:1eqd2ms",
+      "repo": "cloudflare-agents",
+      "target": "packages/agents/src",
+      "commit": "a0e134bbc327fc8a519b5aa66cb8ce4038815d05",
+      "flag": "duplicateSymbol",
+      "file": "agent-routing.ts",
+      "line": 228,
+      "fingerprint": "strata:v1:1eqd2ms"
+    },
+    {
+      "id": "cloudflare-agents/packages/agents/src#strata:v1:9o1uh4",
+      "repo": "cloudflare-agents",
+      "target": "packages/agents/src",
+      "commit": "a0e134bbc327fc8a519b5aa66cb8ce4038815d05",
+      "flag": "duplicateSymbol",
+      "file": "observability/ai/wrapper/streams.ts",
+      "line": 538,
+      "fingerprint": "strata:v1:9o1uh4"
+    },
+    {
+      "id": "continue/core#strata:v1:1k9cgbf",
+      "repo": "continue",
+      "target": "core",
+      "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+      "flag": "duplicateSymbol",
+      "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+      "line": 1605,
+      "fingerprint": "strata:v1:1k9cgbf"
+    },
+    {
+      "id": "continue/core#strata:v1:9rvw01",
+      "repo": "continue",
+      "target": "core",
+      "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+      "flag": "duplicateSymbol",
+      "file": "vendor/modules/@xenova/transformers/types/tokenizers.d.ts",
+      "line": 371,
+      "fingerprint": "strata:v1:9rvw01"
+    },
+    {
+      "id": "continue/core#strata:v1:uobqrc",
+      "repo": "continue",
+      "target": "core",
+      "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+      "flag": "duplicateSymbol",
+      "file": "util/paths.ts",
+      "line": 50,
+      "fingerprint": "strata:v1:uobqrc"
+    },
+    {
+      "id": "continue/gui/src#strata:v1:1fmdcrg",
+      "repo": "continue",
+      "target": "gui/src",
+      "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+      "flag": "duplicateSymbol",
+      "file": "components/svg/GitlabIcon.tsx",
+      "line": 5,
+      "fingerprint": "strata:v1:1fmdcrg"
+    },
+    {
+      "id": "continue/gui/src#strata:v1:fz5seq",
+      "repo": "continue",
+      "target": "gui/src",
+      "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+      "flag": "duplicateSymbol",
+      "file": "pages/config/components/ConfigSection.tsx",
+      "line": 11,
+      "fingerprint": "strata:v1:fz5seq"
+    },
+    {
+      "id": "continue/gui/src#strata:v1:s49t9z",
+      "repo": "continue",
+      "target": "gui/src",
+      "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+      "flag": "duplicateSymbol",
+      "file": "components/mainInput/InputToolbar.tsx",
+      "line": 253,
+      "fingerprint": "strata:v1:s49t9z"
+    },
+    {
+      "id": "continue/gui/src#strata:v1:vhwn8b",
+      "repo": "continue",
+      "target": "gui/src",
+      "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+      "flag": "duplicateSymbol",
+      "file": "components/svg/BotIcon.tsx",
+      "line": 1,
+      "fingerprint": "strata:v1:vhwn8b"
+    },
+    {
+      "id": "hono/src#strata:v1:152ecla",
+      "repo": "hono",
+      "target": "src",
+      "commit": "5e5b83d6ed963a2bc7d8384002e1c953648253b1",
+      "flag": "duplicateSymbol",
+      "file": "helper/ssg/ssg.ts",
+      "line": 118,
+      "fingerprint": "strata:v1:152ecla"
+    },
+    {
+      "id": "hono/src#strata:v1:afmwag",
+      "repo": "hono",
+      "target": "src",
+      "commit": "5e5b83d6ed963a2bc7d8384002e1c953648253b1",
+      "flag": "duplicateSymbol",
+      "file": "helper/css/common.ts",
+      "line": 56,
+      "fingerprint": "strata:v1:afmwag"
+    },
+    {
+      "id": "hono/src#strata:v1:cwkllc",
+      "repo": "hono",
+      "target": "src",
+      "commit": "5e5b83d6ed963a2bc7d8384002e1c953648253b1",
+      "flag": "duplicateSymbol",
+      "file": "adapter/bun/ssg.ts",
+      "line": 25,
+      "fingerprint": "strata:v1:cwkllc"
+    },
+    {
+      "id": "mcp-typescript-sdk/packages/server/src#strata:v1:vrmfx7",
+      "repo": "mcp-typescript-sdk",
+      "target": "packages/server/src",
+      "commit": "3924de99df834302d89f5997a1b64ca268282284",
+      "flag": "duplicateSymbol",
+      "file": "server/middleware/hostHeaderValidation.ts",
+      "line": 40,
+      "fingerprint": "strata:v1:vrmfx7"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:13vgy4k",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "client/components/concurrent-router-queue.ts",
+      "line": 45,
+      "fingerprint": "strata:v1:13vgy4k"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:16bz7j1",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "shared/lib/router/routes/app.ts",
+      "line": 258,
+      "fingerprint": "strata:v1:16bz7j1"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:170w18b",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "build/turborepo-access-trace/types.ts",
+      "line": 17,
+      "fingerprint": "strata:v1:170w18b"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:1c5w08e",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "build/output/format.ts",
+      "line": 44,
+      "fingerprint": "strata:v1:1c5w08e"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:1exfg5f",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "next-devtools/dev-overlay/icons/left-arrow.tsx",
+      "line": 1,
+      "fingerprint": "strata:v1:1exfg5f"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:1i48id4",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "client/legacy/image.tsx",
+      "line": 293,
+      "fingerprint": "strata:v1:1i48id4"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:1l7lxej",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "build/webpack/plugins/next-types-plugin/index.ts",
+      "line": 263,
+      "fingerprint": "strata:v1:1l7lxej"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:1qv7lct",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "server/app-render/entry-base.ts",
+      "line": 88,
+      "fingerprint": "strata:v1:1qv7lct"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:1rhhn1t",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "client/dev/hot-reloader/app/hot-reloader-app.tsx",
+      "line": 109,
+      "fingerprint": "strata:v1:1rhhn1t"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:1rhw95g",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "build/webpack/loaders/css-loader/src/utils.ts",
+      "line": 176,
+      "fingerprint": "strata:v1:1rhw95g"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:1vthgdd",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "server/next.ts",
+      "line": 63,
+      "fingerprint": "strata:v1:1vthgdd"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:1wbxbug",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "server/dev/middleware-turbopack.ts",
+      "line": 29,
+      "fingerprint": "strata:v1:1wbxbug"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:1xdl6wh",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "next-devtools/dev-overlay/components/errors/dev-tools-indicator/dev-tools-info/shortcut-recorder.tsx",
+      "line": 324,
+      "fingerprint": "strata:v1:1xdl6wh"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:967hau",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "next-devtools/dev-overlay/icons/copy-prompt.tsx",
+      "line": 1,
+      "fingerprint": "strata:v1:967hau"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:gybdzc",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "build/analysis/extract-const-value.ts",
+      "line": 22,
+      "fingerprint": "strata:v1:gybdzc"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:uunywm",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "server/dynamic-rendering-utils.ts",
+      "line": 13,
+      "fingerprint": "strata:v1:uunywm"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:v16ysq",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "next-devtools/dev-overlay/components/copy-button/index.tsx",
+      "line": 183,
+      "fingerprint": "strata:v1:v16ysq"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:v2ugnw",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "client/components/builtin/default-null.tsx",
+      "line": 4,
+      "fingerprint": "strata:v1:v2ugnw"
+    },
+    {
+      "id": "next/packages/next/src#strata:v1:zjp3l6",
+      "repo": "next",
+      "target": "packages/next/src",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "flag": "duplicateSymbol",
+      "file": "build/swc/loaderWorkerPool.ts",
+      "line": 5,
+      "fingerprint": "strata:v1:zjp3l6"
+    },
+    {
+      "id": "vercel-ai/packages/ai/src#strata:v1:170wdp8",
+      "repo": "vercel-ai",
+      "target": "packages/ai/src",
+      "commit": "9d9a73f1551f2243035491e9de5a2e00ebf9eb17",
+      "flag": "duplicateSymbol",
+      "file": "model/as-reranking-model-v4.ts",
+      "line": 3,
+      "fingerprint": "strata:v1:170wdp8"
+    },
+    {
+      "id": "workers-sdk/packages/miniflare/src#strata:v1:1s3g3l7",
+      "repo": "workers-sdk",
+      "target": "packages/miniflare/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "workers/r2/s3/auth.worker.ts",
+      "line": 59,
+      "fingerprint": "strata:v1:1s3g3l7"
+    },
+    {
+      "id": "workers-sdk/packages/miniflare/src#strata:v1:4xb6fc",
+      "repo": "workers-sdk",
+      "target": "packages/miniflare/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "workers/r2/schemas.worker.ts",
+      "line": 270,
+      "fingerprint": "strata:v1:4xb6fc"
+    },
+    {
+      "id": "workers-sdk/packages/miniflare/src#strata:v1:56ds47",
+      "repo": "workers-sdk",
+      "target": "packages/miniflare/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "workers/local-explorer/resources/do.ts",
+      "line": 132,
+      "fingerprint": "strata:v1:56ds47"
+    },
+    {
+      "id": "workers-sdk/packages/wrangler/src#strata:v1:10e0jwi",
+      "repo": "workers-sdk",
+      "target": "packages/wrangler/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "pipelines/client.ts",
+      "line": 122,
+      "fingerprint": "strata:v1:10e0jwi"
+    },
+    {
+      "id": "workers-sdk/packages/wrangler/src#strata:v1:13vju9r",
+      "repo": "workers-sdk",
+      "target": "packages/wrangler/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "ai-search/client.ts",
+      "line": 24,
+      "fingerprint": "strata:v1:13vju9r"
+    },
+    {
+      "id": "workers-sdk/packages/wrangler/src#strata:v1:1be2oxp",
+      "repo": "workers-sdk",
+      "target": "packages/wrangler/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "r2/helpers/catalog.ts",
+      "line": 74,
+      "fingerprint": "strata:v1:1be2oxp"
+    },
+    {
+      "id": "workers-sdk/packages/wrangler/src#strata:v1:1g2bguq",
+      "repo": "workers-sdk",
+      "target": "packages/wrangler/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "r2/helpers/catalog.ts",
+      "line": 28,
+      "fingerprint": "strata:v1:1g2bguq"
+    },
+    {
+      "id": "workers-sdk/packages/wrangler/src#strata:v1:1hxacme",
+      "repo": "workers-sdk",
+      "target": "packages/wrangler/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "pipelines/types.ts",
+      "line": 36,
+      "fingerprint": "strata:v1:1hxacme"
+    },
+    {
+      "id": "workers-sdk/packages/wrangler/src#strata:v1:1rwbk5v",
+      "repo": "workers-sdk",
+      "target": "packages/wrangler/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "cloudchamber/apply.ts",
+      "line": 236,
+      "fingerprint": "strata:v1:1rwbk5v"
+    },
+    {
+      "id": "workers-sdk/packages/wrangler/src#strata:v1:1sngedz",
+      "repo": "workers-sdk",
+      "target": "packages/wrangler/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "kv/helpers.ts",
+      "line": 140,
+      "fingerprint": "strata:v1:1sngedz"
+    },
+    {
+      "id": "workers-sdk/packages/wrangler/src#strata:v1:1wz6lsy",
+      "repo": "workers-sdk",
+      "target": "packages/wrangler/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "tail/printing.ts",
+      "line": 144,
+      "fingerprint": "strata:v1:1wz6lsy"
+    },
+    {
+      "id": "workers-sdk/packages/wrangler/src#strata:v1:4a3s8u",
+      "repo": "workers-sdk",
+      "target": "packages/wrangler/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "email-routing/client.ts",
+      "line": 46,
+      "fingerprint": "strata:v1:4a3s8u"
+    },
+    {
+      "id": "workers-sdk/packages/wrangler/src#strata:v1:mrpxbp",
+      "repo": "workers-sdk",
+      "target": "packages/wrangler/src",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "flag": "duplicateSymbol",
+      "file": "kv/helpers.ts",
+      "line": 304,
+      "fingerprint": "strata:v1:mrpxbp"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:12k2dhj",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/classic/in-out.ts",
+      "line": 10,
+      "fingerprint": "strata:v1:12k2dhj"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:1372cfw",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/core/config.ts",
+      "line": 12,
+      "fingerprint": "strata:v1:1372cfw"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:15uu08q",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/core/api.ts",
+      "line": 1476,
+      "fingerprint": "strata:v1:15uu08q"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:162t0em",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/classic/schemas.ts",
+      "line": 1348,
+      "fingerprint": "strata:v1:162t0em"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:17hu5zw",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/core/api.ts",
+      "line": 1327,
+      "fingerprint": "strata:v1:17hu5zw"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:1dkfeit",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v3/benchmarks/primitives.ts",
+      "line": 75,
+      "fingerprint": "strata:v1:1dkfeit"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:1ps0ybb",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/classic/schemas.ts",
+      "line": 763,
+      "fingerprint": "strata:v1:1ps0ybb"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:1ts9nod",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/classic/schemas.ts",
+      "line": 799,
+      "fingerprint": "strata:v1:1ts9nod"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:3nsdm0",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/classic/in-out.ts",
+      "line": 17,
+      "fingerprint": "strata:v1:3nsdm0"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:p46vpe",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/core/api.ts",
+      "line": 804,
+      "fingerprint": "strata:v1:p46vpe"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:sxem27",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/classic/schemas.ts",
+      "line": 1211,
+      "fingerprint": "strata:v1:sxem27"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:vddxbs",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/locales/cs.ts",
+      "line": 5,
+      "fingerprint": "strata:v1:vddxbs"
+    },
+    {
+      "id": "zod/packages/zod/src#strata:v1:z68v37",
+      "repo": "zod",
+      "target": "packages/zod/src",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "flag": "duplicateSymbol",
+      "file": "v4/core/api.ts",
+      "line": 1718,
+      "fingerprint": "strata:v1:z68v37"
+    }
+  ]
+}

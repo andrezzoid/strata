@@ -40,6 +40,17 @@ Future work should earn its complexity. Each item below should be implemented on
 - Generic-type single-instantiation detection for speculative generic abstractions.
 - Structural code-clone detection if `duplicateSymbol` misses important agent-recreation cases.
 
+## Detector Precision (from `eval/labelling/ROUND-1.md`)
+
+Ranked by rejections removed per unit of effort. Round 1 measured `duplicateSymbol` at 31.6% precision on the pinned corpus.
+
+- Teach `duplicateSymbol` to recognise deliberately mirrored siblings, the cause of 56% of its rejections. Candidate signals that need no new analysis: declarations adjacent in one file differing only in a literal or type argument; parallel directory pairs such as `classic/` and `mini/`, `bun/` and `deno/`, `app/` and `pages/`; and groups whose every member already applies the same existing helper.
+- Reword the `duplicateSymbol` message. "agent likely re-built an existing one" asserts a cause that is wrong for at least two thirds of what the detector emits, which is the candidate-not-verdict contract leaking.
+- Widen `skip-patterns.ts` to cover `benchmarks/`, `bench/`, `examples/`, and vendored dependency trees.
+- Guard trivial bodies in `duplicateSymbol` beyond the existing scalar-constant rules: type aliases, single-expression bodies, and `return null`.
+- Decide what to do about icon-shaped components, where a body of one JSX element with a large literal attribute matches structurally but has nothing extractable.
+- Label the remaining six detectors under the same pre-registration, and human-validate a subset of round 1 before any precision figure is quoted outside the repository.
+
 ## Explicit Non-Goals
 
 - Long-function detection: PoSD argues against length-based splitting as a default design heuristic.
