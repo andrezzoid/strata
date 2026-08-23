@@ -44,6 +44,7 @@ The corpus answers _how much_. It does not answer _how much of it is right_, whi
 - The labeller sees the code with strata's message **hidden**; showing it anchors the answer.
 - Three-way judgement matching the scanner's contract: would changing this design make the code easier to understand or modify — yes / no / depends on context not visible here.
 - Record the _cause_ of each rejection, not just the verdict. A precision number is a metric; a cause histogram is a work list.
-- For `duplicateSymbol`, label the group rather than the finding — one bad group emits many findings and would otherwise be counted many times.
+- The unit is the finding. `duplicateSymbol` already emits one finding per duplicate group, with the group's members in `metadata.occurrences`, so no group-level de-duplication is needed.
 
-Pre-register the sample size and the question before labelling begins.
+The sample size, the question, the rejection causes and the reported statistics are fixed in
+[`labelling/PREREGISTRATION.md`](labelling/PREREGISTRATION.md), committed before any sample was drawn.
