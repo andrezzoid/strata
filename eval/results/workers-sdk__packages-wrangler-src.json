@@ -1,0 +1,3740 @@
+{
+  "repo": "workers-sdk",
+  "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+  "target": "packages/wrangler/src",
+  "files": 917,
+  "lines": 269478,
+  "strataVersion": "0.4.0",
+  "summary": {
+    "totalFindings": 143,
+    "byFlag": {
+      "duplicateSymbol": 78,
+      "forcedRareOption": 4,
+      "passThroughExport": 30,
+      "passThroughMethod": 3,
+      "uniqueImplementation": 1,
+      "wideSignature": 27
+    },
+    "topFiles": [
+      {
+        "file": "user/user.ts",
+        "count": 18
+      },
+      {
+        "file": "r2/helpers/catalog.ts",
+        "count": 16
+      },
+      {
+        "file": "email-routing/client.ts",
+        "count": 15
+      },
+      {
+        "file": "pipelines/client.ts",
+        "count": 13
+      },
+      {
+        "file": "ai-search/client.ts",
+        "count": 13
+      },
+      {
+        "file": "vectorize/client.ts",
+        "count": 12
+      },
+      {
+        "file": "versions/api.ts",
+        "count": 9
+      },
+      {
+        "file": "turnstile/client.ts",
+        "count": 8
+      },
+      {
+        "file": "secrets-store/client.ts",
+        "count": 7
+      },
+      {
+        "file": "r2/helpers/bucket.ts",
+        "count": 7
+      }
+    ]
+  },
+  "findings": [
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:fobqpp",
+      "file": "agent-memory/client.ts",
+      "line": 52,
+      "message": "function re-declared 2× across 2 files (e.g. getNamespaceRequest, getR2Bucket) — agent likely re-built an existing one [group wz6r3g]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "wz6r3g",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function getNamespaceRequest(\n\tcomplianceConfig: ComplianceConfig,\n\taccountId: string,\n\tnamespaceName: string\n): Promise<AgentMemoryNamespace> {\n\treturn await fetchResult<AgentMemoryNamespace>(\n\t\tcomplianceConfig, …",
+        "previewFrom": "agent-memory/client.ts:52",
+        "occurrences": [
+          {
+            "name": "getNamespaceRequest",
+            "file": "agent-memory/client.ts",
+            "line": 52
+          },
+          {
+            "name": "getR2Bucket",
+            "file": "pipelines/client.ts",
+            "line": 403
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:fhawg7",
+      "file": "agents-skills-install.ts",
+      "line": 286,
+      "message": "function re-declared 10× across 7 files (e.g. baseNamespaceUrl, baseTokenUrl, escapeIdentifier, +7 more) — agent likely re-built an existing one [group 104uxqs]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "104uxqs",
+        "distinctFiles": 7,
+        "totalDeclarations": 10,
+        "preview": "function skillInstallPromptMessageAfterWranglerCommandHandler(\n\tagentNames: string[]\n): string {\n\treturn `Before you go, Wrangler detected AI coding agents that may not be best configured to work with Cloudflare: ${agentNames.join(\", \")}. …",
+        "previewFrom": "agents-skills-install.ts:286",
+        "occurrences": [
+          {
+            "name": "skillInstallPromptMessageAfterWranglerCommandHandler",
+            "file": "agents-skills-install.ts",
+            "line": 286
+          },
+          {
+            "name": "baseNamespaceUrl",
+            "file": "ai-search/client.ts",
+            "line": 20
+          },
+          {
+            "name": "baseTokenUrl",
+            "file": "ai-search/client.ts",
+            "line": 28
+          },
+          {
+            "name": "getArtifactsNamespacesPath",
+            "file": "artifacts/client.ts",
+            "line": 13
+          },
+          {
+            "name": "formatMicroseconds",
+            "file": "check/commands.ts",
+            "line": 125
+          },
+          {
+            "name": "escapeIdentifier",
+            "file": "d1/migrations/helpers.ts",
+            "line": 152
+          },
+          {
+            "name": "noPreviewDeploymentPatchMessage",
+            "file": "preview/secrets/index.ts",
+            "line": 52
+          },
+          {
+            "name": "noPreviewDeploymentListMessage",
+            "file": "preview/secrets/index.ts",
+            "line": 56
+          },
+          {
+            "name": "previewNotFoundMessage",
+            "file": "preview/secrets/index.ts",
+            "line": 60
+          },
+          {
+            "name": "prefixEnvInterface",
+            "file": "type-generation/index.ts",
+            "line": 1706
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:67tyuu",
+      "file": "agents-skills-install.ts",
+      "line": 404,
+      "message": "function re-declared 2× in 1 file (e.g. getSkillsInstallMetadataFilePath, getSkillsRepoCachePath) — agent likely re-built an existing one [group 1vu8537]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1vu8537",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function getSkillsInstallMetadataFilePath(): string {\n\treturn path.resolve(getGlobalConfigPath(), SKILLS_INSTALL_METADATA_FILENAME);\n}",
+        "previewFrom": "agents-skills-install.ts:404",
+        "occurrences": [
+          {
+            "name": "getSkillsInstallMetadataFilePath",
+            "file": "agents-skills-install.ts",
+            "line": 404
+          },
+          {
+            "name": "getSkillsRepoCachePath",
+            "file": "agents-skills-install.ts",
+            "line": 411
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1trwcr8",
+      "file": "ai-search/client.ts",
+      "line": 15,
+      "message": "const re-declared 2× across 2 files (e.g. jsonContentType) — agent likely re-built an existing one [group anvglu]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "anvglu",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "jsonContentType = \"application/json; charset=utf-8;\"",
+        "previewFrom": "ai-search/client.ts:15",
+        "occurrences": [
+          {
+            "name": "jsonContentType",
+            "file": "ai-search/client.ts",
+            "line": 15
+          },
+          {
+            "name": "jsonContentType",
+            "file": "vectorize/client.ts",
+            "line": 21
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:13vju9r",
+      "file": "ai-search/client.ts",
+      "line": 24,
+      "message": "function re-declared 6× across 6 files (e.g. autoProvisionedResourceName, baseInstanceUrl, getArtifactsNamespacePath, +3 more) — agent likely re-built an existing one [group iz9b86]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "iz9b86",
+        "distinctFiles": 6,
+        "totalDeclarations": 6,
+        "preview": "function baseInstanceUrl(accountId: string, namespace: string): string {\n\treturn `${baseNamespaceUrl(accountId)}/${namespace}/instances`;\n}",
+        "previewFrom": "ai-search/client.ts:24",
+        "occurrences": [
+          {
+            "name": "baseInstanceUrl",
+            "file": "ai-search/client.ts",
+            "line": 24
+          },
+          {
+            "name": "getArtifactsNamespacePath",
+            "file": "artifacts/client.ts",
+            "line": 17
+          },
+          {
+            "name": "autoProvisionedResourceName",
+            "file": "deployment-bundle/auto-provisioned-name.ts",
+            "line": 4
+          },
+          {
+            "name": "withSourceURL",
+            "file": "deployment-bundle/source-url.ts",
+            "line": 4
+          },
+          {
+            "name": "getFunctionsNoRoutesWarning",
+            "file": "pages/errors.ts",
+            "line": 47
+          },
+          {
+            "name": "makeCreateTailUrl",
+            "file": "tail/createTail.ts",
+            "line": 38
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:3ouvlb",
+      "file": "ai-search/client.ts",
+      "line": 65,
+      "message": "function re-declared 3× in 1 file (e.g. deleteInstance, getInstance, getInstanceStats) — agent likely re-built an existing one [group 1qg4nom]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1qg4nom",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "async function getInstance(\n\tconfig: Config,\n\tnamespace: string,\n\tname: string\n): Promise<AiSearchInstance> {\n\tconst accountId = await requireAuth(config);\n\treturn await fetchResult<AiSearchInstance>(\n\t\tconfig, …",
+        "previewFrom": "ai-search/client.ts:65",
+        "occurrences": [
+          {
+            "name": "getInstance",
+            "file": "ai-search/client.ts",
+            "line": 65
+          },
+          {
+            "name": "deleteInstance",
+            "file": "ai-search/client.ts",
+            "line": 96
+          },
+          {
+            "name": "getInstanceStats",
+            "file": "ai-search/client.ts",
+            "line": 109
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ar8p6g",
+      "file": "ai-search/client.ts",
+      "line": 78,
+      "message": "function re-declared 2× in 1 file (e.g. searchInstance, updateInstance) — agent likely re-built an existing one [group 14wmnwv]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "14wmnwv",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function updateInstance(\n\tconfig: Config,\n\tnamespace: string,\n\tname: string,\n\tbody: Record<string, unknown>\n): Promise<AiSearchInstance> {\n\tconst accountId = await requireAuth(config);\n\treturn await fetchResult<AiSearchInstance>( …",
+        "previewFrom": "ai-search/client.ts:78",
+        "occurrences": [
+          {
+            "name": "updateInstance",
+            "file": "ai-search/client.ts",
+            "line": 78
+          },
+          {
+            "name": "searchInstance",
+            "file": "ai-search/client.ts",
+            "line": 122
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:18gmf1q",
+      "file": "ai-search/client.ts",
+      "line": 177,
+      "message": "function re-declared 12× across 7 files (e.g. deleteApp, deleteConfig, deleteEmailRoutingAddress, +9 more) — agent likely re-built an existing one [group u3hxmt]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "u3hxmt",
+        "distinctFiles": 7,
+        "totalDeclarations": 12,
+        "preview": "async function getNamespace(\n\tconfig: Config,\n\tname: string\n): Promise<AiSearchNamespace> {\n\tconst accountId = await requireAuth(config);\n\treturn await fetchResult<AiSearchNamespace>(\n\t\tconfig,\n\t\t`${baseNamespaceUrl(accountId)}/${name}`, …",
+        "previewFrom": "ai-search/client.ts:177",
+        "occurrences": [
+          {
+            "name": "getNamespace",
+            "file": "ai-search/client.ts",
+            "line": 177
+          },
+          {
+            "name": "deleteEmailRoutingAddress",
+            "file": "email-routing/client.ts",
+            "line": 264
+          },
+          {
+            "name": "getApp",
+            "file": "flagship/client.ts",
+            "line": 172
+          },
+          {
+            "name": "deleteApp",
+            "file": "flagship/client.ts",
+            "line": 194
+          },
+          {
+            "name": "deleteConfig",
+            "file": "hyperdrive/client.ts",
+            "line": 130
+          },
+          {
+            "name": "getConfig",
+            "file": "hyperdrive/client.ts",
+            "line": 141
+          },
+          {
+            "name": "getWidget",
+            "file": "turnstile/client.ts",
+            "line": 73
+          },
+          {
+            "name": "deleteWidget",
+            "file": "turnstile/client.ts",
+            "line": 115
+          },
+          {
+            "name": "indexInfo",
+            "file": "vectorize/client.ts",
+            "line": 228
+          },
+          {
+            "name": "listMetadataIndex",
+            "file": "vectorize/client.ts",
+            "line": 263
+          },
+          {
+            "name": "deleteService",
+            "file": "vpc/client.ts",
+            "line": 25
+          },
+          {
+            "name": "getService",
+            "file": "vpc/client.ts",
+            "line": 39
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1lj62t3",
+      "file": "ai-search/client.ts",
+      "line": 189,
+      "message": "function re-declared 5× across 2 files (e.g. createMetadataIndex, deleteByIds, deleteMetadataIndex, +2 more) — agent likely re-built an existing one [group xqgxa]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "xqgxa",
+        "distinctFiles": 2,
+        "totalDeclarations": 5,
+        "preview": "async function updateNamespace(\n\tconfig: Config,\n\tname: string,\n\tbody: { description?: string }\n): Promise<AiSearchNamespace> {\n\tconst accountId = await requireAuth(config);\n\treturn await fetchResult<AiSearchNamespace>(\n\t\tconfig, …",
+        "previewFrom": "ai-search/client.ts:189",
+        "occurrences": [
+          {
+            "name": "updateNamespace",
+            "file": "ai-search/client.ts",
+            "line": 189
+          },
+          {
+            "name": "getByIds",
+            "file": "vectorize/client.ts",
+            "line": 188
+          },
+          {
+            "name": "deleteByIds",
+            "file": "vectorize/client.ts",
+            "line": 208
+          },
+          {
+            "name": "createMetadataIndex",
+            "file": "vectorize/client.ts",
+            "line": 243
+          },
+          {
+            "name": "deleteMetadataIndex",
+            "file": "vectorize/client.ts",
+            "line": 278
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1aszj1a",
+      "file": "ai-search/client.ts",
+      "line": 206,
+      "message": "function re-declared 4× across 2 files (e.g. deleteNamespace, deletePipeline, deleteSink, +1 more) — agent likely re-built an existing one [group 1deralx]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1deralx",
+        "distinctFiles": 2,
+        "totalDeclarations": 4,
+        "preview": "async function deleteNamespace(\n\tconfig: Config,\n\tname: string\n): Promise<void> {\n\tconst accountId = await requireAuth(config);\n\tawait fetchResult<unknown>(config, `${baseNamespaceUrl(accountId)}/${name}`, {\n\t\tmethod: \"DELETE\",\n\t});\n}",
+        "previewFrom": "ai-search/client.ts:206",
+        "occurrences": [
+          {
+            "name": "deleteNamespace",
+            "file": "ai-search/client.ts",
+            "line": 206
+          },
+          {
+            "name": "deleteStream",
+            "file": "pipelines/client.ts",
+            "line": 160
+          },
+          {
+            "name": "deleteSink",
+            "file": "pipelines/client.ts",
+            "line": 189
+          },
+          {
+            "name": "deletePipeline",
+            "file": "pipelines/client.ts",
+            "line": 242
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:2oow4g",
+      "file": "ai-search/client.ts",
+      "line": 218,
+      "message": "function re-declared 2× across 2 files (e.g. baseJobUrl, getArtifactsRepoPath) — agent likely re-built an existing one [group 1sy9nb]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1sy9nb",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function baseJobUrl(\n\taccountId: string,\n\tnamespace: string,\n\tinstance: string\n): string {\n\treturn `${baseInstanceUrl(accountId, namespace)}/${instance}/jobs`;\n}",
+        "previewFrom": "ai-search/client.ts:218",
+        "occurrences": [
+          {
+            "name": "baseJobUrl",
+            "file": "ai-search/client.ts",
+            "line": 218
+          },
+          {
+            "name": "getArtifactsRepoPath",
+            "file": "artifacts/client.ts",
+            "line": 28
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1x1agaj",
+      "file": "api/integrations/platform/index.ts",
+      "line": 52,
+      "message": "function re-declared 2× across 2 files (e.g. getWranglerVersion, unstable_getDevCompatibilityDate) — agent likely re-built an existing one [group 1nwnk8i]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1nwnk8i",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function unstable_getDevCompatibilityDate() {\n\treturn DEFAULT_COMPAT_DATE;\n}",
+        "previewFrom": "api/integrations/platform/index.ts:52",
+        "occurrences": [
+          {
+            "name": "unstable_getDevCompatibilityDate",
+            "file": "api/integrations/platform/index.ts",
+            "line": 52
+          },
+          {
+            "name": "getWranglerVersion",
+            "file": "metrics/helpers.ts",
+            "line": 4
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1kdx1oq",
+      "file": "api/mtls-certificate.ts",
+      "line": 194,
+      "message": "function re-declared 8× across 6 files (e.g. deleteKVNamespace, deleteMTlsCertificate, deleteStore, +5 more) — agent likely re-built an existing one [group 7cjbc3]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "7cjbc3",
+        "distinctFiles": 6,
+        "totalDeclarations": 8,
+        "preview": "async function deleteMTlsCertificate(\n\tcomplianceConfig: ComplianceConfig,\n\taccountId: string,\n\tcertificateId: string\n) {\n\treturn await fetchResult(\n\t\tcomplianceConfig,\n\t\t`/accounts/${accountId}/mtls_certificates/${certificateId}`,\n\t\t{ …",
+        "previewFrom": "api/mtls-certificate.ts:194",
+        "occurrences": [
+          {
+            "name": "deleteMTlsCertificate",
+            "file": "api/mtls-certificate.ts",
+            "line": 194
+          },
+          {
+            "name": "deleteKVNamespace",
+            "file": "kv/helpers.ts",
+            "line": 161
+          },
+          {
+            "name": "getPipeline",
+            "file": "pipelines/legacy-client.ts",
+            "line": 127
+          },
+          {
+            "name": "getR2Catalog",
+            "file": "r2/helpers/catalog.ts",
+            "line": 14
+          },
+          {
+            "name": "enableR2Catalog",
+            "file": "r2/helpers/catalog.ts",
+            "line": 36
+          },
+          {
+            "name": "disableR2Catalog",
+            "file": "r2/helpers/catalog.ts",
+            "line": 53
+          },
+          {
+            "name": "getR2LocalUploadsConfig",
+            "file": "r2/helpers/local-uploads.ts",
+            "line": 12
+          },
+          {
+            "name": "deleteStore",
+            "file": "secrets-store/client.ts",
+            "line": 33
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:16ijbjs",
+      "file": "api/startDevWorker/bundle-allowed-paths.ts",
+      "line": 13,
+      "message": "interface re-declared 3× across 3 files (e.g. RawSourceMap) — agent likely re-built an existing one [group 1rul5lw]",
+      "metadata": {
+        "symbolKind": "interface",
+        "fingerprintHash": "1rul5lw",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "interface RawSourceMap {\n\tfile?: string;\n\tsourceRoot?: string;\n\tsources: string[];\n}",
+        "previewFrom": "api/startDevWorker/bundle-allowed-paths.ts:13",
+        "occurrences": [
+          {
+            "name": "RawSourceMap",
+            "file": "api/startDevWorker/bundle-allowed-paths.ts",
+            "line": 13
+          },
+          {
+            "name": "RawSourceMap",
+            "file": "deployment-bundle/source-maps.ts",
+            "line": 198
+          },
+          {
+            "name": "RawSourceMap",
+            "file": "dev/inspect.ts",
+            "line": 14
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:2gbxhr",
+      "file": "api/startDevWorker/devtools.ts",
+      "line": 7,
+      "message": "type re-declared 3× across 3 files (e.g. EventName, R2EventType, _EventMethods) — agent likely re-built an existing one [group wusofq]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "wusofq",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "type _EventMethods = keyof Protocol.Events;",
+        "previewFrom": "api/startDevWorker/devtools.ts:7",
+        "occurrences": [
+          {
+            "name": "_EventMethods",
+            "file": "api/startDevWorker/devtools.ts",
+            "line": 7
+          },
+          {
+            "name": "EventName",
+            "file": "cloudchamber/enums.ts",
+            "line": 14
+          },
+          {
+            "name": "R2EventType",
+            "file": "r2/helpers/notification.ts",
+            "line": 22
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:odoz5n",
+      "file": "artifacts/namespaces.ts",
+      "line": 38,
+      "message": "function re-declared 2× across 2 files (e.g. formatDefinedValues) — agent likely re-built an existing one [group 1u8wswt]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1u8wswt",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function formatDefinedValues(\n\tvalues: [string, string | number | undefined][]\n): Record<string, string> {\n\treturn Object.fromEntries(\n\t\tvalues\n\t\t\t.filter(\n\t\t\t\t(entry): entry is [string, string | number] => entry[1] !== undefined\n\t\t\t) …",
+        "previewFrom": "artifacts/namespaces.ts:38",
+        "occurrences": [
+          {
+            "name": "formatDefinedValues",
+            "file": "artifacts/namespaces.ts",
+            "line": 38
+          },
+          {
+            "name": "formatDefinedValues",
+            "file": "artifacts/repos.ts",
+            "line": 98
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1vm1uam",
+      "file": "autoconfig/telemetry-utils.ts",
+      "line": 26,
+      "message": "const re-declared 2× across 2 files (e.g. _handler, autoConfigLocalState) — agent likely re-built an existing one [group 4geu7s]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "4geu7s",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "autoConfigLocalState: Partial<AutoConfigLocalState> = {}",
+        "previewFrom": "autoconfig/telemetry-utils.ts:26",
+        "occurrences": [
+          {
+            "name": "autoConfigLocalState",
+            "file": "autoconfig/telemetry-utils.ts",
+            "line": 26
+          },
+          {
+            "name": "_handler",
+            "file": "tsconfig-sanity.ts",
+            "line": 8
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:r56y7v",
+      "file": "cloudchamber/apply.ts",
+      "line": 73,
+      "message": "function re-declared 2× across 2 files (e.g. mergeDeep) — agent likely re-built an existing one [group 1akxo4v]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1akxo4v",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function mergeDeep<T>(target: T, source: Partial<T>): T {\n\tif (typeof target !== \"object\" || target === null) {\n\t\treturn source as T;\n\t}\n\n\tif (typeof source !== \"object\" || source === null) {\n\t\treturn target;\n\t}\n\n\tconst result: T = { …",
+        "previewFrom": "cloudchamber/apply.ts:73",
+        "occurrences": [
+          {
+            "name": "mergeDeep",
+            "file": "cloudchamber/apply.ts",
+            "line": 73
+          },
+          {
+            "name": "mergeDeep",
+            "file": "containers/deploy.ts",
+            "line": 221
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:641znn",
+      "file": "cloudchamber/apply.ts",
+      "line": 98,
+      "message": "function re-declared 3× across 3 files (e.g. isObject, isRecord) — agent likely re-built an existing one [group 5l3yif]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "5l3yif",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "function isObject(value: unknown): value is Record<string, unknown> {\n\treturn typeof value === \"object\" && value !== null && !Array.isArray(value);\n}",
+        "previewFrom": "cloudchamber/apply.ts:98",
+        "occurrences": [
+          {
+            "name": "isObject",
+            "file": "cloudchamber/apply.ts",
+            "line": 98
+          },
+          {
+            "name": "isObject",
+            "file": "containers/deploy.ts",
+            "line": 246
+          },
+          {
+            "name": "isRecord",
+            "file": "flagship/shared.ts",
+            "line": 513
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1rwbk5v",
+      "file": "cloudchamber/apply.ts",
+      "line": 236,
+      "message": "function re-declared 2× across 2 files (e.g. convertContainerAffinitiesForApi) — agent likely re-built an existing one [group 1h2n5af]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1h2n5af",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function convertContainerAffinitiesForApi(\n\tcontainer: ContainerApp\n): ApplicationAffinities | undefined {\n\tif (container.affinities === undefined) {\n\t\treturn undefined;\n\t}\n\n\tconst affinities: ApplicationAffinities = {\n\t\tcolocation: …",
+        "previewFrom": "cloudchamber/apply.ts:236",
+        "occurrences": [
+          {
+            "name": "convertContainerAffinitiesForApi",
+            "file": "cloudchamber/apply.ts",
+            "line": 236
+          },
+          {
+            "name": "convertContainerAffinitiesForApi",
+            "file": "containers/config.ts",
+            "line": 28
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1d3mwmj",
+      "file": "cloudchamber/common.ts",
+      "line": 377,
+      "message": "function re-declared 2× in 1 file (e.g. sortEnvironmentVariables, sortLabels) — agent likely re-built an existing one [group 1liuja4]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1liuja4",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function sortEnvironmentVariables(environmentVariables: EnvironmentVariable[]) {\n\tenvironmentVariables.sort((a, b) => a.name.localeCompare(b.name));\n}",
+        "previewFrom": "cloudchamber/common.ts:377",
+        "occurrences": [
+          {
+            "name": "sortEnvironmentVariables",
+            "file": "cloudchamber/common.ts",
+            "line": 377
+          },
+          {
+            "name": "sortLabels",
+            "file": "cloudchamber/common.ts",
+            "line": 486
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:j81c17",
+      "file": "cloudchamber/common.ts",
+      "line": 419,
+      "message": "function re-declared 2× in 1 file (e.g. promptForEnvironmentVariables, promptForLabels) — agent likely re-built an existing one [group 1ydt9j0]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ydt9j0",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function promptForEnvironmentVariables(\n\tenvironmentVariables: EnvironmentVariable[] | undefined,\n\tinitiallySelected: string[],\n\tallowSkipping: boolean\n): Promise<EnvironmentVariable[] | undefined> {\n\tif (environmentVariables === …",
+        "previewFrom": "cloudchamber/common.ts:419",
+        "occurrences": [
+          {
+            "name": "promptForEnvironmentVariables",
+            "file": "cloudchamber/common.ts",
+            "line": 419
+          },
+          {
+            "name": "promptForLabels",
+            "file": "cloudchamber/common.ts",
+            "line": 517
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:hy2kwj",
+      "file": "cloudchamber/images/images.ts",
+      "line": 68,
+      "message": "function re-declared 4× across 3 files (e.g. Database, Name, deleteImageYargs, +1 more) — agent likely re-built an existing one [group 157biqa]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "157biqa",
+        "distinctFiles": 3,
+        "totalDeclarations": 4,
+        "preview": "function deleteImageYargs(yargs: CommonYargsArgv) {\n\treturn yargs.positional(\"image\", {\n\t\ttype: \"string\",\n\t\tdescription: \"Image and tag to delete, of the form IMAGE:TAG\",\n\t\tdemandOption: true,\n\t});\n}",
+        "previewFrom": "cloudchamber/images/images.ts:68",
+        "occurrences": [
+          {
+            "name": "deleteImageYargs",
+            "file": "cloudchamber/images/images.ts",
+            "line": 68
+          },
+          {
+            "name": "deleteYargs",
+            "file": "containers/containers.ts",
+            "line": 22
+          },
+          {
+            "name": "Name",
+            "file": "d1/options.ts",
+            "line": 3
+          },
+          {
+            "name": "Database",
+            "file": "d1/options.ts",
+            "line": 11
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:61qvpv",
+      "file": "cloudchamber/images/images.ts",
+      "line": 128,
+      "message": "function re-declared 2× across 2 files (e.g. handleListImagesCommand) — agent likely re-built an existing one [group 1kelsuq]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1kelsuq",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function handleListImagesCommand(\n\targs: StrictYargsOptionsToInterface<typeof listImagesYargs>,\n\tconfig: Config\n) {\n\tconst responses = await promiseSpinner(\n\t\tgetCreds(config).then(async (creds) => {\n\t\t\tconst repos = await …",
+        "previewFrom": "cloudchamber/images/images.ts:128",
+        "occurrences": [
+          {
+            "name": "handleListImagesCommand",
+            "file": "cloudchamber/images/images.ts",
+            "line": 128
+          },
+          {
+            "name": "handleListImagesCommand",
+            "file": "containers/images.ts",
+            "line": 143
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1vdbsc4",
+      "file": "cloudchamber/images/images.ts",
+      "line": 155,
+      "message": "function re-declared 2× across 2 files (e.g. listImages) — agent likely re-built an existing one [group 3x5otv]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "3x5otv",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function listImages(\n\tresponses: Repository[],\n\tdigests: boolean = false,\n\tjson: boolean = false\n) {\n\tif (!digests) {\n\t\tresponses = responses.map((resp) => {\n\t\t\treturn {\n\t\t\t\tname: resp.name,\n\t\t\t\ttags: resp.tags.filter((t) => …",
+        "previewFrom": "cloudchamber/images/images.ts:155",
+        "occurrences": [
+          {
+            "name": "listImages",
+            "file": "cloudchamber/images/images.ts",
+            "line": 155
+          },
+          {
+            "name": "listImages",
+            "file": "containers/images.ts",
+            "line": 170
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:p2vac1",
+      "file": "cloudchamber/images/images.ts",
+      "line": 193,
+      "message": "function re-declared 2× across 2 files (e.g. listReposWithTags) — agent likely re-built an existing one [group 5t0cmo]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "5t0cmo",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function listReposWithTags(\n\tcreds: string,\n\tcomplianceConfig?: ComplianceConfig\n): Promise<Record<string, string[]>> {\n\tconst url = new URL(\n\t\t`https://${getCloudflareContainerRegistry(complianceConfig)}`\n\t);\n\tconst catalogUrl = …",
+        "previewFrom": "cloudchamber/images/images.ts:193",
+        "occurrences": [
+          {
+            "name": "listReposWithTags",
+            "file": "cloudchamber/images/images.ts",
+            "line": 193
+          },
+          {
+            "name": "listReposWithTags",
+            "file": "containers/images.ts",
+            "line": 213
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:3g0idm",
+      "file": "cloudchamber/images/images.ts",
+      "line": 220,
+      "message": "function re-declared 2× across 2 files (e.g. deleteTag) — agent likely re-built an existing one [group 1174go9]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1174go9",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function deleteTag(\n\tbaseUrl: string,\n\taccountId: string,\n\timage: string,\n\ttag: string,\n\tcreds: string\n): Promise<string> {\n\tconst manifestAcceptHeader =\n\t\t\"application/vnd.oci.image.manifest.v1+json, …",
+        "previewFrom": "cloudchamber/images/images.ts:220",
+        "occurrences": [
+          {
+            "name": "deleteTag",
+            "file": "cloudchamber/images/images.ts",
+            "line": 220
+          },
+          {
+            "name": "deleteTag",
+            "file": "containers/images.ts",
+            "line": 240
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1n6w32q",
+      "file": "cloudchamber/images/images.ts",
+      "line": 267,
+      "message": "function re-declared 2× across 2 files (e.g. getCreds) — agent likely re-built an existing one [group 1la7i0h]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1la7i0h",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function getCreds(complianceConfig?: ComplianceConfig): Promise<string> {\n\tconst credentials =\n\t\tawait ImageRegistriesService.generateImageRegistryCredentials(\n\t\t\tgetCloudflareContainerRegistry(complianceConfig),\n\t\t\t{ …",
+        "previewFrom": "cloudchamber/images/images.ts:267",
+        "occurrences": [
+          {
+            "name": "getCreds",
+            "file": "cloudchamber/images/images.ts",
+            "line": 267
+          },
+          {
+            "name": "getCreds",
+            "file": "containers/images.ts",
+            "line": 287
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:jk4tav",
+      "file": "cloudchamber/images/registries.ts",
+      "line": 35,
+      "message": "function re-declared 2× across 2 files (e.g. _configureImageRegistryOptionalYargs, _createSSHPublicKeyOptionalYargs) — agent likely re-built an existing one [group av2i4r]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "av2i4r",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function _configureImageRegistryOptionalYargs(yargs: CommonYargsArgv) {\n\treturn yargs\n\t\t.option(\"domain\", {\n\t\t\tdescription:\n\t\t\t\t\"Domain of your registry. Don't include the proto part of the URL, like 'http://'\",\n\t\t\ttype: \"string\",\n\t\t}) …",
+        "previewFrom": "cloudchamber/images/registries.ts:35",
+        "occurrences": [
+          {
+            "name": "_configureImageRegistryOptionalYargs",
+            "file": "cloudchamber/images/registries.ts",
+            "line": 35
+          },
+          {
+            "name": "_createSSHPublicKeyOptionalYargs",
+            "file": "cloudchamber/ssh/ssh.ts",
+            "line": 43
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:f7wpsm",
+      "file": "containers/instances.ts",
+      "line": 301,
+      "message": "type re-declared 4× across 4 files (e.g. InstancesArgs, ListArgs, SharedArgs, +1 more) — agent likely re-built an existing one [group 1k1uv0f]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1k1uv0f",
+        "distinctFiles": 4,
+        "totalDeclarations": 4,
+        "preview": "type InstancesArgs = HandlerArgs<typeof instancesArgs>;",
+        "previewFrom": "containers/instances.ts:301",
+        "occurrences": [
+          {
+            "name": "InstancesArgs",
+            "file": "containers/instances.ts",
+            "line": 301
+          },
+          {
+            "name": "ListArgs",
+            "file": "containers/list.ts",
+            "line": 127
+          },
+          {
+            "name": "SshArgs",
+            "file": "containers/ssh.ts",
+            "line": 100
+          },
+          {
+            "name": "SharedArgs",
+            "file": "deployment-bundle/merge-config-args.ts",
+            "line": 36
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1sh4n21",
+      "file": "core/create-command.ts",
+      "line": 17,
+      "message": "function re-declared 4× across 2 files (e.g. createAlias, createCommand, createNamespace, +1 more) — agent likely re-built an existing one [group 1o2gzrn]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1o2gzrn",
+        "distinctFiles": 2,
+        "totalDeclarations": 4,
+        "preview": "function createCommand(\n\tdefinition: CommandDefinition\n): CreateCommandResult<NamedArgDefinitions> {\n\t// @ts-expect-error return type is used for type inference only\n\treturn definition;\n}",
+        "previewFrom": "core/create-command.ts:17",
+        "occurrences": [
+          {
+            "name": "createCommand",
+            "file": "core/create-command.ts",
+            "line": 17
+          },
+          {
+            "name": "createNamespace",
+            "file": "core/create-command.ts",
+            "line": 24
+          },
+          {
+            "name": "createAlias",
+            "file": "core/create-command.ts",
+            "line": 30
+          },
+          {
+            "name": "defineWranglerConfig",
+            "file": "experimental-config/wrangler-definition.ts",
+            "line": 9
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:qod7au",
+      "file": "d1/migrations/helpers.ts",
+      "line": 156,
+      "message": "function re-declared 2× in 1 file (e.g. getCreateMigrationsTableQuery, getListAppliedMigrationsQuery) — agent likely re-built an existing one [group 1lkf24l]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1lkf24l",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function getCreateMigrationsTableQuery(migrationsTableName: string) {\n\tconst escapedTableName = escapeIdentifier(migrationsTableName);\n\treturn `CREATE TABLE IF NOT EXISTS ${escapedTableName}(\n\t\tid         INTEGER PRIMARY KEY AUTOINCREMENT, …",
+        "previewFrom": "d1/migrations/helpers.ts:156",
+        "occurrences": [
+          {
+            "name": "getCreateMigrationsTableQuery",
+            "file": "d1/migrations/helpers.ts",
+            "line": 156
+          },
+          {
+            "name": "getListAppliedMigrationsQuery",
+            "file": "d1/migrations/helpers.ts",
+            "line": 165
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:lx3h75",
+      "file": "d1/splitter.ts",
+      "line": 253,
+      "message": "function re-declared 3× across 2 files (e.g. isCompoundStatementEnd, isCompoundStatementStart, isValidIdentifier) — agent likely re-built an existing one [group 1x3o6w8]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1x3o6w8",
+        "distinctFiles": 2,
+        "totalDeclarations": 3,
+        "preview": "function isCompoundStatementStart(str: string) {\n\treturn /\\s(BEGIN|CASE)\\s$/i.test(str);\n}",
+        "previewFrom": "d1/splitter.ts:253",
+        "occurrences": [
+          {
+            "name": "isCompoundStatementStart",
+            "file": "d1/splitter.ts",
+            "line": 253
+          },
+          {
+            "name": "isCompoundStatementEnd",
+            "file": "d1/splitter.ts",
+            "line": 260
+          },
+          {
+            "name": "isValidIdentifier",
+            "file": "type-generation/index.ts",
+            "line": 734
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vyoo63",
+      "file": "d1/timeTravel/utils.ts",
+      "line": 61,
+      "message": "function re-declared 2× across 2 files (e.g. isISODate, isTunnelId) — agent likely re-built an existing one [group 9kxiq4]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "9kxiq4",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function isISODate(date: string) {\n\treturn ISO_DATE_REG_EXP.test(date);\n}",
+        "previewFrom": "d1/timeTravel/utils.ts:61",
+        "occurrences": [
+          {
+            "name": "isISODate",
+            "file": "d1/timeTravel/utils.ts",
+            "line": 61
+          },
+          {
+            "name": "isTunnelId",
+            "file": "tunnel/client.ts",
+            "line": 360
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ne39r2",
+      "file": "deployment-bundle/apply-middleware.ts",
+      "line": 134,
+      "message": "function re-declared 2× across 2 files (e.g. escapeTypeScriptString, prepareFilePath) — agent likely re-built an existing one [group 14fzh0o]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "14fzh0o",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function prepareFilePath(filePath: string): string {\n\treturn JSON.stringify(filePath).slice(1, -1);\n}",
+        "previewFrom": "deployment-bundle/apply-middleware.ts:134",
+        "occurrences": [
+          {
+            "name": "prepareFilePath",
+            "file": "deployment-bundle/apply-middleware.ts",
+            "line": 134
+          },
+          {
+            "name": "escapeTypeScriptString",
+            "file": "type-generation/index.ts",
+            "line": 741
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1e34cj4",
+      "file": "deployment-bundle/bundle.ts",
+      "line": 44,
+      "message": "function re-declared 2× across 2 files (e.g. escapeRegex, getIdentifier) — agent likely re-built an existing one [group 1a17dkh]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1a17dkh",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "escapeRegex = (str: string) => {\n\treturn str.replace(ESCAPE_REGEX_CHARACTERS, \"\\\\$&\");\n}",
+        "previewFrom": "deployment-bundle/bundle.ts:44",
+        "occurrences": [
+          {
+            "name": "escapeRegex",
+            "file": "deployment-bundle/bundle.ts",
+            "line": 44
+          },
+          {
+            "name": "getIdentifier",
+            "file": "dev/miniflare/index.ts",
+            "line": 158
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1mbjbb9",
+      "file": "deployments.ts",
+      "line": 117,
+      "message": "function re-declared 4× across 2 files (e.g. emojifyInstanceTriggerName, emojifyStepType, formatSource, +1 more) — agent likely re-built an existing one [group b4mu4j]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "b4mu4j",
+        "distinctFiles": 2,
+        "totalDeclarations": 4,
+        "preview": "function formatSource(source: string): string {\n\tswitch (source) {\n\t\tcase \"api\":\n\t\t\treturn \"API 📡\";\n\t\tcase \"dash\":\n\t\t\treturn \"Dashboard 🖥️\";\n\t\tcase \"wrangler\":\n\t\t\treturn \"Wrangler 🤠\";\n\t\tcase \"terraform\":\n\t\t\treturn \"Terraform 🏗️\"; …",
+        "previewFrom": "deployments.ts:117",
+        "occurrences": [
+          {
+            "name": "formatSource",
+            "file": "deployments.ts",
+            "line": 117
+          },
+          {
+            "name": "formatTrigger",
+            "file": "deployments.ts",
+            "line": 131
+          },
+          {
+            "name": "emojifyInstanceTriggerName",
+            "file": "workflows/utils.ts",
+            "line": 36
+          },
+          {
+            "name": "emojifyStepType",
+            "file": "workflows/utils.ts",
+            "line": 51
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1kmgopv",
+      "file": "dev/miniflare/index.ts",
+      "line": 232,
+      "message": "function re-declared 2× in 1 file (e.g. dispatchNamespaceEntry, kvNamespaceEntry) — agent likely re-built an existing one [group jeh3ih]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "jeh3ih",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function kvNamespaceEntry(\n\t{ binding, id: originalId, remote }: CfKvNamespace,\n\tremoteProxyConnectionString?: RemoteProxyConnectionString\n): [\n\tstring,\n\t{ id: string; remoteProxyConnectionString?: RemoteProxyConnectionString },\n] {\n\tconst …",
+        "previewFrom": "dev/miniflare/index.ts:232",
+        "occurrences": [
+          {
+            "name": "kvNamespaceEntry",
+            "file": "dev/miniflare/index.ts",
+            "line": 232
+          },
+          {
+            "name": "dispatchNamespaceEntry",
+            "file": "dev/miniflare/index.ts",
+            "line": 391
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:jzehsy",
+      "file": "email-routing/client.ts",
+      "line": 15,
+      "message": "function re-declared 2× in 1 file (e.g. listEmailRoutingZones, listEmailSendingZones) — agent likely re-built an existing one [group 1wim7yh]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1wim7yh",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function listEmailRoutingZones(\n\tconfig: Config\n): Promise<EmailRoutingSettings[]> {\n\tconst accountId = await requireAuth(config);\n\treturn await fetchPagedListResult<EmailRoutingSettings>(\n\t\tconfig, …",
+        "previewFrom": "email-routing/client.ts:15",
+        "occurrences": [
+          {
+            "name": "listEmailRoutingZones",
+            "file": "email-routing/client.ts",
+            "line": 15
+          },
+          {
+            "name": "listEmailSendingZones",
+            "file": "email-routing/client.ts",
+            "line": 25
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1w6nh3o",
+      "file": "email-routing/client.ts",
+      "line": 35,
+      "message": "function re-declared 3× in 1 file (e.g. getEmailRoutingCatchAll, getEmailRoutingDns, getEmailRoutingSettings) — agent likely re-built an existing one [group 8k2fob]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "8k2fob",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "async function getEmailRoutingSettings(\n\tconfig: Config,\n\tzoneId: string\n): Promise<EmailRoutingSettings> {\n\tawait requireAuth(config);\n\treturn await fetchResult<EmailRoutingSettings>(\n\t\tconfig,\n\t\t`/zones/${zoneId}/email/routing`\n\t);\n}",
+        "previewFrom": "email-routing/client.ts:35",
+        "occurrences": [
+          {
+            "name": "getEmailRoutingSettings",
+            "file": "email-routing/client.ts",
+            "line": 35
+          },
+          {
+            "name": "getEmailRoutingDns",
+            "file": "email-routing/client.ts",
+            "line": 78
+          },
+          {
+            "name": "getEmailRoutingCatchAll",
+            "file": "email-routing/client.ts",
+            "line": 192
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:4a3s8u",
+      "file": "email-routing/client.ts",
+      "line": 46,
+      "message": "function re-declared 3× in 1 file (e.g. disableEmailRouting, enableEmailRouting, unlockEmailRoutingDns) — agent likely re-built an existing one [group 12q1lc5]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "12q1lc5",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "async function enableEmailRouting(\n\tconfig: Config,\n\tzoneId: string\n): Promise<EmailRoutingSettings> {\n\tawait requireAuth(config);\n\treturn await fetchResult<EmailRoutingSettings>(\n\t\tconfig,\n\t\t`/zones/${zoneId}/email/routing/enable`,\n\t\t{ …",
+        "previewFrom": "email-routing/client.ts:46",
+        "occurrences": [
+          {
+            "name": "enableEmailRouting",
+            "file": "email-routing/client.ts",
+            "line": 46
+          },
+          {
+            "name": "disableEmailRouting",
+            "file": "email-routing/client.ts",
+            "line": 62
+          },
+          {
+            "name": "unlockEmailRoutingDns",
+            "file": "email-routing/client.ts",
+            "line": 89
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:dvpeja",
+      "file": "email-routing/client.ts",
+      "line": 118,
+      "message": "function re-declared 2× in 1 file (e.g. getEmailRoutingRule, getEmailSendingSubdomainDns) — agent likely re-built an existing one [group 1bo6g7x]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1bo6g7x",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function getEmailRoutingRule(\n\tconfig: Config,\n\tzoneId: string,\n\truleId: string\n): Promise<EmailRoutingRule> {\n\tawait requireAuth(config);\n\treturn await fetchResult<EmailRoutingRule>(\n\t\tconfig, …",
+        "previewFrom": "email-routing/client.ts:118",
+        "occurrences": [
+          {
+            "name": "getEmailRoutingRule",
+            "file": "email-routing/client.ts",
+            "line": 118
+          },
+          {
+            "name": "getEmailSendingSubdomainDns",
+            "file": "email-routing/client.ts",
+            "line": 321
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:len8g",
+      "file": "email-routing/client.ts",
+      "line": 130,
+      "message": "function re-declared 2× in 1 file (e.g. createEmailRoutingRule, updateEmailRoutingCatchAll) — agent likely re-built an existing one [group wftbpj]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "wftbpj",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function createEmailRoutingRule(\n\tconfig: Config,\n\tzoneId: string,\n\tbody: {\n\t\tactions: { type: string; value?: string[] }[];\n\t\tmatchers: { type: string; field?: string; value?: string }[];\n\t\tname?: string;\n\t\tenabled?: boolean; …",
+        "previewFrom": "email-routing/client.ts:130",
+        "occurrences": [
+          {
+            "name": "createEmailRoutingRule",
+            "file": "email-routing/client.ts",
+            "line": 130
+          },
+          {
+            "name": "updateEmailRoutingCatchAll",
+            "file": "email-routing/client.ts",
+            "line": 203
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:14foscx",
+      "file": "email-routing/client.ts",
+      "line": 333,
+      "message": "function re-declared 3× across 2 files (e.g. createService, sendEmail, sendRawEmail) — agent likely re-built an existing one [group 1ved89k]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ved89k",
+        "distinctFiles": 2,
+        "totalDeclarations": 3,
+        "preview": "async function sendEmail(\n\tconfig: Config,\n\tbody: {\n\t\tfrom: string | { address: string; name: string };\n\t\tsubject: string;\n\t\tto: string | string[];\n\t\ttext?: string;\n\t\thtml?: string;\n\t\tcc?: string | string[];\n\t\tbcc?: string | string[]; …",
+        "previewFrom": "email-routing/client.ts:333",
+        "occurrences": [
+          {
+            "name": "sendEmail",
+            "file": "email-routing/client.ts",
+            "line": 333
+          },
+          {
+            "name": "sendRawEmail",
+            "file": "email-routing/client.ts",
+            "line": 366
+          },
+          {
+            "name": "createService",
+            "file": "vpc/client.ts",
+            "line": 6
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:13b1jcu",
+      "file": "flagship/client.ts",
+      "line": 235,
+      "message": "function re-declared 2× across 2 files (e.g. createFlag, updateWidget) — agent likely re-built an existing one [group 124pe8k]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "124pe8k",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function createFlag(\n\tconfig: Config,\n\tappId: string,\n\tflag: FlagInput\n): Promise<Flag> {\n\tconst accountId = await requireAuth(config);\n\treturn await fetchResult(\n\t\tconfig, …",
+        "previewFrom": "flagship/client.ts:235",
+        "occurrences": [
+          {
+            "name": "createFlag",
+            "file": "flagship/client.ts",
+            "line": 235
+          },
+          {
+            "name": "updateWidget",
+            "file": "turnstile/client.ts",
+            "line": 98
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:rhqfo1",
+      "file": "flagship/client.ts",
+      "line": 248,
+      "message": "function re-declared 2× in 1 file (e.g. deleteFlag, getFlag) — agent likely re-built an existing one [group 1t0pjnr]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1t0pjnr",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function getFlag(\n\tconfig: Config,\n\tappId: string,\n\tflagKey: string\n): Promise<Flag> {\n\tconst accountId = await requireAuth(config);\n\treturn await fetchResult(\n\t\tconfig, …",
+        "previewFrom": "flagship/client.ts:248",
+        "occurrences": [
+          {
+            "name": "getFlag",
+            "file": "flagship/client.ts",
+            "line": 248
+          },
+          {
+            "name": "deleteFlag",
+            "file": "flagship/client.ts",
+            "line": 275
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ppckec",
+      "file": "flagship/flags/rules/shared.ts",
+      "line": 43,
+      "message": "function re-declared 2× across 2 files (e.g. renderCondition, stringifyCondition) — agent likely re-built an existing one [group 1n3r4zw]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1n3r4zw",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function stringifyCondition(condition: Condition): string {\n\tif (\"logical_operator\" in condition) {\n\t\treturn `(${condition.clauses.map(stringifyCondition).join(` ${condition.logical_operator} `)})`;\n\t}\n\treturn `${condition.attribute} …",
+        "previewFrom": "flagship/flags/rules/shared.ts:43",
+        "occurrences": [
+          {
+            "name": "stringifyCondition",
+            "file": "flagship/flags/rules/shared.ts",
+            "line": 43
+          },
+          {
+            "name": "renderCondition",
+            "file": "flagship/render.ts",
+            "line": 97
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:kp1g8u",
+      "file": "hyperdrive/client.ts",
+      "line": 155,
+      "message": "function re-declared 3× across 3 files (e.g. listConfigs, listServices, listWidgets) — agent likely re-built an existing one [group 2s4bpc]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "2s4bpc",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "async function listConfigs(config: Config): Promise<HyperdriveConfig[]> {\n\tconst accountId = await requireAuth(config);\n\treturn await fetchPagedListResult(\n\t\tconfig,\n\t\t`/accounts/${accountId}/hyperdrive/configs`,\n\t\t{\n\t\t\tmethod: \"GET\",\n\t\t} …",
+        "previewFrom": "hyperdrive/client.ts:155",
+        "occurrences": [
+          {
+            "name": "listConfigs",
+            "file": "hyperdrive/client.ts",
+            "line": 155
+          },
+          {
+            "name": "listWidgets",
+            "file": "turnstile/client.ts",
+            "line": 87
+          },
+          {
+            "name": "listServices",
+            "file": "vpc/client.ts",
+            "line": 53
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1kzgwoh",
+      "file": "init.ts",
+      "line": 165,
+      "message": "function re-declared 3× across 3 files (e.g. isNpm, isSecretBinding) — agent likely re-built an existing one [group nftzin]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "nftzin",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "function isNpm(packageManager: PackageManager) {\n\treturn packageManager.type === \"npm\";\n}",
+        "previewFrom": "init.ts:165",
+        "occurrences": [
+          {
+            "name": "isNpm",
+            "file": "init.ts",
+            "line": 165
+          },
+          {
+            "name": "isSecretBinding",
+            "file": "preview/base-config/secrets/list.ts",
+            "line": 22
+          },
+          {
+            "name": "isSecretBinding",
+            "file": "preview/secrets/list.ts",
+            "line": 32
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1sngedz",
+      "file": "kv/helpers.ts",
+      "line": 140,
+      "message": "function re-declared 2× across 2 files (e.g. setR2LocalUploadsConfig, updateKVNamespace) — agent likely re-built an existing one [group qpf4zq]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "qpf4zq",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function updateKVNamespace(\n\tcomplianceConfig: ComplianceConfig,\n\taccountId: string,\n\tnamespaceId: string,\n\ttitle: string\n): Promise<KVNamespaceInfo> {\n\treturn await fetchResult<KVNamespaceInfo>(\n\t\tcomplianceConfig, …",
+        "previewFrom": "kv/helpers.ts:140",
+        "occurrences": [
+          {
+            "name": "updateKVNamespace",
+            "file": "kv/helpers.ts",
+            "line": 140
+          },
+          {
+            "name": "setR2LocalUploadsConfig",
+            "file": "r2/helpers/local-uploads.ts",
+            "line": 30
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1kgjzqu",
+      "file": "kv/helpers.ts",
+      "line": 279,
+      "message": "function re-declared 3× across 2 files (e.g. deleteKVKeyValue, deleteSecret, getSecret) — agent likely re-built an existing one [group 1qfoszp]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1qfoszp",
+        "distinctFiles": 2,
+        "totalDeclarations": 3,
+        "preview": "async function deleteKVKeyValue(\n\tcomplianceConfig: ComplianceConfig,\n\taccountId: string,\n\tnamespaceId: string,\n\tkey: string\n) {\n\treturn await fetchResult(\n\t\tcomplianceConfig, …",
+        "previewFrom": "kv/helpers.ts:279",
+        "occurrences": [
+          {
+            "name": "deleteKVKeyValue",
+            "file": "kv/helpers.ts",
+            "line": 279
+          },
+          {
+            "name": "getSecret",
+            "file": "secrets-store/client.ts",
+            "line": 91
+          },
+          {
+            "name": "deleteSecret",
+            "file": "secrets-store/client.ts",
+            "line": 173
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:mrpxbp",
+      "file": "kv/helpers.ts",
+      "line": 304,
+      "message": "function re-declared 2× across 2 files (e.g. logBulkProgress) — agent likely re-built an existing one [group 6vvbs4]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "6vvbs4",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function logBulkProgress(\n\toperation: \"put\" | \"delete\",\n\tindex: number,\n\ttotal: number\n) {\n\tlogger.log(\n\t\t`${operation === \"put\" ? \"Uploaded\" : \"Deleted\"} ${Math.floor(\n\t\t\t(100 * index) / total\n\t\t)}% (${formatNumber(index)} out of …",
+        "previewFrom": "kv/helpers.ts:304",
+        "occurrences": [
+          {
+            "name": "logBulkProgress",
+            "file": "kv/helpers.ts",
+            "line": 304
+          },
+          {
+            "name": "logBulkProgress",
+            "file": "r2/helpers/bulk.ts",
+            "line": 114
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:bkvoo",
+      "file": "package-manager.ts",
+      "line": 96,
+      "message": "function re-declared 5× in 1 file (e.g. supportsBun, supportsNpm, supportsNub, +2 more) — agent likely re-built an existing one [group rjxh9i]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "rjxh9i",
+        "distinctFiles": 1,
+        "totalDeclarations": 5,
+        "preview": "function supportsYarn(): Promise<boolean> {\n\treturn supports(\"yarn\");\n}",
+        "previewFrom": "package-manager.ts:96",
+        "occurrences": [
+          {
+            "name": "supportsYarn",
+            "file": "package-manager.ts",
+            "line": 96
+          },
+          {
+            "name": "supportsNpm",
+            "file": "package-manager.ts",
+            "line": 100
+          },
+          {
+            "name": "supportsPnpm",
+            "file": "package-manager.ts",
+            "line": 104
+          },
+          {
+            "name": "supportsBun",
+            "file": "package-manager.ts",
+            "line": 108
+          },
+          {
+            "name": "supportsNub",
+            "file": "package-manager.ts",
+            "line": 112
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vvgt8e",
+      "file": "pages/deployment-tails.ts",
+      "line": 30,
+      "message": "type re-declared 4× across 2 files (e.g. ClearanceLevel, StatusChoice, WidgetMode, +1 more) — agent likely re-built an existing one [group hpu6ui]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "hpu6ui",
+        "distinctFiles": 2,
+        "totalDeclarations": 4,
+        "preview": "type StatusChoice = (typeof statusChoices)[number];",
+        "previewFrom": "pages/deployment-tails.ts:30",
+        "occurrences": [
+          {
+            "name": "StatusChoice",
+            "file": "pages/deployment-tails.ts",
+            "line": 30
+          },
+          {
+            "name": "WidgetMode",
+            "file": "turnstile/client.ts",
+            "line": 6
+          },
+          {
+            "name": "ClearanceLevel",
+            "file": "turnstile/client.ts",
+            "line": 14
+          },
+          {
+            "name": "WidgetRegion",
+            "file": "turnstile/client.ts",
+            "line": 17
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:814zzj",
+      "file": "pages/dev.ts",
+      "line": 58,
+      "message": "const re-declared 3× across 3 files (e.g. CLEANUP_CALLBACKS, NO_PROCESS_ANCESTRY, RUNNING_BUILDERS) — agent likely re-built an existing one [group 46vgw2]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "46vgw2",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "CLEANUP_CALLBACKS: (() => void)[] = []",
+        "previewFrom": "pages/dev.ts:58",
+        "occurrences": [
+          {
+            "name": "CLEANUP_CALLBACKS",
+            "file": "pages/dev.ts",
+            "line": 58
+          },
+          {
+            "name": "RUNNING_BUILDERS",
+            "file": "pages/utils.ts",
+            "line": 6
+          },
+          {
+            "name": "NO_PROCESS_ANCESTRY",
+            "file": "utils/detect-agent.ts",
+            "line": 8
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1m4ccbu",
+      "file": "pipelines/cli/setup.ts",
+      "line": 154,
+      "message": "function re-declared 2× in 1 file (e.g. displayCatalogTokenInstructions, displayR2CredentialsInstructions) — agent likely re-built an existing one [group 17in03w]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "17in03w",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function displayCatalogTokenInstructions(accountId: string): void {\n\tlogger.log(chalk.dim(\"\\n  To create a Catalog API token:\"));\n\tlogger.log(\n\t\tchalk.dim(\n\t\t\t`  Visit …",
+        "previewFrom": "pipelines/cli/setup.ts:154",
+        "occurrences": [
+          {
+            "name": "displayCatalogTokenInstructions",
+            "file": "pipelines/cli/setup.ts",
+            "line": 154
+          },
+          {
+            "name": "displayR2CredentialsInstructions",
+            "file": "pipelines/cli/setup.ts",
+            "line": 166
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vrf3t0",
+      "file": "pipelines/client.ts",
+      "line": 58,
+      "message": "function re-declared 2× in 1 file (e.g. listSinks, listStreams) — agent likely re-built an existing one [group rla467]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "rla467",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function listStreams(\n\tconfig: Config,\n\tparams?: ListStreamsParams\n): Promise<Stream[]> {\n\tconst accountId = await requireAuth(config);\n\tconst searchParams = new URLSearchParams();\n\n\tif (params?.page) {\n\t\tsearchParams.set(\"page\", …",
+        "previewFrom": "pipelines/client.ts:58",
+        "occurrences": [
+          {
+            "name": "listStreams",
+            "file": "pipelines/client.ts",
+            "line": 58
+          },
+          {
+            "name": "listSinks",
+            "file": "pipelines/client.ts",
+            "line": 90
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:10e0jwi",
+      "file": "pipelines/client.ts",
+      "line": 122,
+      "message": "function re-declared 4× in 1 file (e.g. createPipeline, createSink, createStream, +1 more) — agent likely re-built an existing one [group z2oszh]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "z2oszh",
+        "distinctFiles": 1,
+        "totalDeclarations": 4,
+        "preview": "async function createStream(\n\tconfig: Config,\n\tstreamConfig: CreateStreamRequest\n): Promise<Stream> {\n\tconst accountId = await requireAuth(config);\n\n\tconst response = await fetchResult<Stream>(\n\t\tconfig, …",
+        "previewFrom": "pipelines/client.ts:122",
+        "occurrences": [
+          {
+            "name": "createStream",
+            "file": "pipelines/client.ts",
+            "line": 122
+          },
+          {
+            "name": "createSink",
+            "file": "pipelines/client.ts",
+            "line": 204
+          },
+          {
+            "name": "createPipeline",
+            "file": "pipelines/client.ts",
+            "line": 257
+          },
+          {
+            "name": "validateSql",
+            "file": "pipelines/client.ts",
+            "line": 278
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ktjavj",
+      "file": "pipelines/client.ts",
+      "line": 143,
+      "message": "function re-declared 3× in 1 file (e.g. getPipeline, getSink, getStream) — agent likely re-built an existing one [group 1gcm5u2]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1gcm5u2",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "async function getStream(\n\tconfig: Config,\n\tstreamId: string\n): Promise<Stream> {\n\tconst accountId = await requireAuth(config);\n\n\tconst response = await fetchResult<Stream>(\n\t\tconfig, …",
+        "previewFrom": "pipelines/client.ts:143",
+        "occurrences": [
+          {
+            "name": "getStream",
+            "file": "pipelines/client.ts",
+            "line": 143
+          },
+          {
+            "name": "getSink",
+            "file": "pipelines/client.ts",
+            "line": 175
+          },
+          {
+            "name": "getPipeline",
+            "file": "pipelines/client.ts",
+            "line": 225
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:si86uo",
+      "file": "pipelines/index.ts",
+      "line": 172,
+      "message": "function re-declared 2× in 1 file (e.g. __testSkipCredentialValidation, __testSkipDelays) — agent likely re-built an existing one [group 13mw18y]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "13mw18y",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function __testSkipDelays() {\n\t__testSkipDelaysFlag = true;\n}",
+        "previewFrom": "pipelines/index.ts:172",
+        "occurrences": [
+          {
+            "name": "__testSkipDelays",
+            "file": "pipelines/index.ts",
+            "line": 172
+          },
+          {
+            "name": "__testSkipCredentialValidation",
+            "file": "pipelines/index.ts",
+            "line": 176
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1316jv1",
+      "file": "pipelines/legacy-client.ts",
+      "line": 101,
+      "message": "const re-declared 2× across 2 files (e.g. API_HEADERS, JSON_HEADERS) — agent likely re-built an existing one [group 1yltkj1]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "1yltkj1",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "API_HEADERS = {\n\t\"Content-Type\": \"application/json\",\n}",
+        "previewFrom": "pipelines/legacy-client.ts:101",
+        "occurrences": [
+          {
+            "name": "API_HEADERS",
+            "file": "pipelines/legacy-client.ts",
+            "line": 101
+          },
+          {
+            "name": "JSON_HEADERS",
+            "file": "turnstile/client.ts",
+            "line": 55
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1hxacme",
+      "file": "pipelines/types.ts",
+      "line": 36,
+      "message": "interface re-declared 3× in 1 file (e.g. PipelineListResponse, SinkListResponse, StreamListResponse) — agent likely re-built an existing one [group 102gakg]",
+      "metadata": {
+        "symbolKind": "interface",
+        "fingerprintHash": "102gakg",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "interface PipelineListResponse extends CloudflareAPIResponse<\n\tPipeline[]\n> {\n\tresult_info: PaginationInfo;\n}",
+        "previewFrom": "pipelines/types.ts:36",
+        "occurrences": [
+          {
+            "name": "PipelineListResponse",
+            "file": "pipelines/types.ts",
+            "line": 36
+          },
+          {
+            "name": "StreamListResponse",
+            "file": "pipelines/types.ts",
+            "line": 107
+          },
+          {
+            "name": "SinkListResponse",
+            "file": "pipelines/types.ts",
+            "line": 196
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:6qg6fh",
+      "file": "preview/base-config/secrets/list.ts",
+      "line": 29,
+      "message": "function re-declared 2× across 2 files (e.g. extractSecretSummaries) — agent likely re-built an existing one [group psmrvh]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "psmrvh",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function extractSecretSummaries(env: EnvBindings | undefined): SecretSummary[] {\n\treturn Object.entries(env ?? {})\n\t\t.filter(([, binding]) => binding !== null && isSecretBinding(binding))\n\t\t.map(([name]) => ({ name, type: \"secret_text\" …",
+        "previewFrom": "preview/base-config/secrets/list.ts:29",
+        "occurrences": [
+          {
+            "name": "extractSecretSummaries",
+            "file": "preview/base-config/secrets/list.ts",
+            "line": 29
+          },
+          {
+            "name": "extractSecretSummaries",
+            "file": "preview/secrets/list.ts",
+            "line": 39
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1iekzck",
+      "file": "queues/client.ts",
+      "line": 66,
+      "message": "function re-declared 2× in 1 file (e.g. putQueueById, updateQueue) — agent likely re-built an existing one [group pry0cg]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "pry0cg",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function updateQueue(\n\tconfig: Config,\n\tbody: PostQueueBody,\n\tqueue_id: string\n): Promise<QueueResponse> {\n\tconst accountId = await requireAuth(config);\n\treturn fetchResult(config, queuesUrl(accountId, queue_id), {\n\t\tmethod: \"PATCH\", …",
+        "previewFrom": "queues/client.ts:66",
+        "occurrences": [
+          {
+            "name": "updateQueue",
+            "file": "queues/client.ts",
+            "line": 66
+          },
+          {
+            "name": "putQueueById",
+            "file": "queues/client.ts",
+            "line": 176
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1fik33k",
+      "file": "r2/helpers/bucket.ts",
+      "line": 236,
+      "message": "function re-declared 3× across 2 files (e.g. deleteR2Bucket, deleteR2Sippy, getR2Sippy) — agent likely re-built an existing one [group 1y4vjzj]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1y4vjzj",
+        "distinctFiles": 2,
+        "totalDeclarations": 3,
+        "preview": "async function deleteR2Bucket(\n\tcomplianceConfig: ComplianceConfig,\n\taccountId: string,\n\tbucketName: string,\n\tjurisdiction?: string\n): Promise<void> {\n\tconst headers: HeadersInit = {};\n\tif (jurisdiction !== undefined) { …",
+        "previewFrom": "r2/helpers/bucket.ts:236",
+        "occurrences": [
+          {
+            "name": "deleteR2Bucket",
+            "file": "r2/helpers/bucket.ts",
+            "line": 236
+          },
+          {
+            "name": "getR2Sippy",
+            "file": "r2/helpers/sippy.ts",
+            "line": 20
+          },
+          {
+            "name": "deleteR2Sippy",
+            "file": "r2/helpers/sippy.ts",
+            "line": 40
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ilzb3w",
+      "file": "r2/helpers/bucket.ts",
+      "line": 263,
+      "message": "function re-declared 3× in 1 file (e.g. getBucketLockRules, getCORSPolicy, getLifecycleRules) — agent likely re-built an existing one [group sv8f8b]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "sv8f8b",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "async function getCORSPolicy(\n\tcomplianceConfig: ComplianceConfig,\n\taccountId: string,\n\tbucketName: string,\n\tjurisdiction?: string\n): Promise<CORSRule[]> {\n\tconst headers: HeadersInit = {};\n\tif (jurisdiction) { …",
+        "previewFrom": "r2/helpers/bucket.ts:263",
+        "occurrences": [
+          {
+            "name": "getCORSPolicy",
+            "file": "r2/helpers/bucket.ts",
+            "line": 263
+          },
+          {
+            "name": "getBucketLockRules",
+            "file": "r2/helpers/bucket.ts",
+            "line": 400
+          },
+          {
+            "name": "getLifecycleRules",
+            "file": "r2/helpers/bucket.ts",
+            "line": 527
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1gopam",
+      "file": "r2/helpers/bucket.ts",
+      "line": 305,
+      "message": "function re-declared 2× in 1 file (e.g. putBucketLockRules, putCORSPolicy) — agent likely re-built an existing one [group 19csatp]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "19csatp",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function putCORSPolicy(\n\tcomplianceConfig: ComplianceConfig,\n\taccountId: string,\n\tbucketName: string,\n\trules: CORSRule[],\n\tjurisdiction?: string\n): Promise<void> {\n\tconst headers: HeadersInit = {\n\t\t\"Content-Type\": \"application/json\", …",
+        "previewFrom": "r2/helpers/bucket.ts:305",
+        "occurrences": [
+          {
+            "name": "putCORSPolicy",
+            "file": "r2/helpers/bucket.ts",
+            "line": 305
+          },
+          {
+            "name": "putBucketLockRules",
+            "file": "r2/helpers/bucket.ts",
+            "line": 422
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1g2bguq",
+      "file": "r2/helpers/catalog.ts",
+      "line": 28,
+      "message": "type re-declared 3× across 3 files (e.g. Account, AccountInfo, R2WarehouseEnableResponse) — agent likely re-built an existing one [group uzevy0]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "uzevy0",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "type R2WarehouseEnableResponse = {\n\tid: string;\n\tname: string;\n};",
+        "previewFrom": "r2/helpers/catalog.ts:28",
+        "occurrences": [
+          {
+            "name": "R2WarehouseEnableResponse",
+            "file": "r2/helpers/catalog.ts",
+            "line": 28
+          },
+          {
+            "name": "Account",
+            "file": "user/shared.ts",
+            "line": 4
+          },
+          {
+            "name": "AccountInfo",
+            "file": "user/whoami.ts",
+            "line": 357
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1be2oxp",
+      "file": "r2/helpers/catalog.ts",
+      "line": 74,
+      "message": "type re-declared 3× in 1 file (e.g. R2CatalogCompactionResponse, R2CatalogCredentialResponse, R2CatalogSnapshotExpirationResponse) — agent likely re-built an existing one [group 10oimir]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "10oimir",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "type R2CatalogCompactionResponse = {\n\tsuccess: boolean;\n};",
+        "previewFrom": "r2/helpers/catalog.ts:74",
+        "occurrences": [
+          {
+            "name": "R2CatalogCompactionResponse",
+            "file": "r2/helpers/catalog.ts",
+            "line": 74
+          },
+          {
+            "name": "R2CatalogSnapshotExpirationResponse",
+            "file": "r2/helpers/catalog.ts",
+            "line": 117
+          },
+          {
+            "name": "R2CatalogCredentialResponse",
+            "file": "r2/helpers/catalog.ts",
+            "line": 200
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:rk5q4i",
+      "file": "r2/helpers/catalog.ts",
+      "line": 152,
+      "message": "function re-declared 2× in 1 file (e.g. disableR2CatalogCompaction, disableR2CatalogSnapshotExpiration) — agent likely re-built an existing one [group 13enuuc]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "13enuuc",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function disableR2CatalogCompaction(\n\tcomplianceConfig: ComplianceConfig,\n\taccountId: string,\n\tbucketName: string\n): Promise<R2CatalogCompactionResponse> {\n\tconst config: R2CatalogCompactionConfig = {\n\t\tstate: \"disabled\",\n\t}; …",
+        "previewFrom": "r2/helpers/catalog.ts:152",
+        "occurrences": [
+          {
+            "name": "disableR2CatalogCompaction",
+            "file": "r2/helpers/catalog.ts",
+            "line": 152
+          },
+          {
+            "name": "disableR2CatalogSnapshotExpiration",
+            "file": "r2/helpers/catalog.ts",
+            "line": 176
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1p6qp6p",
+      "file": "r2/helpers/catalog.ts",
+      "line": 271,
+      "message": "function re-declared 2× in 1 file (e.g. disableR2CatalogTableCompaction, disableR2CatalogTableSnapshotExpiration) — agent likely re-built an existing one [group 17ewjr7]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "17ewjr7",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function disableR2CatalogTableCompaction(\n\tcomplianceConfig: ComplianceConfig,\n\taccountId: string,\n\tbucketName: string,\n\tnamespace: string,\n\ttableName: string\n): Promise<void> {\n\treturn await fetchResult(\n\t\tcomplianceConfig, …",
+        "previewFrom": "r2/helpers/catalog.ts:271",
+        "occurrences": [
+          {
+            "name": "disableR2CatalogTableCompaction",
+            "file": "r2/helpers/catalog.ts",
+            "line": 271
+          },
+          {
+            "name": "disableR2CatalogTableSnapshotExpiration",
+            "file": "r2/helpers/catalog.ts",
+            "line": 331
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:3x15wo",
+      "file": "secrets-store/client.ts",
+      "line": 156,
+      "message": "function re-declared 2× in 1 file (e.g. duplicateSecret, updateSecret) — agent likely re-built an existing one [group 1wjyoyh]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1wjyoyh",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function updateSecret(\n\tcomplianceConfig: ComplianceConfig,\n\taccountId: string,\n\tstoreId: string,\n\tsecretId: string,\n\tbody: UpdateSecret\n): Promise<Secret> {\n\treturn await fetchResult(\n\t\tcomplianceConfig, …",
+        "previewFrom": "secrets-store/client.ts:156",
+        "occurrences": [
+          {
+            "name": "updateSecret",
+            "file": "secrets-store/client.ts",
+            "line": 156
+          },
+          {
+            "name": "duplicateSecret",
+            "file": "secrets-store/client.ts",
+            "line": 194
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:14jvayp",
+      "file": "tail/filters.ts",
+      "line": 248,
+      "message": "function re-declared 4× in 1 file (e.g. parseIP, parseMethod, parseQuery, +1 more) — agent likely re-built an existing one [group 1ewarmp]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ewarmp",
+        "distinctFiles": 1,
+        "totalDeclarations": 4,
+        "preview": "function parseMethod(method: string[]): MethodFilter {\n\treturn { method };\n}",
+        "previewFrom": "tail/filters.ts:248",
+        "occurrences": [
+          {
+            "name": "parseMethod",
+            "file": "tail/filters.ts",
+            "line": 248
+          },
+          {
+            "name": "parseIP",
+            "file": "tail/filters.ts",
+            "line": 280
+          },
+          {
+            "name": "parseQuery",
+            "file": "tail/filters.ts",
+            "line": 292
+          },
+          {
+            "name": "parseScriptVersion",
+            "file": "tail/filters.ts",
+            "line": 304
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1wz6lsy",
+      "file": "tail/printing.ts",
+      "line": 144,
+      "message": "function re-declared 6× in 1 file (e.g. isEmailEvent, isQueueEvent, isRequestEvent, +3 more) — agent likely re-built an existing one [group 1bbz98w]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1bbz98w",
+        "distinctFiles": 1,
+        "totalDeclarations": 6,
+        "preview": "function isRequestEvent(\n\tevent: TailEventMessage[\"event\"]\n): event is RequestEvent {\n\treturn Boolean(event && \"request\" in event);\n}",
+        "previewFrom": "tail/printing.ts:144",
+        "occurrences": [
+          {
+            "name": "isRequestEvent",
+            "file": "tail/printing.ts",
+            "line": 144
+          },
+          {
+            "name": "isScheduledEvent",
+            "file": "tail/printing.ts",
+            "line": 150
+          },
+          {
+            "name": "isEmailEvent",
+            "file": "tail/printing.ts",
+            "line": 156
+          },
+          {
+            "name": "isQueueEvent",
+            "file": "tail/printing.ts",
+            "line": 160
+          },
+          {
+            "name": "isRpcEvent",
+            "file": "tail/printing.ts",
+            "line": 164
+          },
+          {
+            "name": "isTailEvent",
+            "file": "tail/printing.ts",
+            "line": 182
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:kjjb9d",
+      "file": "utils/constants.ts",
+      "line": 4,
+      "message": "const re-declared 2× across 2 files (e.g. DEFAULT_LOCAL_PORT) — agent likely re-built an existing one [group tsdgut]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "tsdgut",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "DEFAULT_LOCAL_PORT = 8787",
+        "previewFrom": "utils/constants.ts:4",
+        "occurrences": [
+          {
+            "name": "DEFAULT_LOCAL_PORT",
+            "file": "utils/constants.ts",
+            "line": 4
+          },
+          {
+            "name": "DEFAULT_LOCAL_PORT",
+            "file": "workflows/local.ts",
+            "line": 10
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1v5h4xm",
+      "file": "vectorize/client.ts",
+      "line": 44,
+      "message": "function re-declared 2× in 1 file (e.g. deleteIndex, getIndex) — agent likely re-built an existing one [group 1ohgq6b]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ohgq6b",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "async function deleteIndex(\n\tconfig: Config,\n\tindexName: string,\n\tdeprecatedV1: boolean\n): Promise<void> {\n\tconst accountId = await requireAuth(config);\n\tconst versionParam = deprecatedV1 ? `` : `/v2`;\n\treturn await fetchResult<void>( …",
+        "previewFrom": "vectorize/client.ts:44",
+        "occurrences": [
+          {
+            "name": "deleteIndex",
+            "file": "vectorize/client.ts",
+            "line": 44
+          },
+          {
+            "name": "getIndex",
+            "file": "vectorize/client.ts",
+            "line": 60
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:188q1tk",
+      "file": "vectorize/client.ts",
+      "line": 91,
+      "message": "function re-declared 3× in 1 file (e.g. insertIntoIndex, insertIntoIndexV1, upsertIntoIndex) — agent likely re-built an existing one [group 46cwpt]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "46cwpt",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "async function insertIntoIndexV1(\n\tconfig: Config,\n\tindexName: string,\n\tbody: FormData\n): Promise<VectorizeVectorMutation> {\n\tconst accountId = await requireAuth(config);\n\n\treturn await fetchResult(\n\t\tconfig, …",
+        "previewFrom": "vectorize/client.ts:91",
+        "occurrences": [
+          {
+            "name": "insertIntoIndexV1",
+            "file": "vectorize/client.ts",
+            "line": 91
+          },
+          {
+            "name": "insertIntoIndex",
+            "file": "vectorize/client.ts",
+            "line": 108
+          },
+          {
+            "name": "upsertIntoIndex",
+            "file": "vectorize/client.ts",
+            "line": 125
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1pgizbe",
+      "file": "versions/list.ts",
+      "line": 99,
+      "message": "function re-declared 2× in 1 file (e.g. formatSource, formatTrigger) — agent likely re-built an existing one [group h62z08]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "h62z08",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function formatSource(source: string): string {\n\tswitch (source) {\n\t\tcase \"api\":\n\t\t\treturn \"API 📡\";\n\t\tcase \"dash\":\n\t\t\treturn \"Dashboard 🖥️\";\n\t\tcase \"wrangler\":\n\t\t\treturn \"Wrangler 🤠\";\n\t\tcase \"terraform\":\n\t\t\treturn \"Terraform 🏗️\"; …",
+        "previewFrom": "versions/list.ts:99",
+        "occurrences": [
+          {
+            "name": "formatSource",
+            "file": "versions/list.ts",
+            "line": 99
+          },
+          {
+            "name": "formatTrigger",
+            "file": "versions/list.ts",
+            "line": 113
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:mi8760",
+      "file": "cloudchamber/build.ts",
+      "line": 392,
+      "message": "buildAndMaybePush call uses placeholder arguments at positions 4, 5 to reach later options - rare choices are exposed to common callers",
+      "metadata": {
+        "apiName": "buildAndMaybePush",
+        "apiKind": "function",
+        "declaration": {
+          "file": "cloudchamber/build.ts",
+          "line": 193
+        },
+        "kind": "placeholderArgs",
+        "placeholderPositions": [
+          3,
+          4
+        ],
+        "totalParams": 6
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1l3b6ge",
+      "file": "dev/create-worker-preview.ts",
+      "line": 198,
+      "message": "fetchResult call uses placeholder arguments at positions 3, 4 to reach later options - rare choices are exposed to common callers",
+      "metadata": {
+        "apiName": "fetchResult",
+        "apiKind": "function",
+        "declaration": {
+          "file": "cfetch/index.ts",
+          "line": 26
+        },
+        "kind": "placeholderArgs",
+        "placeholderPositions": [
+          2,
+          3
+        ],
+        "totalParams": 6
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1pce2o7",
+      "file": "secrets-store/commands.ts",
+      "line": 25,
+      "message": "usingLocalSecretsStoreSecretAPI callers pass \"\" for 'secretName' in 5/6 calls - hide the common case behind the API",
+      "metadata": {
+        "apiName": "usingLocalSecretsStoreSecretAPI",
+        "apiKind": "function",
+        "kind": "parameter",
+        "parameterIndex": 3,
+        "parameterName": "secretName",
+        "value": "\"\"",
+        "valueKind": "literal",
+        "repeatedCount": 5,
+        "callCount": 6,
+        "callSites": [
+          {
+            "file": "secrets-store/commands.ts",
+            "line": 246
+          },
+          {
+            "file": "secrets-store/commands.ts",
+            "line": 326
+          },
+          {
+            "file": "secrets-store/commands.ts",
+            "line": 584
+          },
+          {
+            "file": "secrets-store/commands.ts",
+            "line": 658
+          },
+          {
+            "file": "secrets-store/commands.ts",
+            "line": 737
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:qj91zb",
+      "file": "type-generation/helpers.ts",
+      "line": 53,
+      "message": "throwMissingBindingError callers pass \"binding\" for option 'fieldName' in 58/68 calls - the option is probably a default",
+      "metadata": {
+        "apiName": "throwMissingBindingError",
+        "apiKind": "function",
+        "kind": "option",
+        "parameterIndex": 0,
+        "parameterName": "options1",
+        "optionName": "fieldName",
+        "value": "\"binding\"",
+        "valueKind": "literal",
+        "repeatedCount": 58,
+        "callCount": 68,
+        "callSites": [
+          {
+            "file": "type-generation/index.ts",
+            "line": 2105
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2120
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2135
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2150
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2165
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2195
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2215
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2235
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2250
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2265
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2285
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2302
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2322
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2352
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2372
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2387
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2404
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2424
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2439
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2453
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2479
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2493
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2507
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2521
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2535
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2549
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2693
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2767
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 2908
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3109
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3128
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3147
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3166
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3185
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3223
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3242
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3261
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3280
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3299
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3318
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3339
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3358
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3396
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3415
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3434
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3463
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3481
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3499
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3517
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3535
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3553
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3581
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3600
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3619
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3637
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3841
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 3931
+          },
+          {
+            "file": "type-generation/index.ts",
+            "line": 4122
+          }
+        ]
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1wo7gpb",
+      "file": "deploy/check-workflow-conflicts.ts",
+      "line": 7,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "checkWorkflowConflicts",
+        "callee": "checkWorkflowConflictsBase",
+        "paramCount": 3
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:133t7m2",
+      "file": "experimental-flags.ts",
+      "line": 12,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "run",
+        "callee": "flags.run",
+        "paramCount": 2
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1wvl2xs",
+      "file": "match-tag.ts",
+      "line": 4,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "verifyWorkerMatchesCITag",
+        "callee": "verifyWorkerMatchesCITagBase",
+        "paramCount": 4
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1omzq3a",
+      "file": "user/user.ts",
+      "line": 69,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "setProfile",
+        "callee": "auth.setProfile",
+        "paramCount": 1
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1sb218h",
+      "file": "user/user.ts",
+      "line": 76,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "getActiveProfile",
+        "callee": "auth.getActiveProfile",
+        "paramCount": 0
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:kqf3zr",
+      "file": "user/user.ts",
+      "line": 87,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "getCredentialStore",
+        "callee": "auth.getCredentialStore",
+        "paramCount": 0
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:16ojp41",
+      "file": "user/user.ts",
+      "line": 94,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "setTemporaryAllowed",
+        "callee": "auth.setTemporaryAllowed",
+        "paramCount": 1
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1hydp6k",
+      "file": "user/user.ts",
+      "line": 110,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "getAuthFromEnv",
+        "callee": "getAuthFromEnvShared",
+        "paramCount": 0
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1srinr1",
+      "file": "user/user.ts",
+      "line": 157,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "getAPIToken",
+        "callee": "auth.getAPIToken",
+        "paramCount": 0
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:4t1i6v",
+      "file": "user/user.ts",
+      "line": 167,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "requireApiToken",
+        "callee": "auth.requireApiToken",
+        "paramCount": 0
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:14vv7ki",
+      "file": "user/user.ts",
+      "line": 190,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "login",
+        "callee": "auth.login",
+        "paramCount": 2
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1tt2vtc",
+      "file": "user/user.ts",
+      "line": 197,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "logout",
+        "callee": "auth.logout",
+        "paramCount": 1
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vtrfci",
+      "file": "user/user.ts",
+      "line": 210,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "loginOrRefreshIfRequired",
+        "callee": "auth.loginOrRefreshIfRequired",
+        "paramCount": 2
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1h6biej",
+      "file": "user/user.ts",
+      "line": 217,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "getOAuthTokenFromLocalState",
+        "callee": "auth.getOAuthTokenFromLocalState",
+        "paramCount": 0
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:6iwowv",
+      "file": "user/user.ts",
+      "line": 243,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "readAuthCredentials",
+        "callee": "auth.readAuthCredentials",
+        "paramCount": 0
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:k9dnlj",
+      "file": "user/user.ts",
+      "line": 252,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "writeAuthCredentials",
+        "callee": "auth.writeAuthCredentials",
+        "paramCount": 1
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:dtt8jx",
+      "file": "user/user.ts",
+      "line": 275,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "getActiveAccountId",
+        "callee": "auth.getActiveAccountId",
+        "paramCount": 1
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:wr9oif",
+      "file": "user/user.ts",
+      "line": 298,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "getOrSelectAccountId",
+        "callee": "auth.getOrSelectAccountId",
+        "paramCount": 1
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:xunzrz",
+      "file": "user/user.ts",
+      "line": 318,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "requireAuth",
+        "callee": "auth.requireAuth",
+        "paramCount": 1
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ckqszi",
+      "file": "user/user.ts",
+      "line": 329,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "fetchAllAccounts",
+        "callee": "auth.fetchAllAccounts",
+        "paramCount": 2
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:kt5lyp",
+      "file": "user/user.ts",
+      "line": 341,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "getAccountFromCache",
+        "callee": "auth.getAccountFromCache",
+        "paramCount": 0
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:10ynae1",
+      "file": "utils/download-worker-config.ts",
+      "line": 7,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "fetchWorkerConfig",
+        "callee": "fetchWorkerConfigBase",
+        "paramCount": 3
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ju32qp",
+      "file": "utils/download-worker-config.ts",
+      "line": 15,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "downloadWorkerConfig",
+        "callee": "downloadWorkerConfigBase",
+        "paramCount": 4
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:63w766",
+      "file": "versions/api.ts",
+      "line": 22,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "fetchVersion",
+        "callee": "fetchVersionBase",
+        "paramCount": 5
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1la9rvb",
+      "file": "versions/api.ts",
+      "line": 54,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "fetchLatestDeployments",
+        "callee": "fetchLatestDeploymentsBase",
+        "paramCount": 3
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:3emr81",
+      "file": "versions/api.ts",
+      "line": 62,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "fetchLatestDeployment",
+        "callee": "fetchLatestDeploymentBase",
+        "paramCount": 3
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:122a7pg",
+      "file": "versions/api.ts",
+      "line": 70,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "fetchDeploymentVersions",
+        "callee": "fetchDeploymentVersionsBase",
+        "paramCount": 5
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:p86i2b",
+      "file": "versions/api.ts",
+      "line": 86,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "fetchDeployableVersions",
+        "callee": "fetchDeployableVersionsBase",
+        "paramCount": 4
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:gzl7ys",
+      "file": "versions/api.ts",
+      "line": 100,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "createDeployment",
+        "callee": "createDeploymentBase",
+        "paramCount": 6
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:5nvwzm",
+      "file": "versions/api.ts",
+      "line": 118,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "patchNonVersionedScriptSettings",
+        "callee": "patchNonVersionedScriptSettingsBase",
+        "paramCount": 4
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vmyl44",
+      "file": "logger.ts",
+      "line": 197,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "Logger",
+        "methodName": "clearHistory",
+        "receiver": "this.onceHistory",
+        "callee": "this.onceHistory.clear",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 13,
+        "passThroughRatio": 0.07692307692307693,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:14gyp4u",
+      "file": "miniflare-cli/assets.ts",
+      "line": 105,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "ProxyDispatcher",
+        "methodName": "close",
+        "receiver": "this.dispatcher",
+        "callee": "this.dispatcher.close",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 3,
+        "passThroughRatio": 0.6666666666666666,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1tjwkkm",
+      "file": "miniflare-cli/assets.ts",
+      "line": 109,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "ProxyDispatcher",
+        "methodName": "destroy",
+        "receiver": "this.dispatcher",
+        "callee": "this.dispatcher.destroy",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 3,
+        "passThroughRatio": 0.6666666666666666,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:3x619y",
+      "file": "api/startDevWorker/BaseController.ts",
+      "line": 26,
+      "message": "interface 'ControllerBus' has only one implementer: DevEnv at api/startDevWorker/DevEnv.ts:34 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "ControllerBus",
+        "memberCount": 1,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DevEnv",
+            "file": "api/startDevWorker/DevEnv.ts",
+            "line": 34
+          }
+        ]
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:lmuxgn",
+      "file": "deployments.ts",
+      "line": 146,
+      "message": "rollbackDeployment takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "rollbackDeployment",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:el9hhy",
+      "file": "dev.ts",
+      "line": 524,
+      "message": "getBindings takes 6 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "getBindings",
+        "requiredParams": 6
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1j38wvu",
+      "file": "dev/create-worker-preview.ts",
+      "line": 186,
+      "message": "createPreviewSession takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "createPreviewSession",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1l6she9",
+      "file": "dev/create-worker-preview.ts",
+      "line": 317,
+      "message": "createWorkerPreview takes 6 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "createWorkerPreview",
+        "requiredParams": 6
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:z02fsk",
+      "file": "preview/containers.ts",
+      "line": 37,
+      "message": "deployPreviewContainers takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "deployPreviewContainers",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:19wecw7",
+      "file": "preview/secrets/index.ts",
+      "line": 64,
+      "message": "patchPreviewDeploymentSecrets takes 7 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "patchPreviewDeploymentSecrets",
+        "requiredParams": 7
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:pxlc6r",
+      "file": "queues/client.ts",
+      "line": 207,
+      "message": "putConsumer takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "putConsumer",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1sb2s0f",
+      "file": "r2/helpers/bucket.ts",
+      "line": 549,
+      "message": "putLifecycleRules takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "putLifecycleRules",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ehg13l",
+      "file": "r2/helpers/catalog.ts",
+      "line": 121,
+      "message": "enableR2CatalogSnapshotExpiration takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "enableR2CatalogSnapshotExpiration",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:pfgnrn",
+      "file": "r2/helpers/catalog.ts",
+      "line": 232,
+      "message": "enableR2CatalogTableCompaction takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "enableR2CatalogTableCompaction",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1eevo74",
+      "file": "r2/helpers/catalog.ts",
+      "line": 271,
+      "message": "disableR2CatalogTableCompaction takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "disableR2CatalogTableCompaction",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:fj0wop",
+      "file": "r2/helpers/catalog.ts",
+      "line": 295,
+      "message": "enableR2CatalogTableSnapshotExpiration takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "enableR2CatalogTableSnapshotExpiration",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:15jtd2",
+      "file": "r2/helpers/catalog.ts",
+      "line": 331,
+      "message": "disableR2CatalogTableSnapshotExpiration takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "disableR2CatalogTableSnapshotExpiration",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:18ieg57",
+      "file": "r2/helpers/domain.ts",
+      "line": 148,
+      "message": "configureCustomDomainSettings takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "configureCustomDomainSettings",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:3pxt8f",
+      "file": "r2/helpers/notification.ts",
+      "line": 123,
+      "message": "listEventNotificationConfig takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "listEventNotificationConfig",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:uql9j2",
+      "file": "r2/helpers/notification.ts",
+      "line": 180,
+      "message": "putEventNotificationConfig takes 7 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "putEventNotificationConfig",
+        "requiredParams": 7
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:12ba8yg",
+      "file": "r2/helpers/notification.ts",
+      "line": 223,
+      "message": "deleteEventNotificationConfig takes 7 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "deleteEventNotificationConfig",
+        "requiredParams": 7
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1dzmi8i",
+      "file": "r2/helpers/object.ts",
+      "line": 80,
+      "message": "putRemoteObject takes 7 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "putRemoteObject",
+        "requiredParams": 7
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:19ahjky",
+      "file": "r2/helpers/object.ts",
+      "line": 128,
+      "message": "deleteR2Object takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "deleteR2Object",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1tkxyc2",
+      "file": "secrets-store/client.ts",
+      "line": 156,
+      "message": "updateSecret takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "updateSecret",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:14bw42y",
+      "file": "secrets-store/client.ts",
+      "line": 194,
+      "message": "duplicateSecret takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "duplicateSecret",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ft1s43",
+      "file": "secrets-store/commands.ts",
+      "line": 25,
+      "message": "usingLocalSecretsStoreSecretAPI takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "usingLocalSecretsStoreSecretAPI",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ld1s1d",
+      "file": "sites.ts",
+      "line": 126,
+      "message": "syncWorkersSite takes 7 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "syncWorkersSite",
+        "requiredParams": 7
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:15bg23h",
+      "file": "tail/createTail.ts",
+      "line": 141,
+      "message": "createTail takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "createTail",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:9owcjy",
+      "file": "versions/api.ts",
+      "line": 70,
+      "message": "fetchDeploymentVersions takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "fetchDeploymentVersions",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1yx3h1b",
+      "file": "versions/api.ts",
+      "line": 100,
+      "message": "createDeployment takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "createDeployment",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:szdquq",
+      "file": "workflows/utils.ts",
+      "line": 119,
+      "message": "updateInstanceStatus takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "updateInstanceStatus",
+        "requiredParams": 5
+      }
+    }
+  ]
+}

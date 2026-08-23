@@ -1,0 +1,2703 @@
+{
+  "repo": "continue",
+  "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+  "target": "core",
+  "files": 619,
+  "lines": 117286,
+  "strataVersion": "0.4.0",
+  "summary": {
+    "totalFindings": 89,
+    "byFlag": {
+      "duplicateSymbol": 39,
+      "exposedMutableRepresentation": 1,
+      "forcedRareOption": 6,
+      "passThroughExport": 1,
+      "passThroughMethod": 16,
+      "uniqueImplementation": 6,
+      "wideSignature": 20
+    },
+    "topFiles": [
+      {
+        "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+        "count": 39
+      },
+      {
+        "file": "util/paths.ts",
+        "count": 22
+      },
+      {
+        "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+        "count": 15
+      },
+      {
+        "file": "llm/llms/Anthropic.vitest.ts",
+        "count": 7
+      },
+      {
+        "file": "llm/llms/Cohere.vitest.ts",
+        "count": 7
+      },
+      {
+        "file": "llm/llms/OpenAI-compatible-core.vitest.ts",
+        "count": 7
+      },
+      {
+        "file": "llm/llms/OpenAI-compatible.vitest.ts",
+        "count": 7
+      },
+      {
+        "file": "llm/llms/OpenAI.vitest.ts",
+        "count": 7
+      },
+      {
+        "file": "llm/llms/test-utils/openai-test-utils.ts",
+        "count": 7
+      },
+      {
+        "file": "util/processTerminalStates.ts",
+        "count": 7
+      }
+    ]
+  },
+  "findings": [
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:17k371e",
+      "file": "autocomplete/CompletionProvider.ts",
+      "line": 27,
+      "message": "const re-declared 2× across 2 files (e.g. ERRORS_TO_IGNORE) — agent likely re-built an existing one [group 1mb7tz1]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "1mb7tz1",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "ERRORS_TO_IGNORE = [\n  // From Ollama\n  \"unexpected server status\",\n  \"operation was aborted\",\n]",
+        "previewFrom": "autocomplete/CompletionProvider.ts:27",
+        "occurrences": [
+          {
+            "name": "ERRORS_TO_IGNORE",
+            "file": "autocomplete/CompletionProvider.ts",
+            "line": 27
+          },
+          {
+            "name": "ERRORS_TO_IGNORE",
+            "file": "nextEdit/NextEditProvider.ts",
+            "line": 43
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1135k82",
+      "file": "autocomplete/filtering/streamTransforms/charStream.vitest.ts",
+      "line": 4,
+      "message": "function re-declared 2× across 2 files (e.g. createMockStream, generateLines) — agent likely re-built an existing one [group 1y2f8f3]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1y2f8f3",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function* createMockStream(chunks: string[]): AsyncGenerator<string> {\n  for (const chunk of chunks) {\n    yield chunk;\n  }\n}",
+        "previewFrom": "autocomplete/filtering/streamTransforms/charStream.vitest.ts:4",
+        "occurrences": [
+          {
+            "name": "createMockStream",
+            "file": "autocomplete/filtering/streamTransforms/charStream.vitest.ts",
+            "line": 4
+          },
+          {
+            "name": "generateLines",
+            "file": "diff/util.ts",
+            "line": 136
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:7n8tkx",
+      "file": "autocomplete/templating/formatting.ts",
+      "line": 49,
+      "message": "function re-declared 3× across 2 files (e.g. formatDiffSnippet, formatStaticSnippet, setupQuickstartConfig) — agent likely re-built an existing one [group 1o2gzrn]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1o2gzrn",
+        "distinctFiles": 2,
+        "totalDeclarations": 3,
+        "preview": "formatDiffSnippet = (\n  snippet: AutocompleteDiffSnippet,\n): AutocompleteDiffSnippet => {\n  return snippet;\n}",
+        "previewFrom": "autocomplete/templating/formatting.ts:49",
+        "occurrences": [
+          {
+            "name": "formatDiffSnippet",
+            "file": "autocomplete/templating/formatting.ts",
+            "line": 49
+          },
+          {
+            "name": "formatStaticSnippet",
+            "file": "autocomplete/templating/formatting.ts",
+            "line": 55
+          },
+          {
+            "name": "setupQuickstartConfig",
+            "file": "config/onboarding.ts",
+            "line": 128
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:mu9muf",
+      "file": "commands/slash/built-in-legacy/onboard.ts",
+      "line": 126,
+      "message": "function re-declared 2× across 2 files (e.g. closeTag, createOnboardingPrompt) — agent likely re-built an existing one [group 104uxqs]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "104uxqs",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function createOnboardingPrompt(context: string): string {\n  return `\n    As a helpful AI assistant, your task is to onboard a new developer to this project.\n    Use the following context about the project structure, READMEs, and …",
+        "previewFrom": "commands/slash/built-in-legacy/onboard.ts:126",
+        "occurrences": [
+          {
+            "name": "createOnboardingPrompt",
+            "file": "commands/slash/built-in-legacy/onboard.ts",
+            "line": 126
+          },
+          {
+            "name": "closeTag",
+            "file": "tools/systemMessageTools/systemToolUtils.ts",
+            "line": 3
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ywao00",
+      "file": "config/load.ts",
+      "line": 663,
+      "message": "function re-declared 2× across 2 files (e.g. escapeLiteralForRegex, escapeSpacesInPath) — agent likely re-built an existing one [group 1nzbtf1]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1nzbtf1",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function escapeSpacesInPath(p: string): string {\n  return p.replace(/ /g, \"\\\\ \");\n}",
+        "previewFrom": "config/load.ts:663",
+        "occurrences": [
+          {
+            "name": "escapeSpacesInPath",
+            "file": "config/load.ts",
+            "line": 663
+          },
+          {
+            "name": "escapeLiteralForRegex",
+            "file": "util/regexValidator.ts",
+            "line": 103
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ajkojg",
+      "file": "config/onboarding.ts",
+      "line": 18,
+      "message": "function re-declared 2× in 1 file (e.g. ANTHROPIC_ONBOARDING_MODELS, GEMINI_ONBOARDING_MODELS) — agent likely re-built an existing one [group 1cnzw9y]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1cnzw9y",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "ANTHROPIC_ONBOARDING_MODELS = (apiKey: string): OnboardingModel[] => [\n  {\n    name: \"Claude Sonnet 4.6\",\n    provider: \"anthropic\",\n    model: \"claude-sonnet-4-6\",\n    apiKey,\n    roles: [\"chat\", \"edit\", \"apply\"], …",
+        "previewFrom": "config/onboarding.ts:18",
+        "occurrences": [
+          {
+            "name": "ANTHROPIC_ONBOARDING_MODELS",
+            "file": "config/onboarding.ts",
+            "line": 18
+          },
+          {
+            "name": "GEMINI_ONBOARDING_MODELS",
+            "file": "config/onboarding.ts",
+            "line": 69
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1o0vfx5",
+      "file": "config/yaml/default.ts",
+      "line": 4,
+      "message": "const re-declared 2× in 1 file (e.g. defaultConfigYaml, defaultConfigYamlJetBrains) — agent likely re-built an existing one [group 1dl3p86]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "1dl3p86",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "defaultConfigYaml: AssistantUnrolled = {\n  models: [],\n  context: [],\n  name: \"Main Config\",\n  version: \"1.0.0\",\n  schema: \"v1\",\n}",
+        "previewFrom": "config/yaml/default.ts:4",
+        "occurrences": [
+          {
+            "name": "defaultConfigYaml",
+            "file": "config/yaml/default.ts",
+            "line": 4
+          },
+          {
+            "name": "defaultConfigYamlJetBrains",
+            "file": "config/yaml/default.ts",
+            "line": 12
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:14o2v8k",
+      "file": "context/mcp/MCPOauth.ts",
+      "line": 68,
+      "message": "type re-declared 5× across 4 files (e.g. AliasType, ArtifactType, DataType, +2 more) — agent likely re-built an existing one [group wusofq]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "wusofq",
+        "distinctFiles": 4,
+        "totalDeclarations": 5,
+        "preview": "type MCPOauthStorageKey = keyof MCPOauthStorage;",
+        "previewFrom": "context/mcp/MCPOauth.ts:68",
+        "occurrences": [
+          {
+            "name": "MCPOauthStorageKey",
+            "file": "context/mcp/MCPOauth.ts",
+            "line": 68
+          },
+          {
+            "name": "ArtifactType",
+            "file": "continueServer/interface.ts",
+            "line": 15
+          },
+          {
+            "name": "TaskType",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 1479
+          },
+          {
+            "name": "AliasType",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 1480
+          },
+          {
+            "name": "DataType",
+            "file": "vendor/modules/@xenova/transformers/types/utils/tensor.d.ts",
+            "line": 307
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:2q4tpx",
+      "file": "context/providers/CodeContextProvider.ts",
+      "line": 11,
+      "message": "const re-declared 2× across 2 files (e.g. MAX_SUBMENU_ITEMS) — agent likely re-built an existing one [group qanihm]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "qanihm",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "MAX_SUBMENU_ITEMS = 10_000",
+        "previewFrom": "context/providers/CodeContextProvider.ts:11",
+        "occurrences": [
+          {
+            "name": "MAX_SUBMENU_ITEMS",
+            "file": "context/providers/CodeContextProvider.ts",
+            "line": 11
+          },
+          {
+            "name": "MAX_SUBMENU_ITEMS",
+            "file": "context/providers/FileContextProvider.ts",
+            "line": 17
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:e0s480",
+      "file": "context/providers/GreptileContextProvider.ts",
+      "line": 163,
+      "message": "function re-declared 2× in 1 file (e.g. getCurrentBranch, getRemoteUrl) — agent likely re-built an existing one [group 5vrbl1]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "5vrbl1",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function getRemoteUrl(absPath: string): string {\n  try {\n    const remote = execSync(`git -C ${absPath} remote get-url origin`)\n      .toString()\n      .trim();\n    return remote;\n  } catch (err) {\n    console.warn(\"Failed to get remote …",
+        "previewFrom": "context/providers/GreptileContextProvider.ts:163",
+        "occurrences": [
+          {
+            "name": "getRemoteUrl",
+            "file": "context/providers/GreptileContextProvider.ts",
+            "line": 163
+          },
+          {
+            "name": "getCurrentBranch",
+            "file": "context/providers/GreptileContextProvider.ts",
+            "line": 175
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:dj9m47",
+      "file": "context/providers/WebContextProvider.ts",
+      "line": 9,
+      "message": "const re-declared 2× across 2 files (e.g. TRIAL_PROXY_URL) — agent likely re-built an existing one [group n23nep]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "n23nep",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "TRIAL_PROXY_URL = \"https://proxy-server-blue-l6vsfbzhba-uw.a.run.app\"",
+        "previewFrom": "context/providers/WebContextProvider.ts:9",
+        "occurrences": [
+          {
+            "name": "TRIAL_PROXY_URL",
+            "file": "context/providers/WebContextProvider.ts",
+            "line": 9
+          },
+          {
+            "name": "TRIAL_PROXY_URL",
+            "file": "indexing/docs/crawlers/DefaultCrawler.ts",
+            "line": 4
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:15c50an",
+      "file": "llm/llms/Anthropic.vitest.ts",
+      "line": 5,
+      "message": "interface re-declared 6× across 6 files (e.g. LlmTestCase) — agent likely re-built an existing one [group ol3ik6]",
+      "metadata": {
+        "symbolKind": "interface",
+        "fingerprintHash": "ol3ik6",
+        "distinctFiles": 6,
+        "totalDeclarations": 6,
+        "preview": "interface LlmTestCase {\n  llm: ILLM;\n  methodToTest: keyof ILLM;\n  params: any[];\n  expectedRequest: {\n    url: string;\n    method: string;\n    headers?: Record<string, string>;\n    body?: Record<string, any>;\n  };\n  mockResponse?: any; …",
+        "previewFrom": "llm/llms/Anthropic.vitest.ts:5",
+        "occurrences": [
+          {
+            "name": "LlmTestCase",
+            "file": "llm/llms/Anthropic.vitest.ts",
+            "line": 5
+          },
+          {
+            "name": "LlmTestCase",
+            "file": "llm/llms/Cohere.vitest.ts",
+            "line": 5
+          },
+          {
+            "name": "LlmTestCase",
+            "file": "llm/llms/OpenAI-compatible-core.vitest.ts",
+            "line": 22
+          },
+          {
+            "name": "LlmTestCase",
+            "file": "llm/llms/OpenAI-compatible.vitest.ts",
+            "line": 41
+          },
+          {
+            "name": "LlmTestCase",
+            "file": "llm/llms/OpenAI.vitest.ts",
+            "line": 5
+          },
+          {
+            "name": "LlmTestCase",
+            "file": "llm/llms/test-utils/openai-test-utils.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1wxzyvx",
+      "file": "llm/llms/Anthropic.vitest.ts",
+      "line": 19,
+      "message": "function re-declared 6× across 6 files (e.g. createMockStream) — agent likely re-built an existing one [group hfi3i7]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "hfi3i7",
+        "distinctFiles": 6,
+        "totalDeclarations": 6,
+        "preview": "function createMockStream(mockStream: any[]) {\n  const encoder = new TextEncoder();\n  return new ReadableStream({\n    start(controller) {\n      for (const chunk of mockStream) {\n        controller.enqueue(\n          encoder.encode( …",
+        "previewFrom": "llm/llms/Anthropic.vitest.ts:19",
+        "occurrences": [
+          {
+            "name": "createMockStream",
+            "file": "llm/llms/Anthropic.vitest.ts",
+            "line": 19
+          },
+          {
+            "name": "createMockStream",
+            "file": "llm/llms/Cohere.vitest.ts",
+            "line": 19
+          },
+          {
+            "name": "createMockStream",
+            "file": "llm/llms/OpenAI-compatible-core.vitest.ts",
+            "line": 36
+          },
+          {
+            "name": "createMockStream",
+            "file": "llm/llms/OpenAI-compatible.vitest.ts",
+            "line": 55
+          },
+          {
+            "name": "createMockStream",
+            "file": "llm/llms/OpenAI.vitest.ts",
+            "line": 19
+          },
+          {
+            "name": "createMockStream",
+            "file": "llm/llms/test-utils/openai-test-utils.ts",
+            "line": 19
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:8ckhk",
+      "file": "llm/llms/Anthropic.vitest.ts",
+      "line": 37,
+      "message": "function re-declared 6× across 6 files (e.g. setupMockFetch) — agent likely re-built an existing one [group c0nauy]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "c0nauy",
+        "distinctFiles": 6,
+        "totalDeclarations": 6,
+        "preview": "function setupMockFetch(mockResponse?: any, mockStream?: any[]) {\n  const mockFetch = vi.fn();\n\n  if (mockStream) {\n    const stream = createMockStream(mockStream);\n    mockFetch.mockResolvedValue(\n      new Response(stream, { …",
+        "previewFrom": "llm/llms/Anthropic.vitest.ts:37",
+        "occurrences": [
+          {
+            "name": "setupMockFetch",
+            "file": "llm/llms/Anthropic.vitest.ts",
+            "line": 37
+          },
+          {
+            "name": "setupMockFetch",
+            "file": "llm/llms/Cohere.vitest.ts",
+            "line": 37
+          },
+          {
+            "name": "setupMockFetch",
+            "file": "llm/llms/OpenAI-compatible-core.vitest.ts",
+            "line": 54
+          },
+          {
+            "name": "setupMockFetch",
+            "file": "llm/llms/OpenAI-compatible.vitest.ts",
+            "line": 73
+          },
+          {
+            "name": "setupMockFetch",
+            "file": "llm/llms/OpenAI.vitest.ts",
+            "line": 37
+          },
+          {
+            "name": "setupMockFetch",
+            "file": "llm/llms/test-utils/openai-test-utils.ts",
+            "line": 37
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:7jmhzp",
+      "file": "llm/llms/Anthropic.vitest.ts",
+      "line": 60,
+      "message": "function re-declared 6× across 6 files (e.g. setupReadableStreamPolyfill) — agent likely re-built an existing one [group 1cfztfb]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1cfztfb",
+        "distinctFiles": 6,
+        "totalDeclarations": 6,
+        "preview": "function setupReadableStreamPolyfill() {\n  // This can be removed if https://github.com/nodejs/undici/issues/2888 is resolved\n  // @ts-ignore\n  const originalFrom = ReadableStream.from;\n  // @ts-ignore\n  ReadableStream.from = (body) => { …",
+        "previewFrom": "llm/llms/Anthropic.vitest.ts:60",
+        "occurrences": [
+          {
+            "name": "setupReadableStreamPolyfill",
+            "file": "llm/llms/Anthropic.vitest.ts",
+            "line": 60
+          },
+          {
+            "name": "setupReadableStreamPolyfill",
+            "file": "llm/llms/Cohere.vitest.ts",
+            "line": 60
+          },
+          {
+            "name": "setupReadableStreamPolyfill",
+            "file": "llm/llms/OpenAI-compatible-core.vitest.ts",
+            "line": 77
+          },
+          {
+            "name": "setupReadableStreamPolyfill",
+            "file": "llm/llms/OpenAI-compatible.vitest.ts",
+            "line": 96
+          },
+          {
+            "name": "setupReadableStreamPolyfill",
+            "file": "llm/llms/OpenAI.vitest.ts",
+            "line": 60
+          },
+          {
+            "name": "setupReadableStreamPolyfill",
+            "file": "llm/llms/test-utils/openai-test-utils.ts",
+            "line": 60
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:igcbgk",
+      "file": "llm/llms/Anthropic.vitest.ts",
+      "line": 73,
+      "message": "function re-declared 6× across 6 files (e.g. executeLlmMethod) — agent likely re-built an existing one [group omeerq]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "omeerq",
+        "distinctFiles": 6,
+        "totalDeclarations": 6,
+        "preview": "async function executeLlmMethod(\n  llm: ILLM,\n  methodToTest: keyof ILLM,\n  params: any[],\n) {\n  if (typeof (llm as any)[methodToTest] !== \"function\") {\n    throw new Error(\n      `Method ${String(methodToTest)} does not exist on the LLM …",
+        "previewFrom": "llm/llms/Anthropic.vitest.ts:73",
+        "occurrences": [
+          {
+            "name": "executeLlmMethod",
+            "file": "llm/llms/Anthropic.vitest.ts",
+            "line": 73
+          },
+          {
+            "name": "executeLlmMethod",
+            "file": "llm/llms/Cohere.vitest.ts",
+            "line": 73
+          },
+          {
+            "name": "executeLlmMethod",
+            "file": "llm/llms/OpenAI-compatible-core.vitest.ts",
+            "line": 90
+          },
+          {
+            "name": "executeLlmMethod",
+            "file": "llm/llms/OpenAI-compatible.vitest.ts",
+            "line": 109
+          },
+          {
+            "name": "executeLlmMethod",
+            "file": "llm/llms/OpenAI.vitest.ts",
+            "line": 73
+          },
+          {
+            "name": "executeLlmMethod",
+            "file": "llm/llms/test-utils/openai-test-utils.ts",
+            "line": 73
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:jcvhy2",
+      "file": "llm/llms/Anthropic.vitest.ts",
+      "line": 91,
+      "message": "function re-declared 6× across 6 files (e.g. assertFetchCall) — agent likely re-built an existing one [group sbnlb0]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "sbnlb0",
+        "distinctFiles": 6,
+        "totalDeclarations": 6,
+        "preview": "function assertFetchCall(mockFetch: any, expectedRequest: any) {\n  expect(mockFetch).toHaveBeenCalledTimes(1);\n  const [url, options] = mockFetch.mock.calls[0];\n\n  expect(url.toString()).toBe(expectedRequest.url); …",
+        "previewFrom": "llm/llms/Anthropic.vitest.ts:91",
+        "occurrences": [
+          {
+            "name": "assertFetchCall",
+            "file": "llm/llms/Anthropic.vitest.ts",
+            "line": 91
+          },
+          {
+            "name": "assertFetchCall",
+            "file": "llm/llms/Cohere.vitest.ts",
+            "line": 91
+          },
+          {
+            "name": "assertFetchCall",
+            "file": "llm/llms/OpenAI-compatible-core.vitest.ts",
+            "line": 108
+          },
+          {
+            "name": "assertFetchCall",
+            "file": "llm/llms/OpenAI-compatible.vitest.ts",
+            "line": 127
+          },
+          {
+            "name": "assertFetchCall",
+            "file": "llm/llms/OpenAI.vitest.ts",
+            "line": 91
+          },
+          {
+            "name": "assertFetchCall",
+            "file": "llm/llms/test-utils/openai-test-utils.ts",
+            "line": 91
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:539uno",
+      "file": "llm/llms/Anthropic.vitest.ts",
+      "line": 110,
+      "message": "function re-declared 2× across 2 files (e.g. runLlmTest) — agent likely re-built an existing one [group 1ue8a5y]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ue8a5y",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function runLlmTest(testCase: LlmTestCase) {\n  const {\n    llm,\n    methodToTest,\n    params,\n    expectedRequest,\n    mockResponse,\n    mockStream,\n  } = testCase;\n\n  const mockFetch = setupMockFetch(mockResponse, mockStream); …",
+        "previewFrom": "llm/llms/Anthropic.vitest.ts:110",
+        "occurrences": [
+          {
+            "name": "runLlmTest",
+            "file": "llm/llms/Anthropic.vitest.ts",
+            "line": 110
+          },
+          {
+            "name": "runLlmTest",
+            "file": "llm/llms/Cohere.vitest.ts",
+            "line": 110
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1q1pt01",
+      "file": "llm/llms/OpenAI-compatible-core.vitest.ts",
+      "line": 127,
+      "message": "function re-declared 4× across 4 files (e.g. runLlmTest) — agent likely re-built an existing one [group 1098b24]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1098b24",
+        "distinctFiles": 4,
+        "totalDeclarations": 4,
+        "preview": "async function runLlmTest(testCase: LlmTestCase) {\n  const {\n    llm,\n    methodToTest,\n    params,\n    expectedRequest,\n    mockResponse,\n    mockStream,\n  } = testCase;\n\n  const mockFetch = setupMockFetch(mockResponse, mockStream); …",
+        "previewFrom": "llm/llms/OpenAI-compatible-core.vitest.ts:127",
+        "occurrences": [
+          {
+            "name": "runLlmTest",
+            "file": "llm/llms/OpenAI-compatible-core.vitest.ts",
+            "line": 127
+          },
+          {
+            "name": "runLlmTest",
+            "file": "llm/llms/OpenAI-compatible.vitest.ts",
+            "line": 146
+          },
+          {
+            "name": "runLlmTest",
+            "file": "llm/llms/OpenAI.vitest.ts",
+            "line": 110
+          },
+          {
+            "name": "runLlmTest",
+            "file": "llm/llms/test-utils/openai-test-utils.ts",
+            "line": 110
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1f05d7c",
+      "file": "llm/openaiTypeConverters.ts",
+      "line": 519,
+      "message": "function re-declared 2× in 1 file (e.g. handleReasoningSummaryDelta, handleReasoningTextDelta) — agent likely re-built an existing one [group 12fbqj1]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "12fbqj1",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function handleReasoningSummaryDelta(\n  e: ResponseReasoningSummaryTextDeltaEvent,\n): ChatMessage | undefined {\n  const details: Array<{ [k: string]: unknown }> = [\n    { type: \"summary_text\", text: e.delta },\n  ];\n  if ((e as …",
+        "previewFrom": "llm/openaiTypeConverters.ts:519",
+        "occurrences": [
+          {
+            "name": "handleReasoningSummaryDelta",
+            "file": "llm/openaiTypeConverters.ts",
+            "line": 519
+          },
+          {
+            "name": "handleReasoningTextDelta",
+            "file": "llm/openaiTypeConverters.ts",
+            "line": 550
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1s527nv",
+      "file": "llm/openaiTypeConverters.ts",
+      "line": 535,
+      "message": "function re-declared 2× in 1 file (e.g. handleReasoningSummaryDone, handleReasoningTextDone) — agent likely re-built an existing one [group 1sz9h7k]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1sz9h7k",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function handleReasoningSummaryDone(\n  e: ResponseReasoningSummaryTextDoneEvent,\n): ChatMessage | undefined {\n  const details: Array<{ [k: string]: unknown }> = [];\n  if (e.text) details.push({ type: \"summary_text\", text: e.text });\n  if …",
+        "previewFrom": "llm/openaiTypeConverters.ts:535",
+        "occurrences": [
+          {
+            "name": "handleReasoningSummaryDone",
+            "file": "llm/openaiTypeConverters.ts",
+            "line": 535
+          },
+          {
+            "name": "handleReasoningTextDone",
+            "file": "llm/openaiTypeConverters.ts",
+            "line": 566
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:18zj615",
+      "file": "llm/templates/edit/codestral.ts",
+      "line": 4,
+      "message": "function re-declared 2× across 2 files (e.g. codestralInsertionEditPrompt, gptInsertionEditPrompt) — agent likely re-built an existing one [group yp3zg3]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "yp3zg3",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "codestralInsertionEditPrompt: PromptTemplateFunction = (_, otherData) => {\n  return dedent`\n    \\`\\`\\`${otherData.language}\n    ${otherData.prefix}[BLANK]${otherData.codeToEdit}${otherData.suffix}\n    \\`\\`\\`\n\n    Above is the file of code …",
+        "previewFrom": "llm/templates/edit/codestral.ts:4",
+        "occurrences": [
+          {
+            "name": "codestralInsertionEditPrompt",
+            "file": "llm/templates/edit/codestral.ts",
+            "line": 4
+          },
+          {
+            "name": "gptInsertionEditPrompt",
+            "file": "llm/templates/edit/gpt.ts",
+            "line": 4
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1fdjtqf",
+      "file": "llm/templates/edit/codestral.ts",
+      "line": 17,
+      "message": "function re-declared 2× across 2 files (e.g. codestralFullFileEditPrompt, gptFullFileEditPrompt) — agent likely re-built an existing one [group xeidbl]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "xeidbl",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "codestralFullFileEditPrompt: PromptTemplateFunction = (_, otherData) => {\n  return dedent`\n    \\`\\`\\`${otherData.language}\n    ${otherData.codeToEdit}\n    \\`\\`\\`\n\n    Please rewrite the above file to address the following request: …",
+        "previewFrom": "llm/templates/edit/codestral.ts:17",
+        "occurrences": [
+          {
+            "name": "codestralFullFileEditPrompt",
+            "file": "llm/templates/edit/codestral.ts",
+            "line": 17
+          },
+          {
+            "name": "gptFullFileEditPrompt",
+            "file": "llm/templates/edit/gpt.ts",
+            "line": 17
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1njv9ft",
+      "file": "util/paths.ts",
+      "line": 46,
+      "message": "function re-declared 3× in 1 file (e.g. getChromiumPath, getEsbuildBinaryPath, getRepoMapFilePath) — agent likely re-built an existing one [group dtaaj2]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "dtaaj2",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "function getChromiumPath(): string {\n  return path.join(getContinueUtilsPath(), \".chromium-browser-snapshots\");\n}",
+        "previewFrom": "util/paths.ts:46",
+        "occurrences": [
+          {
+            "name": "getChromiumPath",
+            "file": "util/paths.ts",
+            "line": 46
+          },
+          {
+            "name": "getRepoMapFilePath",
+            "file": "util/paths.ts",
+            "line": 433
+          },
+          {
+            "name": "getEsbuildBinaryPath",
+            "file": "util/paths.ts",
+            "line": 437
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:uobqrc",
+      "file": "util/paths.ts",
+      "line": 50,
+      "message": "function re-declared 7× in 1 file (e.g. getContinueUtilsPath, getDevDataPath, getIndexFolderPath, +4 more) — agent likely re-built an existing one [group 4mxrbx]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "4mxrbx",
+        "distinctFiles": 1,
+        "totalDeclarations": 7,
+        "preview": "function getContinueUtilsPath(): string {\n  const utilsPath = path.join(getContinueGlobalPath(), \".utils\");\n  if (!fs.existsSync(utilsPath)) {\n    fs.mkdirSync(utilsPath);\n  }\n  return utilsPath;\n}",
+        "previewFrom": "util/paths.ts:50",
+        "occurrences": [
+          {
+            "name": "getContinueUtilsPath",
+            "file": "util/paths.ts",
+            "line": 50
+          },
+          {
+            "name": "getSessionsFolderPath",
+            "file": "util/paths.ts",
+            "line": 78
+          },
+          {
+            "name": "getIndexFolderPath",
+            "file": "util/paths.ts",
+            "line": 86
+          },
+          {
+            "name": "getDevDataPath",
+            "file": "util/paths.ts",
+            "line": 228
+          },
+          {
+            "name": "getMigrationsFolderPath",
+            "file": "util/paths.ts",
+            "line": 292
+          },
+          {
+            "name": "getRemoteConfigsFolderPath",
+            "file": "util/paths.ts",
+            "line": 342
+          },
+          {
+            "name": "getLogsDirPath",
+            "file": "util/paths.ts",
+            "line": 385
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:gc2jbb",
+      "file": "util/paths.ts",
+      "line": 94,
+      "message": "function re-declared 5× in 1 file (e.g. getDocsSqlitePath, getGlobalContextFilePath, getIndexSqlitePath, +2 more) — agent likely re-built an existing one [group vlpdsc]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "vlpdsc",
+        "distinctFiles": 1,
+        "totalDeclarations": 5,
+        "preview": "function getGlobalContextFilePath(): string {\n  return path.join(getIndexFolderPath(), \"globalContext.json\");\n}",
+        "previewFrom": "util/paths.ts:94",
+        "occurrences": [
+          {
+            "name": "getGlobalContextFilePath",
+            "file": "util/paths.ts",
+            "line": 94
+          },
+          {
+            "name": "getIndexSqlitePath",
+            "file": "util/paths.ts",
+            "line": 326
+          },
+          {
+            "name": "getLanceDbPath",
+            "file": "util/paths.ts",
+            "line": 330
+          },
+          {
+            "name": "getTabAutocompleteCacheSqlitePath",
+            "file": "util/paths.ts",
+            "line": 334
+          },
+          {
+            "name": "getDocsSqlitePath",
+            "file": "util/paths.ts",
+            "line": 338
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ypu8mh",
+      "file": "util/paths.ts",
+      "line": 98,
+      "message": "function re-declared 3× in 1 file (e.g. getLocalEnvironmentDotFilePath, getSharedConfigFilePath, getStagingEnvironmentDotFilePath) — agent likely re-built an existing one [group uqt6ku]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "uqt6ku",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "function getSharedConfigFilePath(): string {\n  return path.join(getContinueGlobalPath(), \"sharedConfig.json\");\n}",
+        "previewFrom": "util/paths.ts:98",
+        "occurrences": [
+          {
+            "name": "getSharedConfigFilePath",
+            "file": "util/paths.ts",
+            "line": 98
+          },
+          {
+            "name": "getLocalEnvironmentDotFilePath",
+            "file": "util/paths.ts",
+            "line": 462
+          },
+          {
+            "name": "getStagingEnvironmentDotFilePath",
+            "file": "util/paths.ts",
+            "line": 466
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1820pre",
+      "file": "util/paths.ts",
+      "line": 365,
+      "message": "function re-declared 2× in 1 file (e.g. getConfigJsPathForRemote, getConfigJsonPathForRemote) — agent likely re-built an existing one [group w9q1u7]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "w9q1u7",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function getConfigJsonPathForRemote(\n  remoteConfigServerUrl: string,\n): string {\n  return path.join(getPathToRemoteConfig(remoteConfigServerUrl), \"config.json\");\n}",
+        "previewFrom": "util/paths.ts:365",
+        "occurrences": [
+          {
+            "name": "getConfigJsonPathForRemote",
+            "file": "util/paths.ts",
+            "line": 365
+          },
+          {
+            "name": "getConfigJsPathForRemote",
+            "file": "util/paths.ts",
+            "line": 371
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:mkc9zb",
+      "file": "util/paths.ts",
+      "line": 393,
+      "message": "function re-declared 2× in 1 file (e.g. getCoreLogsPath, getPromptLogsPath) — agent likely re-built an existing one [group 1lorrv0]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1lorrv0",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function getCoreLogsPath(): string {\n  return path.join(getLogsDirPath(), \"core.log\");\n}",
+        "previewFrom": "util/paths.ts:393",
+        "occurrences": [
+          {
+            "name": "getCoreLogsPath",
+            "file": "util/paths.ts",
+            "line": 393
+          },
+          {
+            "name": "getPromptLogsPath",
+            "file": "util/paths.ts",
+            "line": 397
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:om0cc2",
+      "file": "util/processTerminalStates.ts",
+      "line": 23,
+      "message": "function re-declared 2× in 1 file (e.g. isProcessBackgrounded, isProcessRunning) — agent likely re-built an existing one [group t92894]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "t92894",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function isProcessBackgrounded(toolCallId: string): boolean {\n  return processTerminalBackgroundStates.has(toolCallId);\n}",
+        "previewFrom": "util/processTerminalStates.ts:23",
+        "occurrences": [
+          {
+            "name": "isProcessBackgrounded",
+            "file": "util/processTerminalStates.ts",
+            "line": 23
+          },
+          {
+            "name": "isProcessRunning",
+            "file": "util/processTerminalStates.ts",
+            "line": 48
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:hs9k6x",
+      "file": "util/processTerminalStates.ts",
+      "line": 27,
+      "message": "function re-declared 2× in 1 file (e.g. removeBackgroundedProcess, removeRunningProcess) — agent likely re-built an existing one [group k2yiy7]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "k2yiy7",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function removeBackgroundedProcess(toolCallId: string): void {\n  processTerminalBackgroundStates.delete(toolCallId);\n}",
+        "previewFrom": "util/processTerminalStates.ts:27",
+        "occurrences": [
+          {
+            "name": "removeBackgroundedProcess",
+            "file": "util/processTerminalStates.ts",
+            "line": 27
+          },
+          {
+            "name": "removeRunningProcess",
+            "file": "util/processTerminalStates.ts",
+            "line": 66
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:178xbvx",
+      "file": "util/processTerminalStates.ts",
+      "line": 108,
+      "message": "function re-declared 2× in 1 file (e.g. getAllBackgroundedProcessIds, getAllRunningProcessIds) — agent likely re-built an existing one [group 1n1yrxf]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1n1yrxf",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function getAllRunningProcessIds(): string[] {\n  return Array.from(processTerminalForegroundStates.keys());\n}",
+        "previewFrom": "util/processTerminalStates.ts:108",
+        "occurrences": [
+          {
+            "name": "getAllRunningProcessIds",
+            "file": "util/processTerminalStates.ts",
+            "line": 108
+          },
+          {
+            "name": "getAllBackgroundedProcessIds",
+            "file": "util/processTerminalStates.ts",
+            "line": 112
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:3hz4x",
+      "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+      "line": 1614,
+      "message": "class re-declared 13× in 1 file (e.g. BloomPreTrainedModel, CodeGenPreTrainedModel, FalconPreTrainedModel, +10 more) — agent likely re-built an existing one [group mnysy7]",
+      "metadata": {
+        "symbolKind": "class",
+        "fingerprintHash": "mnysy7",
+        "distinctFiles": 1,
+        "totalDeclarations": 13,
+        "preview": "class GPT2PreTrainedModel extends PreTrainedModel {\n  /**\n   * Creates a new instance of the `GPT2PreTrainedModel` class.\n   * @param {Object} config The configuration of the model.\n   * @param {any} session The ONNX session containing the …",
+        "previewFrom": "vendor/modules/@xenova/transformers/types/models.d.ts:1614",
+        "occurrences": [
+          {
+            "name": "GPT2PreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 1614
+          },
+          {
+            "name": "GPTNeoPreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 1640
+          },
+          {
+            "name": "GPTNeoXPreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 1663
+          },
+          {
+            "name": "GPTJPreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 1686
+          },
+          {
+            "name": "GPTBigCodePreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 1709
+          },
+          {
+            "name": "CodeGenPreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 1732
+          },
+          {
+            "name": "LlamaPreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 1764
+          },
+          {
+            "name": "PhiPreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 1790
+          },
+          {
+            "name": "BloomPreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 1819
+          },
+          {
+            "name": "MptPreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 1848
+          },
+          {
+            "name": "OPTPreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 1877
+          },
+          {
+            "name": "MistralPreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 2862
+          },
+          {
+            "name": "FalconPreTrainedModel",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 2888
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:unj1bx",
+      "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+      "line": 3071,
+      "message": "class re-declared 22× in 1 file (e.g. AutoModelForAudioClassification, AutoModelForCTC, AutoModelForCausalLM, +19 more) — agent likely re-built an existing one [group 1qa64tn]",
+      "metadata": {
+        "symbolKind": "class",
+        "fingerprintHash": "1qa64tn",
+        "distinctFiles": 1,
+        "totalDeclarations": 22,
+        "preview": "class AutoModelForSequenceClassification extends PretrainedMixin {\n  static MODEL_CLASS_MAPPINGS: Map<\n    string,\n    (string | typeof BertForSequenceClassification)[]\n  >[];\n}",
+        "previewFrom": "vendor/modules/@xenova/transformers/types/models.d.ts:3071",
+        "occurrences": [
+          {
+            "name": "AutoModelForSequenceClassification",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3071
+          },
+          {
+            "name": "AutoModelForTokenClassification",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3084
+          },
+          {
+            "name": "AutoModelForSeq2SeqLM",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3097
+          },
+          {
+            "name": "AutoModelForSpeechSeq2Seq",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3111
+          },
+          {
+            "name": "AutoModelForTextToSpectrogram",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3125
+          },
+          {
+            "name": "AutoModelForTextToWaveform",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3138
+          },
+          {
+            "name": "AutoModelForCausalLM",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3148
+          },
+          {
+            "name": "AutoModelForMaskedLM",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3161
+          },
+          {
+            "name": "AutoModelForQuestionAnswering",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3174
+          },
+          {
+            "name": "AutoModelForVision2Seq",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3187
+          },
+          {
+            "name": "AutoModelForImageClassification",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3200
+          },
+          {
+            "name": "AutoModelForImageSegmentation",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3213
+          },
+          {
+            "name": "AutoModelForSemanticSegmentation",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3226
+          },
+          {
+            "name": "AutoModelForObjectDetection",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3239
+          },
+          {
+            "name": "AutoModelForZeroShotObjectDetection",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3245
+          },
+          {
+            "name": "AutoModelForMaskGeneration",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3258
+          },
+          {
+            "name": "AutoModelForCTC",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3261
+          },
+          {
+            "name": "AutoModelForAudioClassification",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3267
+          },
+          {
+            "name": "AutoModelForDocumentQuestionAnswering",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3273
+          },
+          {
+            "name": "AutoModelForImageMatting",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3279
+          },
+          {
+            "name": "AutoModelForImageToImage",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3285
+          },
+          {
+            "name": "AutoModelForDepthEstimation",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3291
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:15zr26y",
+      "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+      "line": 3328,
+      "message": "class re-declared 4× in 1 file (e.g. CausalLMOutput, MaskedLMOutput, SequenceClassifierOutput, +1 more) — agent likely re-built an existing one [group 1vdqsq0]",
+      "metadata": {
+        "symbolKind": "class",
+        "fingerprintHash": "1vdqsq0",
+        "distinctFiles": 1,
+        "totalDeclarations": 4,
+        "preview": "class SequenceClassifierOutput extends ModelOutput {\n  /**\n   * @param {Object} output The output of the model.\n   * @param {Tensor} output.logits classification (or regression if config.num_labels==1) scores (before SoftMax).\n   */ …",
+        "previewFrom": "vendor/modules/@xenova/transformers/types/models.d.ts:3328",
+        "occurrences": [
+          {
+            "name": "SequenceClassifierOutput",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3328
+          },
+          {
+            "name": "TokenClassifierOutput",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3339
+          },
+          {
+            "name": "MaskedLMOutput",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3350
+          },
+          {
+            "name": "CausalLMOutput",
+            "file": "vendor/modules/@xenova/transformers/types/models.d.ts",
+            "line": 3380
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1k9cgbf",
+      "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+      "line": 1605,
+      "message": "type re-declared 5× in 1 file (e.g. AudioClassificationSingle, ImageClassificationSingle, TextClassificationSingle, +2 more) — agent likely re-built an existing one [group k1h060]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "k1h060",
+        "distinctFiles": 1,
+        "totalDeclarations": 5,
+        "preview": "type TextClassificationSingle = {\n  /**\n   * The label predicted.\n   */\n  label: string;\n  /**\n   * The corresponding probability.\n   */\n  score: number;\n};",
+        "previewFrom": "vendor/modules/@xenova/transformers/types/pipelines.d.ts:1605",
+        "occurrences": [
+          {
+            "name": "TextClassificationSingle",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 1605
+          },
+          {
+            "name": "AudioClassificationSingle",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 1902
+          },
+          {
+            "name": "ZeroShotAudioClassificationOutput",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 1934
+          },
+          {
+            "name": "ImageClassificationSingle",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 2073
+          },
+          {
+            "name": "ZeroShotImageClassificationOutput",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 2157
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:6cncj7",
+      "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+      "line": 1619,
+      "message": "type re-declared 5× in 1 file (e.g. AudioClassificationPipelineOptions, FillMaskPipelineOptions, ImageClassificationPipelineOptions, +2 more) — agent likely re-built an existing one [group 1wzkrzk]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1wzkrzk",
+        "distinctFiles": 1,
+        "totalDeclarations": 5,
+        "preview": "type TextClassificationPipelineOptions = {\n  /**\n   * The number of top predictions to be returned.\n   */\n  topk?: number;\n};",
+        "previewFrom": "vendor/modules/@xenova/transformers/types/pipelines.d.ts:1619",
+        "occurrences": [
+          {
+            "name": "TextClassificationPipelineOptions",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 1619
+          },
+          {
+            "name": "QuestionAnsweringPipelineOptions",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 1702
+          },
+          {
+            "name": "FillMaskPipelineOptions",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 1741
+          },
+          {
+            "name": "AudioClassificationPipelineOptions",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 1916
+          },
+          {
+            "name": "ImageClassificationPipelineOptions",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 2087
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ohy5hz",
+      "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+      "line": 1757,
+      "message": "type re-declared 3× in 1 file (e.g. ImageToTextSingle, Text2TextGenerationSingle, TextGenerationSingle) — agent likely re-built an existing one [group 17k2stw]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "17k2stw",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "type Text2TextGenerationSingle = {\n  /**\n   * The generated text.\n   */\n  generated_text: string;\n};",
+        "previewFrom": "vendor/modules/@xenova/transformers/types/pipelines.d.ts:1757",
+        "occurrences": [
+          {
+            "name": "Text2TextGenerationSingle",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 1757
+          },
+          {
+            "name": "TextGenerationSingle",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 1808
+          },
+          {
+            "name": "ImageToTextSingle",
+            "file": "vendor/modules/@xenova/transformers/types/pipelines.d.ts",
+            "line": 2056
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:9rvw01",
+      "file": "vendor/modules/@xenova/transformers/types/tokenizers.d.ts",
+      "line": 371,
+      "message": "class re-declared 3× in 1 file (e.g. M2M100Tokenizer, MBartTokenizer, NllbTokenizer) — agent likely re-built an existing one [group cqp6lh]",
+      "metadata": {
+        "symbolKind": "class",
+        "fingerprintHash": "cqp6lh",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "class MBartTokenizer extends PreTrainedTokenizer {\n  constructor(tokenizerJSON: any, tokenizerConfig: any);\n  languageRegex: RegExp;\n  language_codes: any[];\n  lang_to_token: (x: any) => any;\n  /**\n   * Helper function to build translation …",
+        "previewFrom": "vendor/modules/@xenova/transformers/types/tokenizers.d.ts:371",
+        "occurrences": [
+          {
+            "name": "MBartTokenizer",
+            "file": "vendor/modules/@xenova/transformers/types/tokenizers.d.ts",
+            "line": 371
+          },
+          {
+            "name": "NllbTokenizer",
+            "file": "vendor/modules/@xenova/transformers/types/tokenizers.d.ts",
+            "line": 420
+          },
+          {
+            "name": "M2M100Tokenizer",
+            "file": "vendor/modules/@xenova/transformers/types/tokenizers.d.ts",
+            "line": 448
+          }
+        ]
+      }
+    },
+    {
+      "flag": "exposedMutableRepresentation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1fxnym6",
+      "file": "nextEdit/NextEditProvider.ts",
+      "line": 249,
+      "message": "NextEditProvider exposes private mutable array field 'previousCompletions' through 1 public member",
+      "metadata": {
+        "className": "NextEditProvider",
+        "fieldName": "previousCompletions",
+        "fieldLine": 73,
+        "mutableFamily": "array",
+        "accessors": [
+          {
+            "name": "getChain",
+            "kind": "method",
+            "line": 249
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:kpvhox",
+      "file": "config/loadContextProviders.ts",
+      "line": 22,
+      "message": "loadConfigContextProviders callers pass false for 'hasDocs' in 18/21 calls - hide the common case behind the API",
+      "metadata": {
+        "apiName": "loadConfigContextProviders",
+        "apiKind": "function",
+        "kind": "parameter",
+        "parameterIndex": 1,
+        "parameterName": "hasDocs",
+        "value": "false",
+        "valueKind": "literal",
+        "repeatedCount": 18,
+        "callCount": 21,
+        "callSites": [
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 75
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 95
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 114
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 167
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 221
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 253
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 276
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 297
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 329
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 368
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 399
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 434
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 470
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 505
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 521
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 549
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 570
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 581
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:dkiy31",
+      "file": "config/loadContextProviders.ts",
+      "line": 22,
+      "message": "loadConfigContextProviders callers pass \"vscode\" for 'ideType' in 18/21 calls - hide the common case behind the API",
+      "metadata": {
+        "apiName": "loadConfigContextProviders",
+        "apiKind": "function",
+        "kind": "parameter",
+        "parameterIndex": 2,
+        "parameterName": "ideType",
+        "value": "\"vscode\"",
+        "valueKind": "literal",
+        "repeatedCount": 18,
+        "callCount": 21,
+        "callSites": [
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 75
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 95
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 127
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 167
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 221
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 253
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 276
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 297
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 329
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 368
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 399
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 434
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 470
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 505
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 521
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 549
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 570
+          },
+          {
+            "file": "config/loadContextProviders.vitest.ts",
+            "line": 581
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:9iba91",
+      "file": "edit/searchAndReplace/performReplace.ts",
+      "line": 85,
+      "message": "executeFindAndReplace callers pass false for 'replaceAll' in 25/31 calls - hide the common case behind the API",
+      "metadata": {
+        "apiName": "executeFindAndReplace",
+        "apiKind": "function",
+        "kind": "parameter",
+        "parameterIndex": 3,
+        "parameterName": "replaceAll",
+        "value": "false",
+        "valueKind": "literal",
+        "repeatedCount": 25,
+        "callCount": 31,
+        "callSites": [
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 9
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 16
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 35
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 42
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 50
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 64
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 78
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 90
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 102
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 114
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 126
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 165
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 177
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 189
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 201
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 217
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 233
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 249
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 264
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 278
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 291
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 299
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 306
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 313
+          },
+          {
+            "file": "edit/searchAndReplace/executeFindAndReplace.vitest.ts",
+            "line": 320
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1n554ve",
+      "file": "tools/parseArgs.ts",
+      "line": 133,
+      "message": "getBooleanArg callers pass \"flag\" for 'argName' in 15/17 calls - hide the common case behind the API",
+      "metadata": {
+        "apiName": "getBooleanArg",
+        "apiKind": "function",
+        "kind": "parameter",
+        "parameterIndex": 1,
+        "parameterName": "argName",
+        "value": "\"flag\"",
+        "valueKind": "literal",
+        "repeatedCount": 15,
+        "callCount": 17,
+        "callSites": [
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 238
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 239
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 244
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 250
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 261
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 262
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 263
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 264
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 272
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 275
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 278
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 284
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 285
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 287
+          },
+          {
+            "file": "tools/parseArgs.vitest.ts",
+            "line": 290
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:f7q0zz",
+      "file": "tools/systemMessageTools/systemToolUtils.ts",
+      "line": 25,
+      "message": "createDelta callers pass \"\" for 'name' in 5/6 calls - hide the common case behind the API",
+      "metadata": {
+        "apiName": "createDelta",
+        "apiKind": "function",
+        "kind": "parameter",
+        "parameterIndex": 0,
+        "parameterName": "name",
+        "value": "\"\"",
+        "valueKind": "literal",
+        "repeatedCount": 5,
+        "callCount": 6,
+        "callSites": [
+          {
+            "file": "tools/systemMessageTools/interceptSystemToolCalls.ts",
+            "line": 41
+          },
+          {
+            "file": "tools/systemMessageTools/toolCodeblocks/parseSystemToolCall.ts",
+            "line": 62
+          },
+          {
+            "file": "tools/systemMessageTools/toolCodeblocks/parseSystemToolCall.ts",
+            "line": 95
+          },
+          {
+            "file": "tools/systemMessageTools/toolCodeblocks/parseSystemToolCall.ts",
+            "line": 98
+          },
+          {
+            "file": "tools/systemMessageTools/toolCodeblocks/parseSystemToolCall.ts",
+            "line": 116
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1uxupn0",
+      "file": "util/uri.ts",
+      "line": 109,
+      "message": "getLastNUriRelativePathParts callers pass 2 for 'n' in 4/4 calls - hide the common case behind the API",
+      "metadata": {
+        "apiName": "getLastNUriRelativePathParts",
+        "apiKind": "function",
+        "kind": "parameter",
+        "parameterIndex": 2,
+        "parameterName": "n",
+        "value": "2",
+        "valueKind": "literal",
+        "repeatedCount": 4,
+        "callCount": 4,
+        "callSites": [
+          {
+            "file": "autocomplete/templating/formatting.ts",
+            "line": 45
+          },
+          {
+            "file": "autocomplete/templating/formatting.ts",
+            "line": 77
+          },
+          {
+            "file": "indexing/CodeSnippetsIndex.ts",
+            "line": 358
+          },
+          {
+            "file": "util/uri.ts",
+            "line": 192
+          }
+        ]
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ajt7ap",
+      "file": "util/processTerminalStates.ts",
+      "line": 117,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "clearAllBackgroundProcesses",
+        "callee": "processTerminalBackgroundStates.clear",
+        "paramCount": 0
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:brvamv",
+      "file": "autocomplete/CompletionProvider.ts",
+      "line": 115,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "CompletionProvider",
+        "methodName": "cancel",
+        "receiver": "this.loggingService",
+        "callee": "this.loggingService.cancel",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 5,
+        "passThroughRatio": 0.4,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ao9fh2",
+      "file": "autocomplete/CompletionProvider.ts",
+      "line": 130,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "CompletionProvider",
+        "methodName": "markDisplayed",
+        "receiver": "this.loggingService",
+        "callee": "this.loggingService.markDisplayed",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 5,
+        "passThroughRatio": 0.4,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1jx487j",
+      "file": "autocomplete/context/ImportDefinitionsService.ts",
+      "line": 35,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "ImportDefinitionsService",
+        "methodName": "get",
+        "receiver": "this.cache",
+        "callee": "this.cache.get",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 1,
+        "passThroughRatio": 1,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:l01la8",
+      "file": "autocomplete/util/AutocompleteLoggingService.ts",
+      "line": 22,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "AutocompleteLoggingService",
+        "methodName": "deleteAbortController",
+        "receiver": "this._abortControllers",
+        "callee": "this._abortControllers.delete",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 6,
+        "passThroughRatio": 0.16666666666666666,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:prnmsi",
+      "file": "context/mcp/MCPManagerSingleton.ts",
+      "line": 49,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "MCPManagerSingleton",
+        "methodName": "getConnection",
+        "receiver": "this.connections",
+        "callee": "this.connections.get",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 11,
+        "passThroughRatio": 0.09090909090909091,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1fz6pwj",
+      "file": "context/providers/CustomContextProvider.ts",
+      "line": 23,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "CustomContextProviderClass",
+        "methodName": "getContextItems",
+        "receiver": "this.custom",
+        "callee": "this.custom.getContextItems",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 4,
+        "passThroughRatio": 0.25,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:3z7hkc",
+      "file": "core.ts",
+      "line": 111,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "Core",
+        "methodName": "invoke",
+        "receiver": "this.messenger",
+        "callee": "this.messenger.invoke",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 2,
+        "passThroughRatio": 1,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1rwv6y2",
+      "file": "core.ts",
+      "line": 118,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "Core",
+        "methodName": "send",
+        "receiver": "this.messenger",
+        "callee": "this.messenger.send",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 2,
+        "passThroughRatio": 1,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1sr2tuy",
+      "file": "llm/countTokens.ts",
+      "line": 43,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "NonWorkerAsyncEncoder",
+        "methodName": "encode",
+        "receiver": "this.encoding",
+        "callee": "this.encoding.encode",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 3,
+        "passThroughRatio": 0.6666666666666666,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:t01xdx",
+      "file": "llm/countTokens.ts",
+      "line": 47,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "NonWorkerAsyncEncoder",
+        "methodName": "decode",
+        "receiver": "this.encoding",
+        "callee": "this.encoding.decode",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 3,
+        "passThroughRatio": 0.6666666666666666,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:n3fwdx",
+      "file": "nextEdit/NextEditProvider.ts",
+      "line": 179,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "NextEditProvider",
+        "methodName": "cancel",
+        "receiver": "this.loggingService",
+        "callee": "this.loggingService.cancel",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 17,
+        "passThroughRatio": 0.11764705882352941,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1cc4eno",
+      "file": "nextEdit/NextEditProvider.ts",
+      "line": 197,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "NextEditProvider",
+        "methodName": "markDisplayed",
+        "receiver": "this.loggingService",
+        "callee": "this.loggingService.markDisplayed",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 17,
+        "passThroughRatio": 0.11764705882352941,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1uv8a3n",
+      "file": "util/clipboardCache.ts",
+      "line": 53,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "ClipboardCache",
+        "methodName": "get",
+        "receiver": "this.cache",
+        "callee": "this.cache.get",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 5,
+        "passThroughRatio": 0.2,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:38f4my",
+      "file": "util/Logger.ts",
+      "line": 49,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "LoggerClass",
+        "methodName": "debug",
+        "receiver": "this.winston",
+        "callee": "this.winston.debug",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 6,
+        "passThroughRatio": 0.5,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:8j7uec",
+      "file": "util/Logger.ts",
+      "line": 53,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "LoggerClass",
+        "methodName": "info",
+        "receiver": "this.winston",
+        "callee": "this.winston.info",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 6,
+        "passThroughRatio": 0.5,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ctqe9o",
+      "file": "util/Logger.ts",
+      "line": 57,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "LoggerClass",
+        "methodName": "warn",
+        "receiver": "this.winston",
+        "callee": "this.winston.warn",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 6,
+        "passThroughRatio": 0.5,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1tagpgf",
+      "file": "context/retrieval/pipelines/BaseRetrievalPipeline.ts",
+      "line": 56,
+      "message": "interface 'IRetrievalPipeline' has only one implementer: BaseRetrievalPipeline at context/retrieval/pipelines/BaseRetrievalPipeline.ts:60 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "IRetrievalPipeline",
+        "memberCount": 1,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "BaseRetrievalPipeline",
+            "file": "context/retrieval/pipelines/BaseRetrievalPipeline.ts",
+            "line": 60
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:b1hbaa",
+      "file": "llm/countTokens.ts",
+      "line": 23,
+      "message": "interface 'Encoding' has only one implementer: LlamaEncoding at llm/countTokens.ts:28 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "Encoding",
+        "memberCount": 2,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "LlamaEncoding",
+            "file": "llm/countTokens.ts",
+            "line": 28
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:19shvvz",
+      "file": "llm/index.ts",
+      "line": 90,
+      "message": "abstract class 'BaseLLM' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "BaseLLM",
+        "memberCount": 73,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:omk9m3",
+      "file": "nextEdit/providers/BaseNextEditProvider.ts",
+      "line": 27,
+      "message": "abstract class 'BaseNextEditModelProvider' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "BaseNextEditModelProvider",
+        "memberCount": 15,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:11uzmgd",
+      "file": "protocol/messenger/index.ts",
+      "line": 21,
+      "message": "interface 'IMessenger' has only one implementer: InProcessMessenger at protocol/messenger/index.ts:51 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "IMessenger",
+        "memberCount": 5,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "InProcessMessenger",
+            "file": "protocol/messenger/index.ts",
+            "line": 51
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vnxusy",
+      "file": "tools/systemMessageTools/types.ts",
+      "line": 4,
+      "message": "interface 'SystemMessageToolsFramework' has only one implementer: SystemMessageToolCodeblocksFramework at tools/systemMessageTools/toolCodeblocks/index.ts:5 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "SystemMessageToolsFramework",
+        "memberCount": 9,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "SystemMessageToolCodeblocksFramework",
+            "file": "tools/systemMessageTools/toolCodeblocks/index.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:gv8q50",
+      "file": "autocomplete/CompletionProvider.ts",
+      "line": 42,
+      "message": "constructor takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "constructor",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:4x9em4",
+      "file": "autocomplete/filtering/BracketMatchingService.ts",
+      "line": 41,
+      "message": "method stopOnUnmatchedClosingBracket takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method stopOnUnmatchedClosingBracket",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1l3rnqb",
+      "file": "autocomplete/filtering/streamTransforms/StreamTransformPipeline.ts",
+      "line": 21,
+      "message": "method transform takes 7 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method transform",
+        "requiredParams": 7
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1niti9s",
+      "file": "autocomplete/generation/CompletionStreamer.ts",
+      "line": 16,
+      "message": "method streamCompletionWithFilters takes 8 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method streamCompletionWithFilters",
+        "requiredParams": 8
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:hhid8l",
+      "file": "autocomplete/templating/formatOpenedFilesContext.ts",
+      "line": 20,
+      "message": "formatOpenedFilesContext takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "formatOpenedFilesContext",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:yrlv2o",
+      "file": "codeRenderer/CodeRenderer.ts",
+      "line": 225,
+      "message": "method convertToSVG takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method convertToSVG",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1i8qi6e",
+      "file": "codeRenderer/CodeRenderer.ts",
+      "line": 414,
+      "message": "method getDataUri takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method getDataUri",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:102bvtj",
+      "file": "config/load.ts",
+      "line": 791,
+      "message": "loadContinueConfigFromJson takes 6 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "loadContinueConfigFromJson",
+        "requiredParams": 6
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ckejtw",
+      "file": "edit/lazy/applyCodeBlock.ts",
+      "line": 14,
+      "message": "applyCodeBlock takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "applyCodeBlock",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:k20u2h",
+      "file": "edit/lazy/replace.ts",
+      "line": 54,
+      "message": "getReplacementWithLlm takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "getReplacementWithLlm",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1it75g0",
+      "file": "edit/lazy/streamLazyApply.ts",
+      "line": 14,
+      "message": "streamLazyApply takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "streamLazyApply",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1nk0kyt",
+      "file": "edit/recursiveStream.ts",
+      "line": 24,
+      "message": "recursiveStream takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "recursiveStream",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1vfff31",
+      "file": "edit/streamDiffLines.ts",
+      "line": 77,
+      "message": "streamDiffLines takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "streamDiffLines",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:5tigwp",
+      "file": "llm/llms/index.ts",
+      "line": 137,
+      "message": "llmFromDescription takes 6 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "llmFromDescription",
+        "requiredParams": 6
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1qm9ebd",
+      "file": "llm/streamChat.ts",
+      "line": 9,
+      "message": "llmStreamChat takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "llmStreamChat",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:986xgg",
+      "file": "nextEdit/NextEditProvider.ts",
+      "line": 92,
+      "message": "method initialize takes 6 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method initialize",
+        "requiredParams": 6
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1obnaja",
+      "file": "nextEdit/templating/instinct.ts",
+      "line": 39,
+      "message": "currentFileContentBlock takes 6 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "currentFileContentBlock",
+        "requiredParams": 6
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:16narq2",
+      "file": "util/handlebars/handlebarUtils.ts",
+      "line": 34,
+      "message": "prepareTemplatedFilepaths takes 6 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "prepareTemplatedFilepaths",
+        "requiredParams": 6
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:8r0lc7",
+      "file": "util/handlebars/renderTemplatedString.ts",
+      "line": 8,
+      "message": "renderTemplatedString takes 6 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "renderTemplatedString",
+        "requiredParams": 6
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1kgefbi",
+      "file": "vendor/modules/@xenova/transformers/types/processors.d.ts",
+      "line": 332,
+      "message": "method compute_segments takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method compute_segments",
+        "requiredParams": 5
+      }
+    }
+  ]
+}

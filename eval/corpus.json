@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "description": "Pinned TypeScript corpus for measuring strata's real-world behaviour. Repositories are selected for size, activity, and measured AI-attributed commit share; each is pinned to an exact commit so a scan is reproducible and threshold changes are diffable.",
+  "aiAttribution": {
+    "method": "Of the 400 commits preceding the pinned commit, the share whose author or Co-authored-by trailer names a known coding agent.",
+    "pattern": "copilot|devin-ai|cursoragent|cursor-agent|cursor[bot]|google-labs-jules|sweep-ai|factory-droid|claude|codex|jules[bot]",
+    "caveat": "A lower bound on AI involvement, not a measurement of it. Only commits that DECLARE an agent are counted, and the declaration is per-commit, never per-file. No finding in this corpus should be described as AI-authored on the strength of this number."
+  },
+  "repos": [
+    {
+      "id": "cloudflare-agents",
+      "url": "https://github.com/cloudflare/agents",
+      "commit": "a0e134bbc327fc8a519b5aa66cb8ce4038815d05",
+      "committedAt": "2026-08-21T18:26:15+01:00",
+      "aiAttributed": {
+        "matched": 110,
+        "sample": 400,
+        "share": 0.275,
+        "agents": ["cursoragent", "devin-ai", "claude"]
+      },
+      "why": "Highest measured agent share in the corpus, and the densest source of passThroughMethod candidates.",
+      "targets": ["packages/agents/src"]
+    },
+    {
+      "id": "continue",
+      "url": "https://github.com/continuedev/continue",
+      "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+      "committedAt": "2026-07-20T21:00:09-07:00",
+      "aiAttributed": {
+        "matched": 115,
+        "sample": 400,
+        "share": 0.288,
+        "agents": ["claude", "cursoragent"]
+      },
+      "why": "Highest measured agent share, and one of three targets that exercises all seven detectors. The gui target adds a .tsx-heavy arm.",
+      "targets": ["core", "gui/src"]
+    },
+    {
+      "id": "mcp-typescript-sdk",
+      "url": "https://github.com/modelcontextprotocol/typescript-sdk",
+      "commit": "3924de99df834302d89f5997a1b64ca268282284",
+      "committedAt": "2026-08-18T22:09:20+03:00",
+      "aiAttributed": {
+        "matched": 38,
+        "sample": 400,
+        "share": 0.095,
+        "agents": ["claude", "copilot"]
+      },
+      "why": "Small, young, protocol-driven codebase — the shape a candidate scanner is most likely to be pointed at by a new adopter.",
+      "targets": ["packages/server/src", "packages/core/src"]
+    },
+    {
+      "id": "workers-sdk",
+      "url": "https://github.com/cloudflare/workers-sdk",
+      "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+      "committedAt": "2026-08-22T18:55:46+01:00",
+      "aiAttributed": {
+        "matched": 30,
+        "sample": 400,
+        "share": 0.075,
+        "agents": ["devin-ai", "claude", "copilot"]
+      },
+      "why": "The corpus's densest source of passThroughExport candidates, and the only one where wideSignature and passThroughExport both rank high.",
+      "targets": ["packages/wrangler/src", "packages/miniflare/src"]
+    },
+    {
+      "id": "next",
+      "url": "https://github.com/vercel/next.js",
+      "commit": "cb463843e78506c6b79518af8125af05e6cbac77",
+      "committedAt": "2026-08-22T23:22:05+00:00",
+      "aiAttributed": {
+        "matched": 19,
+        "sample": 400,
+        "share": 0.048,
+        "agents": ["claude", "codex"]
+      },
+      "why": "Largest single target in the corpus and the widest detector spread; carries the corpus's only meaningful wideSignature volume.",
+      "targets": ["packages/next/src"]
+    },
+    {
+      "id": "vercel-ai",
+      "url": "https://github.com/vercel/ai",
+      "commit": "9d9a73f1551f2243035491e9de5a2e00ebf9eb17",
+      "committedAt": "2026-08-23T01:41:08+00:00",
+      "aiAttributed": {
+        "matched": 19,
+        "sample": 400,
+        "share": 0.048,
+        "agents": ["claude", "cursoragent"]
+      },
+      "why": "The one target where uniqueImplementation dominates — a provider-adapter codebase is exactly where speculative interfaces should either be justified or not.",
+      "targets": ["packages/ai/src"]
+    },
+    {
+      "id": "hono",
+      "url": "https://github.com/honojs/hono",
+      "commit": "5e5b83d6ed963a2bc7d8384002e1c953648253b1",
+      "committedAt": "2026-08-23T16:34:05+09:00",
+      "aiAttributed": {
+        "matched": 4,
+        "sample": 400,
+        "share": 0.01,
+        "agents": ["claude", "copilot"]
+      },
+      "why": "Low-attribution contrast arm: mature, hand-written, heavily reviewed. Included so a per-KLOC number from the high-attribution repos has something to be read against.",
+      "targets": ["src"]
+    },
+    {
+      "id": "zod",
+      "url": "https://github.com/colinhacks/zod",
+      "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+      "committedAt": "2026-08-20T08:52:06-07:00",
+      "aiAttributed": {
+        "matched": 30,
+        "sample": 400,
+        "share": 0.075,
+        "agents": ["claude", "cursoragent"]
+      },
+      "why": "Second contrast arm, and the target that first exposed the duplicateSymbol triviality families. Kept because a known-bad case belongs in a regression corpus.",
+      "targets": ["packages/zod/src"]
+    }
+  ]
+}

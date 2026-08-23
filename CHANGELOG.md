@@ -4,6 +4,8 @@ All notable changes to `strata` will be documented here.
 
 ## 0.4.1 - Unreleased
 
+- Adds an evaluation corpus under `eval/`: eight TypeScript repositories pinned to exact commits, chosen for size and measured agent-attributed commit share, with committed scan results so detector threshold changes become diffable. Run with `bun run eval:run` and `bun run eval:report`; nothing under `eval/` ships to npm.
+
 ## 0.4.0 - 2026-07-14
 
 - Adds `forcedRareOption` detection for exported APIs whose callers repeatedly pass the same literal, placeholder, or default-like option.

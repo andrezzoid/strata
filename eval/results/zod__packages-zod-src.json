@@ -1,0 +1,3502 @@
+{
+  "repo": "zod",
+  "commit": "e516c3baf22615e20934116abebfed6c000222c2",
+  "target": "packages/zod/src",
+  "files": 321,
+  "lines": 81350,
+  "strataVersion": "0.4.0",
+  "summary": {
+    "totalFindings": 111,
+    "byFlag": {
+      "duplicateSymbol": 100,
+      "forcedRareOption": 1,
+      "passThroughExport": 4,
+      "passThroughMethod": 2,
+      "uniqueImplementation": 3,
+      "wideSignature": 1
+    },
+    "topFiles": [
+      {
+        "file": "v4/core/api.ts",
+        "count": 79
+      },
+      {
+        "file": "v4/classic/schemas.ts",
+        "count": 58
+      },
+      {
+        "file": "v4/mini/schemas.ts",
+        "count": 48
+      },
+      {
+        "file": "v4/core/json-schema-processors.ts",
+        "count": 16
+      },
+      {
+        "file": "v4/core/compile.ts",
+        "count": 11
+      },
+      {
+        "file": "v3/types.ts",
+        "count": 7
+      },
+      {
+        "file": "v3/helpers/parseUtil.ts",
+        "count": 6
+      },
+      {
+        "file": "v4/core/util.ts",
+        "count": 6
+      },
+      {
+        "file": "v4/classic/compat.ts",
+        "count": 5
+      },
+      {
+        "file": "v3/ZodError.ts",
+        "count": 4
+      }
+    ]
+  },
+  "findings": [
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:mszjoe",
+      "file": "v3/benchmarks/discriminatedUnion.ts",
+      "line": 11,
+      "message": "const re-declared 2× across 2 files (e.g. objA) — agent likely re-built an existing one [group r1iv3d]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "r1iv3d",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "objA = {\n  type: \"a\",\n}",
+        "previewFrom": "v3/benchmarks/discriminatedUnion.ts:11",
+        "occurrences": [
+          {
+            "name": "objA",
+            "file": "v3/benchmarks/discriminatedUnion.ts",
+            "line": 11
+          },
+          {
+            "name": "objA",
+            "file": "v3/benchmarks/union.ts",
+            "line": 11
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:185w6qn",
+      "file": "v3/benchmarks/discriminatedUnion.ts",
+      "line": 18,
+      "message": "const re-declared 2× across 2 files (e.g. objB) — agent likely re-built an existing one [group r1ivxm]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "r1ivxm",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "objB = {\n  type: \"b\",\n}",
+        "previewFrom": "v3/benchmarks/discriminatedUnion.ts:18",
+        "occurrences": [
+          {
+            "name": "objB",
+            "file": "v3/benchmarks/discriminatedUnion.ts",
+            "line": 18
+          },
+          {
+            "name": "objB",
+            "file": "v3/benchmarks/union.ts",
+            "line": 18
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1tistsw",
+      "file": "v3/benchmarks/discriminatedUnion.ts",
+      "line": 25,
+      "message": "const re-declared 2× across 2 files (e.g. objC) — agent likely re-built an existing one [group r1iwrv]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "r1iwrv",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "objC = {\n  type: \"c\",\n}",
+        "previewFrom": "v3/benchmarks/discriminatedUnion.ts:25",
+        "occurrences": [
+          {
+            "name": "objC",
+            "file": "v3/benchmarks/discriminatedUnion.ts",
+            "line": 25
+          },
+          {
+            "name": "objC",
+            "file": "v3/benchmarks/union.ts",
+            "line": 25
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ie7xv2",
+      "file": "v3/benchmarks/index.ts",
+      "line": 13,
+      "message": "const re-declared 3× across 3 files (e.g. EMPTY_PATH, NO_ISSUES, suites) — agent likely re-built an existing one [group 46vgw2]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "46vgw2",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "suites: Benchmark.Suite[] = []",
+        "previewFrom": "v3/benchmarks/index.ts:13",
+        "occurrences": [
+          {
+            "name": "suites",
+            "file": "v3/benchmarks/index.ts",
+            "line": 13
+          },
+          {
+            "name": "EMPTY_PATH",
+            "file": "v3/helpers/parseUtil.ts",
+            "line": 51
+          },
+          {
+            "name": "NO_ISSUES",
+            "file": "v4/core/memoizer.ts",
+            "line": 28
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1dkfeit",
+      "file": "v3/benchmarks/primitives.ts",
+      "line": 75,
+      "message": "const re-declared 2× across 2 files (e.g. short) — agent likely re-built an existing one [group 18u8uz1]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "18u8uz1",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "short = \"short\"",
+        "previewFrom": "v3/benchmarks/primitives.ts:75",
+        "occurrences": [
+          {
+            "name": "short",
+            "file": "v3/benchmarks/primitives.ts",
+            "line": 75
+          },
+          {
+            "name": "short",
+            "file": "v3/benchmarks/string.ts",
+            "line": 9
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1s5svyq",
+      "file": "v3/helpers/parseUtil.ts",
+      "line": 163,
+      "message": "function re-declared 2× in 1 file (e.g. DIRTY, OK) — agent likely re-built an existing one [group h6xrwx]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "h6xrwx",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "DIRTY = <T>(value: T): DIRTY<T> => ({ status: \"dirty\", value })",
+        "previewFrom": "v3/helpers/parseUtil.ts:163",
+        "occurrences": [
+          {
+            "name": "DIRTY",
+            "file": "v3/helpers/parseUtil.ts",
+            "line": 163
+          },
+          {
+            "name": "OK",
+            "file": "v3/helpers/parseUtil.ts",
+            "line": 166
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:7ccyev",
+      "file": "v3/helpers/parseUtil.ts",
+      "line": 172,
+      "message": "function re-declared 3× in 1 file (e.g. isAborted, isDirty, isValid) — agent likely re-built an existing one [group 1jkoyt2]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1jkoyt2",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "isAborted = (x: ParseReturnType<any>): x is INVALID => (x as any).status === \"aborted\"",
+        "previewFrom": "v3/helpers/parseUtil.ts:172",
+        "occurrences": [
+          {
+            "name": "isAborted",
+            "file": "v3/helpers/parseUtil.ts",
+            "line": 172
+          },
+          {
+            "name": "isDirty",
+            "file": "v3/helpers/parseUtil.ts",
+            "line": 173
+          },
+          {
+            "name": "isValid",
+            "file": "v3/helpers/parseUtil.ts",
+            "line": 174
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:peu194",
+      "file": "v3/helpers/util.ts",
+      "line": 173,
+      "message": "type re-declared 6× across 4 files (e.g. ArrayKeys, EnumValues, KeyOf, +3 more) — agent likely re-built an existing one [group wusofq]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "wusofq",
+        "distinctFiles": 4,
+        "totalDeclarations": 6,
+        "preview": "type ZodParsedType = keyof typeof ZodParsedType;",
+        "previewFrom": "v3/helpers/util.ts:173",
+        "occurrences": [
+          {
+            "name": "ZodParsedType",
+            "file": "v3/helpers/util.ts",
+            "line": 173
+          },
+          {
+            "name": "ArrayKeys",
+            "file": "v3/types.ts",
+            "line": 4040
+          },
+          {
+            "name": "EnumValues",
+            "file": "v3/types.ts",
+            "line": 4043
+          },
+          {
+            "name": "ZodIssueCode",
+            "file": "v3/ZodError.ts",
+            "line": 34
+          },
+          {
+            "name": "KeyOf",
+            "file": "v4/core/util.ts",
+            "line": 190
+          },
+          {
+            "name": "Keys",
+            "file": "v4/core/util.ts",
+            "line": 197
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:153rybk",
+      "file": "v3/types.ts",
+      "line": 664,
+      "message": "function re-declared 4× across 2 files (e.g. anchor, fixedBase64url, time, +1 more) — agent likely re-built an existing one [group 14jbput]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "14jbput",
+        "distinctFiles": 2,
+        "totalDeclarations": 4,
+        "preview": "function timeRegex(args: {\n  offset?: boolean;\n  local?: boolean;\n  precision?: number | null;\n}) {\n  return new RegExp(`^${timeRegexSource(args)}$`);\n}",
+        "previewFrom": "v3/types.ts:664",
+        "occurrences": [
+          {
+            "name": "timeRegex",
+            "file": "v3/types.ts",
+            "line": 664
+          },
+          {
+            "name": "anchor",
+            "file": "v4/core/regexes.ts",
+            "line": 103
+          },
+          {
+            "name": "time",
+            "file": "v4/core/regexes.ts",
+            "line": 121
+          },
+          {
+            "name": "fixedBase64url",
+            "file": "v4/core/regexes.ts",
+            "line": 173
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:qs2ohs",
+      "file": "v3/types.ts",
+      "line": 687,
+      "message": "function re-declared 2× in 1 file (e.g. isValidCidr, isValidIP) — agent likely re-built an existing one [group 18yh90l]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "18yh90l",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function isValidIP(ip: string, version?: IpVersion) {\n  if ((version === \"v4\" || !version) && ipv4Regex.test(ip)) {\n    return true;\n  }\n  if ((version === \"v6\" || !version) && ipv6Regex.test(ip)) {\n    return true;\n  }\n\n  return false;\n}",
+        "previewFrom": "v3/types.ts:687",
+        "occurrences": [
+          {
+            "name": "isValidIP",
+            "file": "v3/types.ts",
+            "line": 687
+          },
+          {
+            "name": "isValidCidr",
+            "file": "v3/types.ts",
+            "line": 720
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:11sdsy5",
+      "file": "v3/ZodError.ts",
+      "line": 84,
+      "message": "interface re-declared 3× in 1 file (e.g. ZodInvalidDateIssue, ZodInvalidIntersectionTypesIssue, ZodNotFiniteIssue) — agent likely re-built an existing one [group mrcev9]",
+      "metadata": {
+        "symbolKind": "interface",
+        "fingerprintHash": "mrcev9",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "interface ZodInvalidDateIssue extends ZodIssueBase {\n  code: typeof ZodIssueCode.invalid_date;\n}",
+        "previewFrom": "v3/ZodError.ts:84",
+        "occurrences": [
+          {
+            "name": "ZodInvalidDateIssue",
+            "file": "v3/ZodError.ts",
+            "line": 84
+          },
+          {
+            "name": "ZodInvalidIntersectionTypesIssue",
+            "file": "v3/ZodError.ts",
+            "line": 132
+          },
+          {
+            "name": "ZodNotFiniteIssue",
+            "file": "v3/ZodError.ts",
+            "line": 141
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1d7534t",
+      "file": "v4/classic/compat.ts",
+      "line": 7,
+      "message": "type re-declared 4× across 3 files (e.g. Infer, TypeOf, output) — agent likely re-built an existing one [group 1mbv485]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1mbv485",
+        "distinctFiles": 3,
+        "totalDeclarations": 4,
+        "preview": "type TypeOf<T> = core.output<T>;",
+        "previewFrom": "v4/classic/compat.ts:7",
+        "occurrences": [
+          {
+            "name": "TypeOf",
+            "file": "v4/classic/compat.ts",
+            "line": 7
+          },
+          {
+            "name": "Infer",
+            "file": "v4/classic/compat.ts",
+            "line": 9
+          },
+          {
+            "name": "output",
+            "file": "v4/classic/in-out.ts",
+            "line": 7
+          },
+          {
+            "name": "output",
+            "file": "v4/mini/in-out.ts",
+            "line": 7
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ubo96v",
+      "file": "v4/classic/compat.ts",
+      "line": 56,
+      "message": "type re-declared 3× in 1 file (e.g. Schema, ZodSchema, ZodTypeAny) — agent likely re-built an existing one [group 12z2jwv]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "12z2jwv",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "type ZodTypeAny<\n  Output = unknown,\n  Input = unknown,\n  Internals extends core.$ZodTypeInternals<Output, Input> = core.$ZodTypeInternals<Output, Input>,\n> = ZodType<Output, Input, Internals>;",
+        "previewFrom": "v4/classic/compat.ts:56",
+        "occurrences": [
+          {
+            "name": "ZodTypeAny",
+            "file": "v4/classic/compat.ts",
+            "line": 56
+          },
+          {
+            "name": "ZodSchema",
+            "file": "v4/classic/compat.ts",
+            "line": 62
+          },
+          {
+            "name": "Schema",
+            "file": "v4/classic/compat.ts",
+            "line": 68
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1r8pmew",
+      "file": "v4/classic/from-json-schema.ts",
+      "line": 128,
+      "message": "function re-declared 2× across 2 files (e.g. decodeJSONPointerSegment, encodeJSONPointerSegment) — agent likely re-built an existing one [group tacwqv]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "tacwqv",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function decodeJSONPointerSegment(segment: string): string {\n  return segment.replace(/~1/g, \"/\").replace(/~0/g, \"~\");\n}",
+        "previewFrom": "v4/classic/from-json-schema.ts:128",
+        "occurrences": [
+          {
+            "name": "decodeJSONPointerSegment",
+            "file": "v4/classic/from-json-schema.ts",
+            "line": 128
+          },
+          {
+            "name": "encodeJSONPointerSegment",
+            "file": "v4/core/to-json-schema.ts",
+            "line": 287
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:12k2dhj",
+      "file": "v4/classic/in-out.ts",
+      "line": 10,
+      "message": "function re-declared 2× across 2 files (e.g. input) — agent likely re-built an existing one [group 1ixtv7]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ixtv7",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function input<T extends core.$ZodType>(schema: T): schemas.ZodType<core.input<T>, core.input<T>> {\n  return visit(schema, {\n    pipe: (s) => s._zod.def.in,\n  }) as schemas.ZodType<core.input<T>, core.input<T>>;\n}",
+        "previewFrom": "v4/classic/in-out.ts:10",
+        "occurrences": [
+          {
+            "name": "input",
+            "file": "v4/classic/in-out.ts",
+            "line": 10
+          },
+          {
+            "name": "input",
+            "file": "v4/mini/in-out.ts",
+            "line": 10
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:3nsdm0",
+      "file": "v4/classic/in-out.ts",
+      "line": 17,
+      "message": "function re-declared 2× across 2 files (e.g. output) — agent likely re-built an existing one [group 1j2fw38]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1j2fw38",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function output<T extends core.$ZodType>(schema: T): schemas.ZodType<core.output<T>, core.output<T>> {\n  return visit(schema, {\n    pipe: (s) => s._zod.def.out,\n  }) as schemas.ZodType<core.output<T>, core.output<T>>;\n}",
+        "previewFrom": "v4/classic/in-out.ts:17",
+        "occurrences": [
+          {
+            "name": "output",
+            "file": "v4/classic/in-out.ts",
+            "line": 17
+          },
+          {
+            "name": "output",
+            "file": "v4/mini/in-out.ts",
+            "line": 17
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:13ngk03",
+      "file": "v4/classic/iso.ts",
+      "line": 6,
+      "message": "function re-declared 2× across 2 files (e.g. datetime) — agent likely re-built an existing one [group 12kcbb4]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "12kcbb4",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function datetime(params?: string | core.$ZodISODateTimeParams): ZodISODateTime {\n  return core._isoDateTime(ZodISODateTime, params);\n}",
+        "previewFrom": "v4/classic/iso.ts:6",
+        "occurrences": [
+          {
+            "name": "datetime",
+            "file": "v4/classic/iso.ts",
+            "line": 6
+          },
+          {
+            "name": "datetime",
+            "file": "v4/mini/iso.ts",
+            "line": 16
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:hwf2ms",
+      "file": "v4/classic/iso.ts",
+      "line": 10,
+      "message": "function re-declared 2× across 2 files (e.g. date) — agent likely re-built an existing one [group op7zg1]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "op7zg1",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function date(params?: string | core.$ZodISODateParams): ZodISODate {\n  return core._isoDate(ZodISODate, params);\n}",
+        "previewFrom": "v4/classic/iso.ts:10",
+        "occurrences": [
+          {
+            "name": "date",
+            "file": "v4/classic/iso.ts",
+            "line": 10
+          },
+          {
+            "name": "date",
+            "file": "v4/mini/iso.ts",
+            "line": 32
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:q93q85",
+      "file": "v4/classic/iso.ts",
+      "line": 14,
+      "message": "function re-declared 2× across 2 files (e.g. time) — agent likely re-built an existing one [group 1mnohtu]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1mnohtu",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function time(params?: string | core.$ZodISOTimeParams): ZodISOTime {\n  return core._isoTime(ZodISOTime, params);\n}",
+        "previewFrom": "v4/classic/iso.ts:14",
+        "occurrences": [
+          {
+            "name": "time",
+            "file": "v4/classic/iso.ts",
+            "line": 14
+          },
+          {
+            "name": "time",
+            "file": "v4/mini/iso.ts",
+            "line": 48
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:srht4s",
+      "file": "v4/classic/iso.ts",
+      "line": 18,
+      "message": "function re-declared 2× across 2 files (e.g. duration) — agent likely re-built an existing one [group pp1dg9]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "pp1dg9",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function duration(params?: string | core.$ZodISODurationParams): ZodISODuration {\n  return core._isoDuration(ZodISODuration, params);\n}",
+        "previewFrom": "v4/classic/iso.ts:18",
+        "occurrences": [
+          {
+            "name": "duration",
+            "file": "v4/classic/iso.ts",
+            "line": 18
+          },
+          {
+            "name": "duration",
+            "file": "v4/mini/iso.ts",
+            "line": 64
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:90cai4",
+      "file": "v4/classic/schemas.ts",
+      "line": 705,
+      "message": "function re-declared 2× across 2 files (e.g. email) — agent likely re-built an existing one [group 9e7eeo]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "9e7eeo",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function email(params?: string | core.$ZodEmailParams): ZodEmail {\n  return core._email(ZodEmail, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:705",
+        "occurrences": [
+          {
+            "name": "email",
+            "file": "v4/classic/schemas.ts",
+            "line": 705
+          },
+          {
+            "name": "email",
+            "file": "v4/mini/schemas.ts",
+            "line": 152
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:103otrh",
+      "file": "v4/classic/schemas.ts",
+      "line": 719,
+      "message": "function re-declared 2× across 2 files (e.g. guid) — agent likely re-built an existing one [group t4k9n5]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "t4k9n5",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function guid(params?: string | core.$ZodGUIDParams): ZodGUID {\n  return core._guid(ZodGUID, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:719",
+        "occurrences": [
+          {
+            "name": "guid",
+            "file": "v4/classic/schemas.ts",
+            "line": 719
+          },
+          {
+            "name": "guid",
+            "file": "v4/mini/schemas.ts",
+            "line": 169
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1jd4mm3",
+      "file": "v4/classic/schemas.ts",
+      "line": 733,
+      "message": "function re-declared 2× across 2 files (e.g. uuid) — agent likely re-built an existing one [group 5sy4wv]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "5sy4wv",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function uuid(params?: string | core.$ZodUUIDParams): ZodUUID {\n  return core._uuid(ZodUUID, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:733",
+        "occurrences": [
+          {
+            "name": "uuid",
+            "file": "v4/classic/schemas.ts",
+            "line": 733
+          },
+          {
+            "name": "uuid",
+            "file": "v4/mini/schemas.ts",
+            "line": 186
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1efsh9h",
+      "file": "v4/classic/schemas.ts",
+      "line": 737,
+      "message": "function re-declared 2× across 2 files (e.g. uuidv4) — agent likely re-built an existing one [group 3azqfd]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "3azqfd",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function uuidv4(params?: string | core.$ZodUUIDv4Params): ZodUUID {\n  return core._uuidv4(ZodUUID, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:737",
+        "occurrences": [
+          {
+            "name": "uuidv4",
+            "file": "v4/classic/schemas.ts",
+            "line": 737
+          },
+          {
+            "name": "uuidv4",
+            "file": "v4/mini/schemas.ts",
+            "line": 191
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:6in013",
+      "file": "v4/classic/schemas.ts",
+      "line": 743,
+      "message": "function re-declared 2× across 2 files (e.g. uuidv6) — agent likely re-built an existing one [group a2varv]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "a2varv",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function uuidv6(params?: string | core.$ZodUUIDv6Params): ZodUUID {\n  return core._uuidv6(ZodUUID, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:743",
+        "occurrences": [
+          {
+            "name": "uuidv6",
+            "file": "v4/classic/schemas.ts",
+            "line": 743
+          },
+          {
+            "name": "uuidv6",
+            "file": "v4/mini/schemas.ts",
+            "line": 198
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1jl6be0",
+      "file": "v4/classic/schemas.ts",
+      "line": 749,
+      "message": "function re-declared 2× across 2 files (e.g. uuidv7) — agent likely re-built an existing one [group dgt2y4]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "dgt2y4",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function uuidv7(params?: string | core.$ZodUUIDv7Params): ZodUUID {\n  return core._uuidv7(ZodUUID, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:749",
+        "occurrences": [
+          {
+            "name": "uuidv7",
+            "file": "v4/classic/schemas.ts",
+            "line": 749
+          },
+          {
+            "name": "uuidv7",
+            "file": "v4/mini/schemas.ts",
+            "line": 205
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ps0ybb",
+      "file": "v4/classic/schemas.ts",
+      "line": 763,
+      "message": "function re-declared 2× across 2 files (e.g. url) — agent likely re-built an existing one [group 1fvgy6z]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1fvgy6z",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function url(params?: string | core.$ZodURLParams): ZodURL {\n  return core._url(ZodURL, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:763",
+        "occurrences": [
+          {
+            "name": "url",
+            "file": "v4/classic/schemas.ts",
+            "line": 763
+          },
+          {
+            "name": "url",
+            "file": "v4/mini/schemas.ts",
+            "line": 219
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1vt0awh",
+      "file": "v4/classic/schemas.ts",
+      "line": 767,
+      "message": "function re-declared 2× across 2 files (e.g. httpUrl) — agent likely re-built an existing one [group 8x0t79]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "8x0t79",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function httpUrl(params?: string | Omit<core.$ZodURLParams, \"protocol\" | \"hostname\">): ZodURL {\n  return core._url(ZodURL, {\n    protocol: core.regexes.httpProtocol,\n    hostname: core.regexes.domain,\n    ...util.normalizeParams(params), …",
+        "previewFrom": "v4/classic/schemas.ts:767",
+        "occurrences": [
+          {
+            "name": "httpUrl",
+            "file": "v4/classic/schemas.ts",
+            "line": 767
+          },
+          {
+            "name": "httpUrl",
+            "file": "v4/mini/schemas.ts",
+            "line": 224
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:k6x61k",
+      "file": "v4/classic/schemas.ts",
+      "line": 785,
+      "message": "function re-declared 2× across 2 files (e.g. emoji) — agent likely re-built an existing one [group 15faggs]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "15faggs",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function emoji(params?: string | core.$ZodEmojiParams): ZodEmoji {\n  return core._emoji(ZodEmoji, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:785",
+        "occurrences": [
+          {
+            "name": "emoji",
+            "file": "v4/classic/schemas.ts",
+            "line": 785
+          },
+          {
+            "name": "emoji",
+            "file": "v4/mini/schemas.ts",
+            "line": 245
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ts9nod",
+      "file": "v4/classic/schemas.ts",
+      "line": 799,
+      "message": "function re-declared 2× across 2 files (e.g. nanoid) — agent likely re-built an existing one [group s6zwap]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "s6zwap",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function nanoid(params?: string | core.$ZodNanoIDParams): ZodNanoID {\n  return core._nanoid(ZodNanoID, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:799",
+        "occurrences": [
+          {
+            "name": "nanoid",
+            "file": "v4/classic/schemas.ts",
+            "line": 799
+          },
+          {
+            "name": "nanoid",
+            "file": "v4/mini/schemas.ts",
+            "line": 262
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ew61ih",
+      "file": "v4/classic/schemas.ts",
+      "line": 830,
+      "message": "function re-declared 2× across 2 files (e.g. cuid) — agent likely re-built an existing one [group 19xr64t]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "19xr64t",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function cuid(params?: string | core.$ZodCUIDParams): ZodCUID {\n  return core._cuid(ZodCUID, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:830",
+        "occurrences": [
+          {
+            "name": "cuid",
+            "file": "v4/classic/schemas.ts",
+            "line": 830
+          },
+          {
+            "name": "cuid",
+            "file": "v4/mini/schemas.ts",
+            "line": 296
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:18a5gkb",
+      "file": "v4/classic/schemas.ts",
+      "line": 844,
+      "message": "function re-declared 2× across 2 files (e.g. cuid2) — agent likely re-built an existing one [group 1pt7mdb]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1pt7mdb",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function cuid2(params?: string | core.$ZodCUID2Params): ZodCUID2 {\n  return core._cuid2(ZodCUID2, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:844",
+        "occurrences": [
+          {
+            "name": "cuid2",
+            "file": "v4/classic/schemas.ts",
+            "line": 844
+          },
+          {
+            "name": "cuid2",
+            "file": "v4/mini/schemas.ts",
+            "line": 313
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1u24pv6",
+      "file": "v4/classic/schemas.ts",
+      "line": 858,
+      "message": "function re-declared 2× across 2 files (e.g. ulid) — agent likely re-built an existing one [group 1ejcjsm]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ejcjsm",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function ulid(params?: string | core.$ZodULIDParams): ZodULID {\n  return core._ulid(ZodULID, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:858",
+        "occurrences": [
+          {
+            "name": "ulid",
+            "file": "v4/classic/schemas.ts",
+            "line": 858
+          },
+          {
+            "name": "ulid",
+            "file": "v4/mini/schemas.ts",
+            "line": 330
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:87p7m1",
+      "file": "v4/classic/schemas.ts",
+      "line": 872,
+      "message": "function re-declared 2× across 2 files (e.g. xid) — agent likely re-built an existing one [group 1xc59wt]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1xc59wt",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function xid(params?: string | core.$ZodXIDParams): ZodXID {\n  return core._xid(ZodXID, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:872",
+        "occurrences": [
+          {
+            "name": "xid",
+            "file": "v4/classic/schemas.ts",
+            "line": 872
+          },
+          {
+            "name": "xid",
+            "file": "v4/mini/schemas.ts",
+            "line": 344
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:m6n62s",
+      "file": "v4/classic/schemas.ts",
+      "line": 886,
+      "message": "function re-declared 2× across 2 files (e.g. ksuid) — agent likely re-built an existing one [group jytuko]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "jytuko",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function ksuid(params?: string | core.$ZodKSUIDParams): ZodKSUID {\n  return core._ksuid(ZodKSUID, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:886",
+        "occurrences": [
+          {
+            "name": "ksuid",
+            "file": "v4/classic/schemas.ts",
+            "line": 886
+          },
+          {
+            "name": "ksuid",
+            "file": "v4/mini/schemas.ts",
+            "line": 361
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:20eckn",
+      "file": "v4/classic/schemas.ts",
+      "line": 914,
+      "message": "function re-declared 2× across 2 files (e.g. ipv4) — agent likely re-built an existing one [group m0kz9n]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "m0kz9n",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function ipv4(params?: string | core.$ZodIPv4Params): ZodIPv4 {\n  return core._ipv4(ZodIPv4, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:914",
+        "occurrences": [
+          {
+            "name": "ipv4",
+            "file": "v4/classic/schemas.ts",
+            "line": 914
+          },
+          {
+            "name": "ipv4",
+            "file": "v4/mini/schemas.ts",
+            "line": 378
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:13y23n9",
+      "file": "v4/classic/schemas.ts",
+      "line": 927,
+      "message": "function re-declared 2× across 2 files (e.g. mac) — agent likely re-built an existing one [group 7qz3tl]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "7qz3tl",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function mac(params?: string | core.$ZodMACParams): ZodMAC {\n  return core._mac(ZodMAC, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:927",
+        "occurrences": [
+          {
+            "name": "mac",
+            "file": "v4/classic/schemas.ts",
+            "line": 927
+          },
+          {
+            "name": "mac",
+            "file": "v4/mini/schemas.ts",
+            "line": 443
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:t4cxbd",
+      "file": "v4/classic/schemas.ts",
+      "line": 940,
+      "message": "function re-declared 2× across 2 files (e.g. ipv6) — agent likely re-built an existing one [group ssgjm5]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "ssgjm5",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function ipv6(params?: string | core.$ZodIPv6Params): ZodIPv6 {\n  return core._ipv6(ZodIPv6, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:940",
+        "occurrences": [
+          {
+            "name": "ipv6",
+            "file": "v4/classic/schemas.ts",
+            "line": 940
+          },
+          {
+            "name": "ipv6",
+            "file": "v4/mini/schemas.ts",
+            "line": 395
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1wv771s",
+      "file": "v4/classic/schemas.ts",
+      "line": 953,
+      "message": "function re-declared 2× across 2 files (e.g. cidrv4) — agent likely re-built an existing one [group og381g]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "og381g",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function cidrv4(params?: string | core.$ZodCIDRv4Params): ZodCIDRv4 {\n  return core._cidrv4(ZodCIDRv4, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:953",
+        "occurrences": [
+          {
+            "name": "cidrv4",
+            "file": "v4/classic/schemas.ts",
+            "line": 953
+          },
+          {
+            "name": "cidrv4",
+            "file": "v4/mini/schemas.ts",
+            "line": 412
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:oy1pte",
+      "file": "v4/classic/schemas.ts",
+      "line": 966,
+      "message": "function re-declared 2× across 2 files (e.g. cidrv6) — agent likely re-built an existing one [group v7ysdy]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "v7ysdy",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function cidrv6(params?: string | core.$ZodCIDRv6Params): ZodCIDRv6 {\n  return core._cidrv6(ZodCIDRv6, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:966",
+        "occurrences": [
+          {
+            "name": "cidrv6",
+            "file": "v4/classic/schemas.ts",
+            "line": 966
+          },
+          {
+            "name": "cidrv6",
+            "file": "v4/mini/schemas.ts",
+            "line": 429
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:xd6be1",
+      "file": "v4/classic/schemas.ts",
+      "line": 979,
+      "message": "function re-declared 2× across 2 files (e.g. base64) — agent likely re-built an existing one [group epr7il]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "epr7il",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function base64(params?: string | core.$ZodBase64Params): ZodBase64 {\n  return core._base64(ZodBase64, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:979",
+        "occurrences": [
+          {
+            "name": "base64",
+            "file": "v4/classic/schemas.ts",
+            "line": 979
+          },
+          {
+            "name": "base64",
+            "file": "v4/mini/schemas.ts",
+            "line": 459
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1dx99j0",
+      "file": "v4/classic/schemas.ts",
+      "line": 995,
+      "message": "function re-declared 2× across 2 files (e.g. base64url) — agent likely re-built an existing one [group tueio]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "tueio",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function base64url(params?: string | core.$ZodBase64URLParams): ZodBase64URL {\n  return core._base64url(ZodBase64URL, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:995",
+        "occurrences": [
+          {
+            "name": "base64url",
+            "file": "v4/classic/schemas.ts",
+            "line": 995
+          },
+          {
+            "name": "base64url",
+            "file": "v4/mini/schemas.ts",
+            "line": 475
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:hwxtb8",
+      "file": "v4/classic/schemas.ts",
+      "line": 1009,
+      "message": "function re-declared 2× across 2 files (e.g. e164) — agent likely re-built an existing one [group h7h6w8]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "h7h6w8",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function e164(params?: string | core.$ZodE164Params): ZodE164 {\n  return core._e164(ZodE164, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:1009",
+        "occurrences": [
+          {
+            "name": "e164",
+            "file": "v4/classic/schemas.ts",
+            "line": 1009
+          },
+          {
+            "name": "e164",
+            "file": "v4/mini/schemas.ts",
+            "line": 492
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:12tdos9",
+      "file": "v4/classic/schemas.ts",
+      "line": 1025,
+      "message": "function re-declared 2× across 2 files (e.g. creditCard) — agent likely re-built an existing one [group 15rtxel]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "15rtxel",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function creditCard(params?: string | core.$ZodCreditCardParams): ZodCreditCard {\n  return core._creditCard(ZodCreditCard, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:1025",
+        "occurrences": [
+          {
+            "name": "creditCard",
+            "file": "v4/classic/schemas.ts",
+            "line": 1025
+          },
+          {
+            "name": "creditCard",
+            "file": "v4/mini/schemas.ts",
+            "line": 507
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1s09ezd",
+      "file": "v4/classic/schemas.ts",
+      "line": 1039,
+      "message": "function re-declared 2× across 2 files (e.g. jwt) — agent likely re-built an existing one [group 1h92gn1]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1h92gn1",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function jwt(params?: string | core.$ZodJWTParams): ZodJWT {\n  return core._jwt(ZodJWT, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:1039",
+        "occurrences": [
+          {
+            "name": "jwt",
+            "file": "v4/classic/schemas.ts",
+            "line": 1039
+          },
+          {
+            "name": "jwt",
+            "file": "v4/mini/schemas.ts",
+            "line": 521
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:6060bg",
+      "file": "v4/classic/schemas.ts",
+      "line": 1058,
+      "message": "function re-declared 2× across 2 files (e.g. stringFormat) — agent likely re-built an existing one [group qx58kg]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "qx58kg",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function stringFormat<Format extends string>(\n  format: Format,\n  fnOrRegex: ((arg: string) => util.MaybeAsync<unknown>) | RegExp,\n  _params: string | core.$ZodStringFormatParams = {}\n): ZodCustomStringFormat<Format> {\n  return …",
+        "previewFrom": "v4/classic/schemas.ts:1058",
+        "occurrences": [
+          {
+            "name": "stringFormat",
+            "file": "v4/classic/schemas.ts",
+            "line": 1058
+          },
+          {
+            "name": "stringFormat",
+            "file": "v4/mini/schemas.ts",
+            "line": 540
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vrviue",
+      "file": "v4/classic/schemas.ts",
+      "line": 1066,
+      "message": "function re-declared 2× across 2 files (e.g. hostname) — agent likely re-built an existing one [group nuuewa]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "nuuewa",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function hostname(_params?: string | core.$ZodStringFormatParams): ZodCustomStringFormat<\"hostname\"> {\n  return core._stringFormat(ZodCustomStringFormat, \"hostname\", core.regexes.hostname, _params) as any;\n}",
+        "previewFrom": "v4/classic/schemas.ts:1066",
+        "occurrences": [
+          {
+            "name": "hostname",
+            "file": "v4/classic/schemas.ts",
+            "line": 1066
+          },
+          {
+            "name": "hostname",
+            "file": "v4/mini/schemas.ts",
+            "line": 549
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:10a40wc",
+      "file": "v4/classic/schemas.ts",
+      "line": 1070,
+      "message": "function re-declared 2× across 2 files (e.g. hex) — agent likely re-built an existing one [group 106j500]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "106j500",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function hex(_params?: string | core.$ZodStringFormatParams): ZodCustomStringFormat<\"hex\"> {\n  return core._stringFormat(ZodCustomStringFormat, \"hex\", core.regexes.hex, _params) as any;\n}",
+        "previewFrom": "v4/classic/schemas.ts:1070",
+        "occurrences": [
+          {
+            "name": "hex",
+            "file": "v4/classic/schemas.ts",
+            "line": 1070
+          },
+          {
+            "name": "hex",
+            "file": "v4/mini/schemas.ts",
+            "line": 554
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:tbot8g",
+      "file": "v4/classic/schemas.ts",
+      "line": 1074,
+      "message": "function re-declared 2× across 2 files (e.g. hash) — agent likely re-built an existing one [group wudm9w]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "wudm9w",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function hash<Alg extends util.HashAlgorithm, Enc extends util.HashEncoding = \"hex\">(\n  alg: Alg,\n  params?: {\n    enc?: Enc;\n  } & core.$ZodStringFormatParams\n): ZodCustomStringFormat<`${Alg}_${Enc}`> {\n  const enc = params?.enc ?? \"hex\"; …",
+        "previewFrom": "v4/classic/schemas.ts:1074",
+        "occurrences": [
+          {
+            "name": "hash",
+            "file": "v4/classic/schemas.ts",
+            "line": 1074
+          },
+          {
+            "name": "hash",
+            "file": "v4/mini/schemas.ts",
+            "line": 559
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:sxem27",
+      "file": "v4/classic/schemas.ts",
+      "line": 1211,
+      "message": "function re-declared 2× across 2 files (e.g. int) — agent likely re-built an existing one [group 1anvedv]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1anvedv",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function int(params?: string | core.$ZodCheckNumberFormatParams): ZodInt {\n  return core._int(ZodNumberFormat, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:1211",
+        "occurrences": [
+          {
+            "name": "int",
+            "file": "v4/classic/schemas.ts",
+            "line": 1211
+          },
+          {
+            "name": "int",
+            "file": "v4/mini/schemas.ts",
+            "line": 608
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1x1ls7z",
+      "file": "v4/classic/schemas.ts",
+      "line": 1217,
+      "message": "function re-declared 2× across 2 files (e.g. float32) — agent likely re-built an existing one [group 1iyzhqb]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1iyzhqb",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function float32(params?: string | core.$ZodCheckNumberFormatParams): ZodFloat32 {\n  return core._float32(ZodNumberFormat, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:1217",
+        "occurrences": [
+          {
+            "name": "float32",
+            "file": "v4/classic/schemas.ts",
+            "line": 1217
+          },
+          {
+            "name": "float32",
+            "file": "v4/mini/schemas.ts",
+            "line": 615
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1gzwt6s",
+      "file": "v4/classic/schemas.ts",
+      "line": 1223,
+      "message": "function re-declared 2× across 2 files (e.g. float64) — agent likely re-built an existing one [group 15x79e0]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "15x79e0",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function float64(params?: string | core.$ZodCheckNumberFormatParams): ZodFloat64 {\n  return core._float64(ZodNumberFormat, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:1223",
+        "occurrences": [
+          {
+            "name": "float64",
+            "file": "v4/classic/schemas.ts",
+            "line": 1223
+          },
+          {
+            "name": "float64",
+            "file": "v4/mini/schemas.ts",
+            "line": 622
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:15oamus",
+      "file": "v4/classic/schemas.ts",
+      "line": 1229,
+      "message": "function re-declared 2× across 2 files (e.g. int32) — agent likely re-built an existing one [group 1uuxubc]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1uuxubc",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function int32(params?: string | core.$ZodCheckNumberFormatParams): ZodInt32 {\n  return core._int32(ZodNumberFormat, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:1229",
+        "occurrences": [
+          {
+            "name": "int32",
+            "file": "v4/classic/schemas.ts",
+            "line": 1229
+          },
+          {
+            "name": "int32",
+            "file": "v4/mini/schemas.ts",
+            "line": 629
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1m4hzft",
+      "file": "v4/classic/schemas.ts",
+      "line": 1235,
+      "message": "function re-declared 2× across 2 files (e.g. uint32) — agent likely re-built an existing one [group k21j65]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "k21j65",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function uint32(params?: string | core.$ZodCheckNumberFormatParams): ZodUInt32 {\n  return core._uint32(ZodNumberFormat, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:1235",
+        "occurrences": [
+          {
+            "name": "uint32",
+            "file": "v4/classic/schemas.ts",
+            "line": 1235
+          },
+          {
+            "name": "uint32",
+            "file": "v4/mini/schemas.ts",
+            "line": 636
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:pmlntl",
+      "file": "v4/classic/schemas.ts",
+      "line": 1343,
+      "message": "function re-declared 2× across 2 files (e.g. int64) — agent likely re-built an existing one [group 1ht5lz1]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ht5lz1",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function int64(params?: string | core.$ZodBigIntFormatParams): ZodBigIntFormat {\n  return core._int64(ZodBigIntFormat, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:1343",
+        "occurrences": [
+          {
+            "name": "int64",
+            "file": "v4/classic/schemas.ts",
+            "line": 1343
+          },
+          {
+            "name": "int64",
+            "file": "v4/mini/schemas.ts",
+            "line": 691
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:162t0em",
+      "file": "v4/classic/schemas.ts",
+      "line": 1348,
+      "message": "function re-declared 2× across 2 files (e.g. uint64) — agent likely re-built an existing one [group 709atu]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "709atu",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function uint64(params?: string | core.$ZodBigIntFormatParams): ZodBigIntFormat {\n  return core._uint64(ZodBigIntFormat, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:1348",
+        "occurrences": [
+          {
+            "name": "uint64",
+            "file": "v4/classic/schemas.ts",
+            "line": 1348
+          },
+          {
+            "name": "uint64",
+            "file": "v4/mini/schemas.ts",
+            "line": 698
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1dzugiq",
+      "file": "v4/classic/schemas.ts",
+      "line": 1519,
+      "message": "function re-declared 2× across 2 files (e.g. keyof) — agent likely re-built an existing one [group 13pgm06]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "13pgm06",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function keyof<T extends ZodObject>(schema: T): ZodEnum<util.KeysEnum<T[\"_zod\"][\"output\"]>> {\n  const shape = schema._zod.def.shape;\n  return _enum(Object.keys(shape)) as any;\n}",
+        "previewFrom": "v4/classic/schemas.ts:1519",
+        "occurrences": [
+          {
+            "name": "keyof",
+            "file": "v4/classic/schemas.ts",
+            "line": 1519
+          },
+          {
+            "name": "keyof",
+            "file": "v4/mini/schemas.ts",
+            "line": 865
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:cf3m4p",
+      "file": "v4/classic/schemas.ts",
+      "line": 1822,
+      "message": "interface re-declared 5× in 1 file (e.g. ZodCustom, ZodIntersection, ZodNaN, +2 more) — agent likely re-built an existing one [group vhziki]",
+      "metadata": {
+        "symbolKind": "interface",
+        "fingerprintHash": "vhziki",
+        "distinctFiles": 1,
+        "totalDeclarations": 5,
+        "preview": "interface ZodIntersection<A extends core.SomeType = core.$ZodType, B extends core.SomeType = core.$ZodType>\n  extends _ZodType<core.$ZodIntersectionInternals<A, B>>,\n    core.$ZodIntersection<A, B> {\n  \"~standard\": …",
+        "previewFrom": "v4/classic/schemas.ts:1822",
+        "occurrences": [
+          {
+            "name": "ZodIntersection",
+            "file": "v4/classic/schemas.ts",
+            "line": 1822
+          },
+          {
+            "name": "ZodTransform",
+            "file": "v4/classic/schemas.ts",
+            "line": 2188
+          },
+          {
+            "name": "ZodNaN",
+            "file": "v4/classic/schemas.ts",
+            "line": 2471
+          },
+          {
+            "name": "ZodTemplateLiteral",
+            "file": "v4/classic/schemas.ts",
+            "line": 2597
+          },
+          {
+            "name": "ZodCustom",
+            "file": "v4/classic/schemas.ts",
+            "line": 2734
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1g6gksg",
+      "file": "v4/classic/schemas.ts",
+      "line": 2183,
+      "message": "function re-declared 2× across 2 files (e.g. file) — agent likely re-built an existing one [group 5aatg]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "5aatg",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function file(params?: string | core.$ZodFileParams): ZodFile {\n  return core._file(ZodFile, params) as any;\n}",
+        "previewFrom": "v4/classic/schemas.ts:2183",
+        "occurrences": [
+          {
+            "name": "file",
+            "file": "v4/classic/schemas.ts",
+            "line": 2183
+          },
+          {
+            "name": "file",
+            "file": "v4/mini/schemas.ts",
+            "line": 1423
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:g01dux",
+      "file": "v4/classic/schemas.ts",
+      "line": 2247,
+      "message": "interface re-declared 9× in 1 file (e.g. ZodExactOptional, ZodLazy, ZodNonOptional, +6 more) — agent likely re-built an existing one [group ebtwjm]",
+      "metadata": {
+        "symbolKind": "interface",
+        "fingerprintHash": "ebtwjm",
+        "distinctFiles": 1,
+        "totalDeclarations": 9,
+        "preview": "interface ZodOptional<T extends core.SomeType = core.$ZodType>\n  extends _ZodType<core.$ZodOptionalInternals<T>>,\n    core.$ZodOptional<T> {\n  \"~standard\": ZodStandardSchemaWithJSON<this>;\n  unwrap(): T;\n}",
+        "previewFrom": "v4/classic/schemas.ts:2247",
+        "occurrences": [
+          {
+            "name": "ZodOptional",
+            "file": "v4/classic/schemas.ts",
+            "line": 2247
+          },
+          {
+            "name": "ZodExactOptional",
+            "file": "v4/classic/schemas.ts",
+            "line": 2272
+          },
+          {
+            "name": "ZodNullable",
+            "file": "v4/classic/schemas.ts",
+            "line": 2297
+          },
+          {
+            "name": "ZodPrefault",
+            "file": "v4/classic/schemas.ts",
+            "line": 2358
+          },
+          {
+            "name": "ZodNonOptional",
+            "file": "v4/classic/schemas.ts",
+            "line": 2388
+          },
+          {
+            "name": "ZodSuccess",
+            "file": "v4/classic/schemas.ts",
+            "line": 2417
+          },
+          {
+            "name": "ZodReadonly",
+            "file": "v4/classic/schemas.ts",
+            "line": 2572
+          },
+          {
+            "name": "ZodLazy",
+            "file": "v4/classic/schemas.ts",
+            "line": 2623
+          },
+          {
+            "name": "ZodPromise",
+            "file": "v4/classic/schemas.ts",
+            "line": 2645
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ejqjg4",
+      "file": "v4/classic/schemas.ts",
+      "line": 2322,
+      "message": "function re-declared 2× across 2 files (e.g. nullish) — agent likely re-built an existing one [group arhfg8]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "arhfg8",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function nullish<T extends core.SomeType>(innerType: T): ZodOptional<ZodNullable<T>> {\n  return optional(nullable(innerType));\n}",
+        "previewFrom": "v4/classic/schemas.ts:2322",
+        "occurrences": [
+          {
+            "name": "nullish",
+            "file": "v4/classic/schemas.ts",
+            "line": 2322
+          },
+          {
+            "name": "nullish",
+            "file": "v4/mini/schemas.ts",
+            "line": 1516
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:oauzgt",
+      "file": "v4/classic/schemas.ts",
+      "line": 2756,
+      "message": "function re-declared 2× across 2 files (e.g. custom) — agent likely re-built an existing one [group 1y2401d]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1y2401d",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function custom<O>(\n  fn?: (data: unknown) => unknown,\n  _params?: string | core.$ZodCustomParams | undefined\n): ZodCustom<O, O> {\n  return core._custom(ZodCustom, fn ?? (() => true), _params) as any;\n}",
+        "previewFrom": "v4/classic/schemas.ts:2756",
+        "occurrences": [
+          {
+            "name": "custom",
+            "file": "v4/classic/schemas.ts",
+            "line": 2756
+          },
+          {
+            "name": "custom",
+            "file": "v4/mini/schemas.ts",
+            "line": 1844
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:wkh3qz",
+      "file": "v4/classic/schemas.ts",
+      "line": 2763,
+      "message": "function re-declared 2× across 2 files (e.g. refine) — agent likely re-built an existing one [group icx1jz]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "icx1jz",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function refine<T>(\n  fn: (arg: NoInfer<T>) => util.MaybeAsync<unknown>,\n  _params: string | core.$ZodCustomParams = {}\n): core.$ZodCheck<T> {\n  return core._refine(ZodCustom, fn, _params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:2763",
+        "occurrences": [
+          {
+            "name": "refine",
+            "file": "v4/classic/schemas.ts",
+            "line": 2763
+          },
+          {
+            "name": "refine",
+            "file": "v4/mini/schemas.ts",
+            "line": 1853
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1eriifh",
+      "file": "v4/classic/schemas.ts",
+      "line": 2771,
+      "message": "function re-declared 2× across 2 files (e.g. superRefine) — agent likely re-built an existing one [group 1aj4gdt]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1aj4gdt",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function superRefine<T>(\n  fn: (arg: T, payload: core.$RefinementCtx<T>) => void | Promise<void>,\n  params?: core.$ZodSuperRefineParams\n): core.$ZodCheck<T> {\n  return core._superRefine(fn, params);\n}",
+        "previewFrom": "v4/classic/schemas.ts:2771",
+        "occurrences": [
+          {
+            "name": "superRefine",
+            "file": "v4/classic/schemas.ts",
+            "line": 2771
+          },
+          {
+            "name": "superRefine",
+            "file": "v4/mini/schemas.ts",
+            "line": 1862
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:19y4ff7",
+      "file": "v4/classic/schemas.ts",
+      "line": 2816,
+      "message": "function re-declared 2× across 2 files (e.g. stringbool) — agent likely re-built an existing one [group 1ljlzav]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ljlzav",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "stringbool: (_params?: string | core.$ZodStringBoolParams) => ZodCodec<ZodString, ZodBoolean> = (\n  ...args\n) =>\n  core._stringbool(\n    {\n      Codec: ZodCodec,\n      Boolean: ZodBoolean,\n      String: ZodString,\n    },\n    ...args\n  ) as …",
+        "previewFrom": "v4/classic/schemas.ts:2816",
+        "occurrences": [
+          {
+            "name": "stringbool",
+            "file": "v4/classic/schemas.ts",
+            "line": 2816
+          },
+          {
+            "name": "stringbool",
+            "file": "v4/mini/schemas.ts",
+            "line": 1901
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:5wwvd4",
+      "file": "v4/core/api.ts",
+      "line": 63,
+      "message": "function re-declared 11× in 1 file (e.g. _bigint, _boolean, _date, +8 more) — agent likely re-built an existing one [group 1we0z0v]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1we0z0v",
+        "distinctFiles": 1,
+        "totalDeclarations": 11,
+        "preview": "function _string<T extends schemas.$ZodString>(\n  Class: util.SchemaClass<T>,\n  params?: string | $ZodStringParams\n): T {\n  return new Class({\n    type: \"string\",\n    ...util.normalizeParams(params),\n  });\n}",
+        "previewFrom": "v4/core/api.ts:63",
+        "occurrences": [
+          {
+            "name": "_string",
+            "file": "v4/core/api.ts",
+            "line": 63
+          },
+          {
+            "name": "_boolean",
+            "file": "v4/core/api.ts",
+            "line": 691
+          },
+          {
+            "name": "_bigint",
+            "file": "v4/core/api.ts",
+            "line": 717
+          },
+          {
+            "name": "_symbol",
+            "file": "v4/core/api.ts",
+            "line": 768
+          },
+          {
+            "name": "_undefined",
+            "file": "v4/core/api.ts",
+            "line": 781
+          },
+          {
+            "name": "_null",
+            "file": "v4/core/api.ts",
+            "line": 794
+          },
+          {
+            "name": "_never",
+            "file": "v4/core/api.ts",
+            "line": 822
+          },
+          {
+            "name": "_void",
+            "file": "v4/core/api.ts",
+            "line": 832
+          },
+          {
+            "name": "_date",
+            "file": "v4/core/api.ts",
+            "line": 842
+          },
+          {
+            "name": "_nan",
+            "file": "v4/core/api.ts",
+            "line": 863
+          },
+          {
+            "name": "_file",
+            "file": "v4/core/api.ts",
+            "line": 1453
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:lihn0i",
+      "file": "v4/core/api.ts",
+      "line": 74,
+      "message": "function re-declared 4× in 1 file (e.g. _coercedBigint, _coercedBoolean, _coercedDate, +1 more) — agent likely re-built an existing one [group 87rjhl]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "87rjhl",
+        "distinctFiles": 1,
+        "totalDeclarations": 4,
+        "preview": "function _coercedString<T extends schemas.$ZodString>(\n  Class: util.SchemaClass<T>,\n  params?: string | $ZodStringParams\n): T {\n  return new Class({\n    type: \"string\",\n    coerce: true,\n    ...util.normalizeParams(params),\n  });\n}",
+        "previewFrom": "v4/core/api.ts:74",
+        "occurrences": [
+          {
+            "name": "_coercedString",
+            "file": "v4/core/api.ts",
+            "line": 74
+          },
+          {
+            "name": "_coercedBoolean",
+            "file": "v4/core/api.ts",
+            "line": 701
+          },
+          {
+            "name": "_coercedBigint",
+            "file": "v4/core/api.ts",
+            "line": 727
+          },
+          {
+            "name": "_coercedDate",
+            "file": "v4/core/api.ts",
+            "line": 849
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:u04yfk",
+      "file": "v4/core/api.ts",
+      "line": 96,
+      "message": "function re-declared 21× in 1 file (e.g. _base64, _base64url, _cidrv4, +18 more) — agent likely re-built an existing one [group pv5587]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "pv5587",
+        "distinctFiles": 1,
+        "totalDeclarations": 21,
+        "preview": "function _email<T extends schemas.$ZodEmail>(\n  Class: util.SchemaClass<T>,\n  params?: string | $ZodEmailParams | $ZodCheckEmailParams\n): T {\n  return new Class({\n    type: \"string\",\n    format: \"email\",\n    check: \"string_format\", …",
+        "previewFrom": "v4/core/api.ts:96",
+        "occurrences": [
+          {
+            "name": "_email",
+            "file": "v4/core/api.ts",
+            "line": 96
+          },
+          {
+            "name": "_guid",
+            "file": "v4/core/api.ts",
+            "line": 113
+          },
+          {
+            "name": "_uuid",
+            "file": "v4/core/api.ts",
+            "line": 130
+          },
+          {
+            "name": "_url",
+            "file": "v4/core/api.ts",
+            "line": 201
+          },
+          {
+            "name": "_emoji",
+            "file": "v4/core/api.ts",
+            "line": 218
+          },
+          {
+            "name": "_nanoid",
+            "file": "v4/core/api.ts",
+            "line": 235
+          },
+          {
+            "name": "_cuid",
+            "file": "v4/core/api.ts",
+            "line": 267
+          },
+          {
+            "name": "_cuid2",
+            "file": "v4/core/api.ts",
+            "line": 284
+          },
+          {
+            "name": "_ulid",
+            "file": "v4/core/api.ts",
+            "line": 301
+          },
+          {
+            "name": "_xid",
+            "file": "v4/core/api.ts",
+            "line": 318
+          },
+          {
+            "name": "_ksuid",
+            "file": "v4/core/api.ts",
+            "line": 335
+          },
+          {
+            "name": "_ipv4",
+            "file": "v4/core/api.ts",
+            "line": 352
+          },
+          {
+            "name": "_ipv6",
+            "file": "v4/core/api.ts",
+            "line": 369
+          },
+          {
+            "name": "_mac",
+            "file": "v4/core/api.ts",
+            "line": 386
+          },
+          {
+            "name": "_cidrv4",
+            "file": "v4/core/api.ts",
+            "line": 403
+          },
+          {
+            "name": "_cidrv6",
+            "file": "v4/core/api.ts",
+            "line": 420
+          },
+          {
+            "name": "_base64",
+            "file": "v4/core/api.ts",
+            "line": 437
+          },
+          {
+            "name": "_base64url",
+            "file": "v4/core/api.ts",
+            "line": 454
+          },
+          {
+            "name": "_e164",
+            "file": "v4/core/api.ts",
+            "line": 471
+          },
+          {
+            "name": "_creditCard",
+            "file": "v4/core/api.ts",
+            "line": 488
+          },
+          {
+            "name": "_jwt",
+            "file": "v4/core/api.ts",
+            "line": 505
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:paqhpp",
+      "file": "v4/core/api.ts",
+      "line": 127,
+      "message": "type re-declared 4× in 1 file (e.g. $ZodUUIDParams, $ZodUUIDv4Params, $ZodUUIDv6Params, +1 more) — agent likely re-built an existing one [group yky1jc]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "yky1jc",
+        "distinctFiles": 1,
+        "totalDeclarations": 4,
+        "preview": "type $ZodUUIDParams = StringFormatParams<schemas.$ZodUUID, \"pattern\" | \"when\">;",
+        "previewFrom": "v4/core/api.ts:127",
+        "occurrences": [
+          {
+            "name": "$ZodUUIDParams",
+            "file": "v4/core/api.ts",
+            "line": 127
+          },
+          {
+            "name": "$ZodUUIDv4Params",
+            "file": "v4/core/api.ts",
+            "line": 144
+          },
+          {
+            "name": "$ZodUUIDv6Params",
+            "file": "v4/core/api.ts",
+            "line": 162
+          },
+          {
+            "name": "$ZodUUIDv7Params",
+            "file": "v4/core/api.ts",
+            "line": 180
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1owkw7f",
+      "file": "v4/core/api.ts",
+      "line": 128,
+      "message": "type re-declared 4× in 1 file (e.g. $ZodCheckUUIDParams, $ZodCheckUUIDv4Params, $ZodCheckUUIDv6Params, +1 more) — agent likely re-built an existing one [group 1mzghmu]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1mzghmu",
+        "distinctFiles": 1,
+        "totalDeclarations": 4,
+        "preview": "type $ZodCheckUUIDParams = CheckStringFormatParams<schemas.$ZodUUID, \"pattern\" | \"when\">;",
+        "previewFrom": "v4/core/api.ts:128",
+        "occurrences": [
+          {
+            "name": "$ZodCheckUUIDParams",
+            "file": "v4/core/api.ts",
+            "line": 128
+          },
+          {
+            "name": "$ZodCheckUUIDv4Params",
+            "file": "v4/core/api.ts",
+            "line": 145
+          },
+          {
+            "name": "$ZodCheckUUIDv6Params",
+            "file": "v4/core/api.ts",
+            "line": 163
+          },
+          {
+            "name": "$ZodCheckUUIDv7Params",
+            "file": "v4/core/api.ts",
+            "line": 181
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1rj9bsn",
+      "file": "v4/core/api.ts",
+      "line": 147,
+      "message": "function re-declared 3× in 1 file (e.g. _uuidv4, _uuidv6, _uuidv7) — agent likely re-built an existing one [group 1li51dq]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1li51dq",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "function _uuidv4<T extends schemas.$ZodUUID>(\n  Class: util.SchemaClass<T>,\n  params?: string | $ZodUUIDv4Params | $ZodCheckUUIDv4Params\n): T {\n  return new Class({\n    type: \"string\",\n    format: \"uuid\",\n    check: \"string_format\", …",
+        "previewFrom": "v4/core/api.ts:147",
+        "occurrences": [
+          {
+            "name": "_uuidv4",
+            "file": "v4/core/api.ts",
+            "line": 147
+          },
+          {
+            "name": "_uuidv6",
+            "file": "v4/core/api.ts",
+            "line": 165
+          },
+          {
+            "name": "_uuidv7",
+            "file": "v4/core/api.ts",
+            "line": 183
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:6hby52",
+      "file": "v4/core/api.ts",
+      "line": 548,
+      "message": "function re-declared 2× in 1 file (e.g. _isoDate, _isoDuration) — agent likely re-built an existing one [group 1sadi3h]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1sadi3h",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function _isoDate<T extends schemas.$ZodISODate>(\n  Class: util.SchemaClass<T>,\n  params?: string | $ZodISODateParams | $ZodCheckISODateParams\n): T {\n  return new Class({\n    type: \"string\",\n    format: \"date\",\n    check: \"string_format\", …",
+        "previewFrom": "v4/core/api.ts:548",
+        "occurrences": [
+          {
+            "name": "_isoDate",
+            "file": "v4/core/api.ts",
+            "line": 548
+          },
+          {
+            "name": "_isoDuration",
+            "file": "v4/core/api.ts",
+            "line": 581
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:5v0jcg",
+      "file": "v4/core/api.ts",
+      "line": 623,
+      "message": "function re-declared 7× in 1 file (e.g. _float32, _float64, _int, +4 more) — agent likely re-built an existing one [group 1hkxizb]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1hkxizb",
+        "distinctFiles": 1,
+        "totalDeclarations": 7,
+        "preview": "function _int<T extends schemas.$ZodNumberFormat>(\n  Class: util.SchemaClass<T>,\n  params?: string | $ZodCheckNumberFormatParams\n): T {\n  return new Class({\n    type: \"number\",\n    check: \"number_format\",\n    abort: false,\n    format: …",
+        "previewFrom": "v4/core/api.ts:623",
+        "occurrences": [
+          {
+            "name": "_int",
+            "file": "v4/core/api.ts",
+            "line": 623
+          },
+          {
+            "name": "_float32",
+            "file": "v4/core/api.ts",
+            "line": 636
+          },
+          {
+            "name": "_float64",
+            "file": "v4/core/api.ts",
+            "line": 649
+          },
+          {
+            "name": "_int32",
+            "file": "v4/core/api.ts",
+            "line": 662
+          },
+          {
+            "name": "_uint32",
+            "file": "v4/core/api.ts",
+            "line": 675
+          },
+          {
+            "name": "_int64",
+            "file": "v4/core/api.ts",
+            "line": 739
+          },
+          {
+            "name": "_uint64",
+            "file": "v4/core/api.ts",
+            "line": 752
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:p46vpe",
+      "file": "v4/core/api.ts",
+      "line": 804,
+      "message": "function re-declared 2× in 1 file (e.g. _any, _unknown) — agent likely re-built an existing one [group tt55ih]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "tt55ih",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function _any<T extends schemas.$ZodAny>(Class: util.SchemaClass<T>): T {\n  return new Class({\n    type: \"any\",\n  });\n}",
+        "previewFrom": "v4/core/api.ts:804",
+        "occurrences": [
+          {
+            "name": "_any",
+            "file": "v4/core/api.ts",
+            "line": 804
+          },
+          {
+            "name": "_unknown",
+            "file": "v4/core/api.ts",
+            "line": 813
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1n1j3sp",
+      "file": "v4/core/api.ts",
+      "line": 874,
+      "message": "function re-declared 2× in 1 file (e.g. _lt, _lte) — agent likely re-built an existing one [group ufn3sw]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "ufn3sw",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function _lt(\n  value: util.Numeric,\n  params?: string | $ZodCheckLessThanParams\n): checks.$ZodCheckLessThan<util.Numeric> {\n  return new checks.$ZodCheckLessThan({\n    check: \"less_than\",\n    ...util.normalizeParams(params),\n    value, …",
+        "previewFrom": "v4/core/api.ts:874",
+        "occurrences": [
+          {
+            "name": "_lt",
+            "file": "v4/core/api.ts",
+            "line": 874
+          },
+          {
+            "name": "_lte",
+            "file": "v4/core/api.ts",
+            "line": 887
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1od8h8s",
+      "file": "v4/core/api.ts",
+      "line": 907,
+      "message": "function re-declared 2× in 1 file (e.g. _gt, _gte) — agent likely re-built an existing one [group w98y1f]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "w98y1f",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function _gt(value: util.Numeric, params?: string | $ZodCheckGreaterThanParams): checks.$ZodCheckGreaterThan {\n  return new checks.$ZodCheckGreaterThan({\n    check: \"greater_than\",\n\n    ...util.normalizeParams(params),\n    value, …",
+        "previewFrom": "v4/core/api.ts:907",
+        "occurrences": [
+          {
+            "name": "_gt",
+            "file": "v4/core/api.ts",
+            "line": 907
+          },
+          {
+            "name": "_gte",
+            "file": "v4/core/api.ts",
+            "line": 918
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:g4kdcw",
+      "file": "v4/core/api.ts",
+      "line": 1188,
+      "message": "function re-declared 6× in 1 file (e.g. _array, _nativeEnum, _nonoptional, +3 more) — agent likely re-built an existing one [group 9ek85j]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "9ek85j",
+        "distinctFiles": 1,
+        "totalDeclarations": 6,
+        "preview": "function _array<T extends schemas.$ZodType>(\n  Class: util.SchemaClass<schemas.$ZodArray>,\n  element: T,\n  params?: string | $ZodArrayParams\n): schemas.$ZodArray<T> {\n  return new Class({\n    type: \"array\",\n    element,\n    // get …",
+        "previewFrom": "v4/core/api.ts:1188",
+        "occurrences": [
+          {
+            "name": "_array",
+            "file": "v4/core/api.ts",
+            "line": 1188
+          },
+          {
+            "name": "_union",
+            "file": "v4/core/api.ts",
+            "line": 1208
+          },
+          {
+            "name": "_set",
+            "file": "v4/core/api.ts",
+            "line": 1361
+          },
+          {
+            "name": "_nativeEnum",
+            "file": "v4/core/api.ts",
+            "line": 1417
+          },
+          {
+            "name": "_nonoptional",
+            "file": "v4/core/api.ts",
+            "line": 1519
+          },
+          {
+            "name": "_templateLiteral",
+            "file": "v4/core/api.ts",
+            "line": 1593
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1u6rjfa",
+      "file": "v4/core/api.ts",
+      "line": 1274,
+      "message": "function re-declared 2× in 1 file (e.g. _intersection, _pipe) — agent likely re-built an existing one [group 9uled9]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "9uled9",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function _intersection<T extends schemas.$ZodObject, U extends schemas.$ZodObject>(\n  Class: util.SchemaClass<schemas.$ZodIntersection>,\n  left: T,\n  right: U\n): schemas.$ZodIntersection<T, U> {\n  return new Class({\n    type: …",
+        "previewFrom": "v4/core/api.ts:1274",
+        "occurrences": [
+          {
+            "name": "_intersection",
+            "file": "v4/core/api.ts",
+            "line": 1274
+          },
+          {
+            "name": "_pipe",
+            "file": "v4/core/api.ts",
+            "line": 1562
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:17hu5zw",
+      "file": "v4/core/api.ts",
+      "line": 1327,
+      "message": "function re-declared 2× in 1 file (e.g. _map, _record) — agent likely re-built an existing one [group 1s27rqb]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1s27rqb",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function _record<Key extends schemas.$ZodRecordKey, Value extends schemas.$ZodObject>(\n  Class: util.SchemaClass<schemas.$ZodRecord>,\n  keyType: Key,\n  valueType: Value,\n  params?: string | $ZodRecordParams\n): schemas.$ZodRecord<Key, …",
+        "previewFrom": "v4/core/api.ts:1327",
+        "occurrences": [
+          {
+            "name": "_record",
+            "file": "v4/core/api.ts",
+            "line": 1327
+          },
+          {
+            "name": "_map",
+            "file": "v4/core/api.ts",
+            "line": 1344
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:15uu08q",
+      "file": "v4/core/api.ts",
+      "line": 1476,
+      "message": "function re-declared 6× in 1 file (e.g. _lazy, _nullable, _optional, +3 more) — agent likely re-built an existing one [group 13pjcox]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "13pjcox",
+        "distinctFiles": 1,
+        "totalDeclarations": 6,
+        "preview": "function _optional<T extends schemas.$ZodObject>(\n  Class: util.SchemaClass<schemas.$ZodOptional>,\n  innerType: T\n): schemas.$ZodOptional<T> {\n  return new Class({\n    type: \"optional\",\n    innerType,\n  }) as any;\n}",
+        "previewFrom": "v4/core/api.ts:1476",
+        "occurrences": [
+          {
+            "name": "_optional",
+            "file": "v4/core/api.ts",
+            "line": 1476
+          },
+          {
+            "name": "_nullable",
+            "file": "v4/core/api.ts",
+            "line": 1489
+          },
+          {
+            "name": "_success",
+            "file": "v4/core/api.ts",
+            "line": 1534
+          },
+          {
+            "name": "_readonly",
+            "file": "v4/core/api.ts",
+            "line": 1580
+          },
+          {
+            "name": "_lazy",
+            "file": "v4/core/api.ts",
+            "line": 1608
+          },
+          {
+            "name": "_promise",
+            "file": "v4/core/api.ts",
+            "line": 1621
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:z68v37",
+      "file": "v4/core/api.ts",
+      "line": 1718,
+      "message": "function re-declared 2× across 2 files (e.g. _check, check) — agent likely re-built an existing one [group omrqfe]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "omrqfe",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function _check<O = unknown>(fn: schemas.CheckFn<O>, params?: string | $ZodCustomParams): checks.$ZodCheck<O> {\n  const ch = new checks.$ZodCheck({\n    check: \"custom\",\n    ...util.normalizeParams(params),\n  });\n\n  ch._zod.check = fn; …",
+        "previewFrom": "v4/core/api.ts:1718",
+        "occurrences": [
+          {
+            "name": "_check",
+            "file": "v4/core/api.ts",
+            "line": 1718
+          },
+          {
+            "name": "check",
+            "file": "v4/mini/schemas.ts",
+            "line": 1832
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:luvsh3",
+      "file": "v4/core/compile.ts",
+      "line": 25,
+      "message": "type re-declared 4× across 3 files (e.g. $input, $output, INVALID, +1 more) — agent likely re-built an existing one [group 1nfju4j]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1nfju4j",
+        "distinctFiles": 3,
+        "totalDeclarations": 4,
+        "preview": "type INVALID = typeof INVALID;",
+        "previewFrom": "v4/core/compile.ts:25",
+        "occurrences": [
+          {
+            "name": "INVALID",
+            "file": "v4/core/compile.ts",
+            "line": 25
+          },
+          {
+            "name": "$output",
+            "file": "v4/core/registries.ts",
+            "line": 5
+          },
+          {
+            "name": "$input",
+            "file": "v4/core/registries.ts",
+            "line": 7
+          },
+          {
+            "name": "Resolving",
+            "file": "v4/core/visit.ts",
+            "line": 7
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:141aln6",
+      "file": "v4/core/compile.ts",
+      "line": 436,
+      "message": "function re-declared 2× in 1 file (e.g. generateGreaterThanCheck, generateLessThanCheck) — agent likely re-built an existing one [group q9upoq]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "q9upoq",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function generateGreaterThanCheck(\n  doc: Doc,\n  ctx: CompileContext,\n  def: checks.$ZodCheckGreaterThanDef,\n  accessor: string\n): void {\n  const op = def.inclusive ? \"<\" : \"<=\";\n  doc.write(`if (${accessor} ${op} ${comparisonOperand(ctx, …",
+        "previewFrom": "v4/core/compile.ts:436",
+        "occurrences": [
+          {
+            "name": "generateGreaterThanCheck",
+            "file": "v4/core/compile.ts",
+            "line": 436
+          },
+          {
+            "name": "generateLessThanCheck",
+            "file": "v4/core/compile.ts",
+            "line": 446
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1w4hk50",
+      "file": "v4/core/compile.ts",
+      "line": 987,
+      "message": "function re-declared 6× in 1 file (e.g. generateBooleanCheck, generateFileCheck, generateNullCheck, +3 more) — agent likely re-built an existing one [group 14g5gfg]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "14g5gfg",
+        "distinctFiles": 1,
+        "totalDeclarations": 6,
+        "preview": "function generateBooleanCheck(doc: Doc, accessor: string): string {\n  doc.write(`if (typeof ${accessor} !== \"boolean\") return INVALID;`);\n  return accessor;\n}",
+        "previewFrom": "v4/core/compile.ts:987",
+        "occurrences": [
+          {
+            "name": "generateBooleanCheck",
+            "file": "v4/core/compile.ts",
+            "line": 987
+          },
+          {
+            "name": "generateSymbolCheck",
+            "file": "v4/core/compile.ts",
+            "line": 1010
+          },
+          {
+            "name": "generateUndefinedCheck",
+            "file": "v4/core/compile.ts",
+            "line": 1015
+          },
+          {
+            "name": "generateNullCheck",
+            "file": "v4/core/compile.ts",
+            "line": 1020
+          },
+          {
+            "name": "generateVoidCheck",
+            "file": "v4/core/compile.ts",
+            "line": 1025
+          },
+          {
+            "name": "generateFileCheck",
+            "file": "v4/core/compile.ts",
+            "line": 1899
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1hwr4l1",
+      "file": "v4/core/compile.ts",
+      "line": 1030,
+      "message": "function re-declared 2× in 1 file (e.g. generateDateCheck, generateNaNCheck) — agent likely re-built an existing one [group 5nnqod]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "5nnqod",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function generateNaNCheck(doc: Doc, accessor: string): string {\n  doc.write(`if (typeof ${accessor} !== \"number\" || !Number.isNaN(${accessor})) return INVALID;`);\n  return accessor;\n}",
+        "previewFrom": "v4/core/compile.ts:1030",
+        "occurrences": [
+          {
+            "name": "generateNaNCheck",
+            "file": "v4/core/compile.ts",
+            "line": 1030
+          },
+          {
+            "name": "generateDateCheck",
+            "file": "v4/core/compile.ts",
+            "line": 1035
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1372cfw",
+      "file": "v4/core/config.ts",
+      "line": 12,
+      "message": "function re-declared 2× across 2 files (e.g. config) — agent likely re-built an existing one [group 1dvqvk7]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1dvqvk7",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function config(config?: Partial<$ZodConfig>): $ZodConfig {\n  if (config) Object.assign(globalConfig, config);\n  return globalConfig;\n}",
+        "previewFrom": "v4/core/config.ts:12",
+        "occurrences": [
+          {
+            "name": "config",
+            "file": "v4/core/config.ts",
+            "line": 12
+          },
+          {
+            "name": "config",
+            "file": "v4/core/core.ts",
+            "line": 178
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:gfnnhi",
+      "file": "v4/core/json-schema-processors.ts",
+      "line": 100,
+      "message": "function re-declared 2× in 1 file (e.g. booleanProcessor, successProcessor) — agent likely re-built an existing one [group 1p22mnj]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1p22mnj",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "booleanProcessor: Processor<schemas.$ZodBoolean> = (_schema, _ctx, json, _params) => {\n  (json as JSONSchema.BooleanSchema).type = \"boolean\";\n}",
+        "previewFrom": "v4/core/json-schema-processors.ts:100",
+        "occurrences": [
+          {
+            "name": "booleanProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 100
+          },
+          {
+            "name": "successProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 227
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1rsb4b4",
+      "file": "v4/core/json-schema-processors.ts",
+      "line": 104,
+      "message": "function re-declared 11× in 1 file (e.g. bigintProcessor, customProcessor, dateProcessor, +8 more) — agent likely re-built an existing one [group 87u189]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "87u189",
+        "distinctFiles": 1,
+        "totalDeclarations": 11,
+        "preview": "bigintProcessor: Processor<schemas.$ZodBigInt> = (schema, ctx, json, params) => {\n  handleUnrepresentable(schema, ctx, json, params, \"BigInt cannot be represented in JSON Schema\");\n}",
+        "previewFrom": "v4/core/json-schema-processors.ts:104",
+        "occurrences": [
+          {
+            "name": "bigintProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 104
+          },
+          {
+            "name": "symbolProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 108
+          },
+          {
+            "name": "undefinedProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 122
+          },
+          {
+            "name": "voidProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 126
+          },
+          {
+            "name": "dateProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 142
+          },
+          {
+            "name": "nanProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 191
+          },
+          {
+            "name": "customProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 231
+          },
+          {
+            "name": "functionProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 235
+          },
+          {
+            "name": "transformProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 239
+          },
+          {
+            "name": "mapProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 243
+          },
+          {
+            "name": "setProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 247
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:tyghic",
+      "file": "v4/core/json-schema-processors.ts",
+      "line": 500,
+      "message": "function re-declared 3× in 1 file (e.g. nonoptionalProcessor, optionalProcessor, promiseProcessor) — agent likely re-built an existing one [group 1g5vu3x]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1g5vu3x",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "nonoptionalProcessor: Processor<schemas.$ZodNonOptional> = (schema, ctx, _json, params) => {\n  const def = schema._zod.def as schemas.$ZodNonOptionalDef;\n  process(def.innerType, ctx as any, params);\n  const seen = ctx.seen.get(schema)!; …",
+        "previewFrom": "v4/core/json-schema-processors.ts:500",
+        "occurrences": [
+          {
+            "name": "nonoptionalProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 500
+          },
+          {
+            "name": "promiseProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 580
+          },
+          {
+            "name": "optionalProcessor",
+            "file": "v4/core/json-schema-processors.ts",
+            "line": 587
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:16dqbpw",
+      "file": "v4/core/json-schema.ts",
+      "line": 146,
+      "message": "interface re-declared 3× across 3 files (e.g. $ZSFNull, $ZodNullDef, NullSchema) — agent likely re-built an existing one [group 16ad81m]",
+      "metadata": {
+        "symbolKind": "interface",
+        "fingerprintHash": "16ad81m",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "interface NullSchema extends JSONSchema {\n  type: \"null\";\n}",
+        "previewFrom": "v4/core/json-schema.ts:146",
+        "occurrences": [
+          {
+            "name": "NullSchema",
+            "file": "v4/core/json-schema.ts",
+            "line": 146
+          },
+          {
+            "name": "$ZodNullDef",
+            "file": "v4/core/schemas.ts",
+            "line": 1505
+          },
+          {
+            "name": "$ZSFNull",
+            "file": "v4/core/zsf.ts",
+            "line": 35
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:zlol8a",
+      "file": "v4/core/schemas.ts",
+      "line": 1745,
+      "message": "function re-declared 2× in 1 file (e.g. handleArrayResult, handleTupleResult) — agent likely re-built an existing one [group 1vzgv1z]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1vzgv1z",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function handleArrayResult(result: ParsePayload<any>, final: ParsePayload<any[]>, index: number) {\n  if (result.issues.length) {\n    final.issues.push(...util.prefixIssues(index, result.issues));\n  }\n  final.value[index] = result.value;\n}",
+        "previewFrom": "v4/core/schemas.ts:1745",
+        "occurrences": [
+          {
+            "name": "handleArrayResult",
+            "file": "v4/core/schemas.ts",
+            "line": 1745
+          },
+          {
+            "name": "handleTupleResult",
+            "file": "v4/core/schemas.ts",
+            "line": 2962
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1v8pits",
+      "file": "v4/core/util.ts",
+      "line": 226,
+      "message": "function re-declared 2× in 1 file (e.g. assertEqual, assertNotEqual) — agent likely re-built an existing one [group 1o2gzrn]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1o2gzrn",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function assertEqual<A, B>(val: AssertEqual<A, B>): AssertEqual<A, B> {\n  return val;\n}",
+        "previewFrom": "v4/core/util.ts:226",
+        "occurrences": [
+          {
+            "name": "assertEqual",
+            "file": "v4/core/util.ts",
+            "line": 226
+          },
+          {
+            "name": "assertNotEqual",
+            "file": "v4/core/util.ts",
+            "line": 230
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:mqjw1c",
+      "file": "v4/locales/az.ts",
+      "line": 5,
+      "message": "function re-declared 2× across 2 files (e.g. error) — agent likely re-built an existing one [group 1ogtbw]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ogtbw",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "error: () => errors.$ZodErrorMap = () => {\n  const Sizable: Record<string, { unit: string; verb: string }> = {\n    string: { unit: \"simvol\", verb: \"olmalıdır\" },\n    file: { unit: \"bayt\", verb: \"olmalıdır\" },\n    array: { unit: \"element\", …",
+        "previewFrom": "v4/locales/az.ts:5",
+        "occurrences": [
+          {
+            "name": "error",
+            "file": "v4/locales/az.ts",
+            "line": 5
+          },
+          {
+            "name": "error",
+            "file": "v4/locales/tr.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1f3i6b0",
+      "file": "v4/locales/be.ts",
+      "line": 5,
+      "message": "function re-declared 2× across 2 files (e.g. getBelarusianPlural, getRussianPlural) — agent likely re-built an existing one [group zcl9ik]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "zcl9ik",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function getBelarusianPlural(count: number, one: string, few: string, many: string): string {\n  const absCount = Math.abs(count);\n  const lastDigit = absCount % 10;\n  const lastTwoDigits = absCount % 100;\n\n  if (lastTwoDigits >= 11 && …",
+        "previewFrom": "v4/locales/be.ts:5",
+        "occurrences": [
+          {
+            "name": "getBelarusianPlural",
+            "file": "v4/locales/be.ts",
+            "line": 5
+          },
+          {
+            "name": "getRussianPlural",
+            "file": "v4/locales/ru.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ppxfw",
+      "file": "v4/locales/ca.ts",
+      "line": 5,
+      "message": "function re-declared 2× across 2 files (e.g. error) — agent likely re-built an existing one [group 1v3ic1b]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1v3ic1b",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "error: () => errors.$ZodErrorMap = () => {\n  const Sizable: Record<string, { unit: string; verb: string }> = {\n    string: { unit: \"caràcters\", verb: \"contenir\" },\n    file: { unit: \"bytes\", verb: \"contenir\" },\n    array: { unit: …",
+        "previewFrom": "v4/locales/ca.ts:5",
+        "occurrences": [
+          {
+            "name": "error",
+            "file": "v4/locales/ca.ts",
+            "line": 5
+          },
+          {
+            "name": "error",
+            "file": "v4/locales/fr-CA.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vddxbs",
+      "file": "v4/locales/cs.ts",
+      "line": 5,
+      "message": "function re-declared 2× across 2 files (e.g. error) — agent likely re-built an existing one [group 3tbww9]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "3tbww9",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "error: () => errors.$ZodErrorMap = () => {\n  const Sizable: Record<string, { unit: string; verb: string }> = {\n    string: { unit: \"znaků\", verb: \"mít\" },\n    file: { unit: \"bajtů\", verb: \"mít\" },\n    array: { unit: \"prvků\", verb: \"mít\" }, …",
+        "previewFrom": "v4/locales/cs.ts:5",
+        "occurrences": [
+          {
+            "name": "error",
+            "file": "v4/locales/cs.ts",
+            "line": 5
+          },
+          {
+            "name": "error",
+            "file": "v4/locales/sk.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:aimnqt",
+      "file": "v4/locales/de.ts",
+      "line": 5,
+      "message": "function re-declared 4× across 4 files (e.g. error) — agent likely re-built an existing one [group 1gs81ar]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1gs81ar",
+        "distinctFiles": 4,
+        "totalDeclarations": 4,
+        "preview": "error: () => errors.$ZodErrorMap = () => {\n  const Sizable: Record<string, { unit: string; verb: string }> = {\n    string: { unit: \"Zeichen\", verb: \"zu haben\" },\n    file: { unit: \"Bytes\", verb: \"zu haben\" },\n    array: { unit: \"Elemente\", …",
+        "previewFrom": "v4/locales/de.ts:5",
+        "occurrences": [
+          {
+            "name": "error",
+            "file": "v4/locales/de.ts",
+            "line": 5
+          },
+          {
+            "name": "error",
+            "file": "v4/locales/hu.ts",
+            "line": 5
+          },
+          {
+            "name": "error",
+            "file": "v4/locales/nn.ts",
+            "line": 5
+          },
+          {
+            "name": "error",
+            "file": "v4/locales/no.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:gb4ke5",
+      "file": "v4/locales/fa.ts",
+      "line": 5,
+      "message": "function re-declared 2× across 2 files (e.g. error) — agent likely re-built an existing one [group pnudzx]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "pnudzx",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "error: () => errors.$ZodErrorMap = () => {\n  const Sizable: Record<string, { unit: string; verb: string }> = {\n    string: { unit: \"کاراکتر\", verb: \"داشته باشد\" },\n    file: { unit: \"بایت\", verb: \"داشته باشد\" },\n    array: { unit: \"آیتم\", …",
+        "previewFrom": "v4/locales/fa.ts:5",
+        "occurrences": [
+          {
+            "name": "error",
+            "file": "v4/locales/fa.ts",
+            "line": 5
+          },
+          {
+            "name": "error",
+            "file": "v4/locales/ps.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:8ra0ep",
+      "file": "v4/locales/is.ts",
+      "line": 5,
+      "message": "function re-declared 2× across 2 files (e.g. error) — agent likely re-built an existing one [group 1noh4s]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1noh4s",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "error: () => errors.$ZodErrorMap = () => {\n  const Sizable: Record<string, { unit: string; verb: string }> = {\n    string: { unit: \"stafi\", verb: \"að hafa\" },\n    file: { unit: \"bæti\", verb: \"að hafa\" },\n    array: { unit: \"hluti\", verb: …",
+        "previewFrom": "v4/locales/is.ts:5",
+        "occurrences": [
+          {
+            "name": "error",
+            "file": "v4/locales/is.ts",
+            "line": 5
+          },
+          {
+            "name": "error",
+            "file": "v4/locales/mk.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:n6gg6m",
+      "file": "v4/locales/uk.ts",
+      "line": 5,
+      "message": "function re-declared 2× across 2 files (e.g. error) — agent likely re-built an existing one [group 1pfdhit]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1pfdhit",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "error: () => errors.$ZodErrorMap = () => {\n  const Sizable: Record<string, { unit: string; verb: string }> = {\n    string: { unit: \"символів\", verb: \"матиме\" },\n    file: { unit: \"байтів\", verb: \"матиме\" },\n    array: { unit: \"елементів\", …",
+        "previewFrom": "v4/locales/uk.ts:5",
+        "occurrences": [
+          {
+            "name": "error",
+            "file": "v4/locales/uk.ts",
+            "line": 5
+          },
+          {
+            "name": "error",
+            "file": "v4/locales/uz.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:6boyoq",
+      "file": "v4/core/util.ts",
+      "line": 328,
+      "message": "assignProp callers pass \"shape\" for 'prop' in 7/8 calls - hide the common case behind the API",
+      "metadata": {
+        "apiName": "assignProp",
+        "apiKind": "function",
+        "kind": "parameter",
+        "parameterIndex": 1,
+        "parameterName": "prop",
+        "value": "\"shape\"",
+        "valueKind": "literal",
+        "repeatedCount": 7,
+        "callCount": 8,
+        "callSites": [
+          {
+            "file": "v4/core/util.ts",
+            "line": 661
+          },
+          {
+            "file": "v4/core/util.ts",
+            "line": 690
+          },
+          {
+            "file": "v4/core/util.ts",
+            "line": 719
+          },
+          {
+            "file": "v4/core/util.ts",
+            "line": 733
+          },
+          {
+            "file": "v4/core/util.ts",
+            "line": 750
+          },
+          {
+            "file": "v4/core/util.ts",
+            "line": 806
+          },
+          {
+            "file": "v4/core/util.ts",
+            "line": 847
+          }
+        ]
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:kr98wq",
+      "file": "v4/classic/schemas.ts",
+      "line": 2771,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "superRefine",
+        "callee": "core._superRefine",
+        "paramCount": 2
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:27gux1",
+      "file": "v4/mini/schemas.ts",
+      "line": 930,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "extend",
+        "callee": "util.extend",
+        "paramCount": 2
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1atjxia",
+      "file": "v4/mini/schemas.ts",
+      "line": 977,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "omit",
+        "callee": "util.omit",
+        "paramCount": 2
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:c5fd1",
+      "file": "v4/mini/schemas.ts",
+      "line": 1862,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "superRefine",
+        "callee": "core._superRefine",
+        "paramCount": 2
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:2rrdai",
+      "file": "v3/types.ts",
+      "line": 2570,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "ZodObject",
+        "methodName": "shape",
+        "receiver": "this._def",
+        "callee": "this._def.shape",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 20,
+        "passThroughRatio": 0.05,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1qniwtl",
+      "file": "v4/core/registries.ts",
+      "line": 74,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "$ZodRegistry",
+        "methodName": "has",
+        "receiver": "this._map",
+        "callee": "this._map.has",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 5,
+        "passThroughRatio": 0.2,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1mosdl2",
+      "file": "v3/types.ts",
+      "line": 5035,
+      "message": "abstract class 'Class' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "Class",
+        "memberCount": 1,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:f5rkq0",
+      "file": "v4/core/util.ts",
+      "line": 1056,
+      "message": "abstract class 'Class' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "Class",
+        "memberCount": 1,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:131l1si",
+      "file": "v4/mini/schemas.ts",
+      "line": 1874,
+      "message": "abstract class 'Class' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "Class",
+        "memberCount": 1,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1xj5apo",
+      "file": "v4/core/to-json-schema.ts",
+      "line": 189,
+      "message": "handleUnrepresentable takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "handleUnrepresentable",
+        "requiredParams": 5
+      }
+    }
+  ]
+}

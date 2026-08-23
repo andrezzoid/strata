@@ -1,0 +1,1231 @@
+{
+  "repo": "workers-sdk",
+  "commit": "f8308360283f97d33e188aee2e19c1ef9c09524a",
+  "target": "packages/miniflare/src",
+  "files": 216,
+  "lines": 50063,
+  "strataVersion": "0.4.0",
+  "summary": {
+    "totalFindings": 41,
+    "byFlag": {
+      "duplicateSymbol": 23,
+      "passThroughExport": 1,
+      "passThroughMethod": 13,
+      "uniqueImplementation": 3,
+      "wideSignature": 1
+    },
+    "topFiles": [
+      {
+        "file": "workers/r2/schemas.worker.ts",
+        "count": 12
+      },
+      {
+        "file": "workers/workflows/wrapped-binding.worker.ts",
+        "count": 10
+      },
+      {
+        "file": "config/schema.ts",
+        "count": 9
+      },
+      {
+        "file": "workers/queues/schemas.ts",
+        "count": 7
+      },
+      {
+        "file": "plugins/core/index.ts",
+        "count": 4
+      },
+      {
+        "file": "plugins/core/constants.ts",
+        "count": 4
+      },
+      {
+        "file": "config/v4-schema.ts",
+        "count": 3
+      },
+      {
+        "file": "config/v4-convert.ts",
+        "count": 3
+      },
+      {
+        "file": "exit-hook.ts",
+        "count": 3
+      },
+      {
+        "file": "workers/d1/database.worker.ts",
+        "count": 3
+      }
+    ]
+  },
+  "findings": [
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:xjvdkq",
+      "file": "config/schema.ts",
+      "line": 466,
+      "message": "function re-declared 3× across 3 files (e.g. getDefaultBindingIdentifier, getOutboundDoProxyClassName, rowKey) — agent likely re-built an existing one [group iz9b86]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "iz9b86",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "function getDefaultBindingIdentifier(bindingName: string, workerName: string) {\n\treturn `${bindingName}-${workerName || \"worker\"}`;\n}",
+        "previewFrom": "config/schema.ts:466",
+        "occurrences": [
+          {
+            "name": "getDefaultBindingIdentifier",
+            "file": "config/schema.ts",
+            "line": 466
+          },
+          {
+            "name": "getOutboundDoProxyClassName",
+            "file": "shared/external-service.ts",
+            "line": 31
+          },
+          {
+            "name": "rowKey",
+            "file": "workers/observability/tail-to-store.ts",
+            "line": 540
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1vl4kmk",
+      "file": "config/schema.ts",
+      "line": 514,
+      "message": "type re-declared 10× across 3 files (e.g. DevConfig, InstanceOptions, LegacyConfig, +7 more) — agent likely re-built an existing one [group jmrbt8]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "jmrbt8",
+        "distinctFiles": 3,
+        "totalDeclarations": 10,
+        "preview": "type MiniflareWorkerConfig = z.input<typeof MiniflareWorkerConfigSchema>;",
+        "previewFrom": "config/schema.ts:514",
+        "occurrences": [
+          {
+            "name": "MiniflareWorkerConfig",
+            "file": "config/schema.ts",
+            "line": 514
+          },
+          {
+            "name": "DevConfig",
+            "file": "config/schema.ts",
+            "line": 622
+          },
+          {
+            "name": "LegacyConfig",
+            "file": "config/schema.ts",
+            "line": 650
+          },
+          {
+            "name": "WorkerOptions",
+            "file": "config/schema.ts",
+            "line": 662
+          },
+          {
+            "name": "InstanceOptions",
+            "file": "config/schema.ts",
+            "line": 774
+          },
+          {
+            "name": "MiniflareOptions",
+            "file": "config/schema.ts",
+            "line": 831
+          },
+          {
+            "name": "QueueOutgoingMessage",
+            "file": "workers/queues/schemas.ts",
+            "line": 62
+          },
+          {
+            "name": "QueuesOutgoingBatchRequest",
+            "file": "workers/queues/schemas.ts",
+            "line": 67
+          },
+          {
+            "name": "RawRecord",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 88
+          },
+          {
+            "name": "RawR2Checksums",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 135
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:18xex59",
+      "file": "config/schema.ts",
+      "line": 667,
+      "message": "type re-declared 5× across 2 files (e.g. ParsedInstanceOptions, ParsedV4MiniflareOptions, ParsedV4SharedOptions, +2 more) — agent likely re-built an existing one [group 1sragzx]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1sragzx",
+        "distinctFiles": 2,
+        "totalDeclarations": 5,
+        "preview": "type ParsedWorkerOptions = z.output<typeof WorkerOptionsSchema>;",
+        "previewFrom": "config/schema.ts:667",
+        "occurrences": [
+          {
+            "name": "ParsedWorkerOptions",
+            "file": "config/schema.ts",
+            "line": 667
+          },
+          {
+            "name": "ParsedInstanceOptions",
+            "file": "config/schema.ts",
+            "line": 779
+          },
+          {
+            "name": "ParsedV4WorkerOptions",
+            "file": "config/v4-schema.ts",
+            "line": 922
+          },
+          {
+            "name": "ParsedV4SharedOptions",
+            "file": "config/v4-schema.ts",
+            "line": 965
+          },
+          {
+            "name": "ParsedV4MiniflareOptions",
+            "file": "config/v4-schema.ts",
+            "line": 968
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vh4zat",
+      "file": "config/v4-convert.ts",
+      "line": 20,
+      "message": "const re-declared 2× across 2 files (e.g. FALLBACK_COMPATIBILITY_DATE) — agent likely re-built an existing one [group 180k3m9]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "180k3m9",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "FALLBACK_COMPATIBILITY_DATE = \"2000-01-01\"",
+        "previewFrom": "config/v4-convert.ts:20",
+        "occurrences": [
+          {
+            "name": "FALLBACK_COMPATIBILITY_DATE",
+            "file": "config/v4-convert.ts",
+            "line": 20
+          },
+          {
+            "name": "FALLBACK_COMPATIBILITY_DATE",
+            "file": "plugins/core/index.ts",
+            "line": 265
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1czgbin",
+      "file": "config/v4-convert.ts",
+      "line": 864,
+      "message": "function re-declared 2× in 1 file (e.g. getBooleanProperty, getStringProperty) — agent likely re-built an existing one [group 1uyneo4]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1uyneo4",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function getStringProperty(\n\trecord: Record<string, unknown> | undefined,\n\tkey: string\n) {\n\tconst value = record?.[key];\n\treturn typeof value === \"string\" ? value : undefined;\n}",
+        "previewFrom": "config/v4-convert.ts:864",
+        "occurrences": [
+          {
+            "name": "getStringProperty",
+            "file": "config/v4-convert.ts",
+            "line": 864
+          },
+          {
+            "name": "getBooleanProperty",
+            "file": "config/v4-convert.ts",
+            "line": 872
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:146mtvf",
+      "file": "exit-hook.ts",
+      "line": 34,
+      "message": "function re-declared 3× in 1 file (e.g. onSignalHup, onSignalInt, onSignalTerm) — agent likely re-built an existing one [group 1aegcyd]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1aegcyd",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "function onSignalInt(): void {\n\trunCallbacks();\n\t// eslint-disable-next-line unicorn/no-process-exit -- intentional: replicate default SIGINT behavior\n\tprocess.exit(128 + 2);\n}",
+        "previewFrom": "exit-hook.ts:34",
+        "occurrences": [
+          {
+            "name": "onSignalInt",
+            "file": "exit-hook.ts",
+            "line": 34
+          },
+          {
+            "name": "onSignalTerm",
+            "file": "exit-hook.ts",
+            "line": 40
+          },
+          {
+            "name": "onSignalHup",
+            "file": "exit-hook.ts",
+            "line": 46
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:c8zk9z",
+      "file": "http/fetch.ts",
+      "line": 13,
+      "message": "const re-declared 2× across 2 files (e.g. ignored, restrictedUndiciHeaders) — agent likely re-built an existing one [group 1azjmcf]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "1azjmcf",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "ignored = [\"transfer-encoding\", \"connection\", \"keep-alive\", \"expect\"]",
+        "previewFrom": "http/fetch.ts:13",
+        "occurrences": [
+          {
+            "name": "ignored",
+            "file": "http/fetch.ts",
+            "line": 13
+          },
+          {
+            "name": "restrictedUndiciHeaders",
+            "file": "index.ts",
+            "line": 640
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:xff2mn",
+      "file": "plugins/cache/index.ts",
+      "line": 28,
+      "message": "function re-declared 4× across 4 files (e.g. getCacheServiceName, getQueueServiceName, getStorageCandidateName, +1 more) — agent likely re-built an existing one [group 105kct1]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "105kct1",
+        "distinctFiles": 4,
+        "totalDeclarations": 4,
+        "preview": "function getCacheServiceName(workerIndex: number) {\n\treturn `${CACHE_PLUGIN_NAME}:${workerIndex}`;\n}",
+        "previewFrom": "plugins/cache/index.ts:28",
+        "occurrences": [
+          {
+            "name": "getCacheServiceName",
+            "file": "plugins/cache/index.ts",
+            "line": 28
+          },
+          {
+            "name": "getUserServiceName",
+            "file": "plugins/core/constants.ts",
+            "line": 34
+          },
+          {
+            "name": "getStorageCandidateName",
+            "file": "shared/dev-registry.ts",
+            "line": 27
+          },
+          {
+            "name": "getQueueServiceName",
+            "file": "workers/queues/constants.ts",
+            "line": 23
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:yby0z1",
+      "file": "plugins/core/constants.ts",
+      "line": 47,
+      "message": "function re-declared 4× across 2 files (e.g. getBuiltinServiceName, getConnectSocketName, getCustomFetchServiceName, +1 more) — agent likely re-built an existing one [group 1ud3rt]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ud3rt",
+        "distinctFiles": 2,
+        "totalDeclarations": 4,
+        "preview": "function getBuiltinServiceName(\n\tworkerIndex: number,\n\tkind: CustomServiceKind,\n\tbindingName: string\n) {\n\treturn `${SERVICE_BUILTIN_PREFIX}:${workerIndex}:${kind}${bindingName}`;\n}",
+        "previewFrom": "plugins/core/constants.ts:47",
+        "occurrences": [
+          {
+            "name": "getBuiltinServiceName",
+            "file": "plugins/core/constants.ts",
+            "line": 47
+          },
+          {
+            "name": "getCustomFetchServiceName",
+            "file": "plugins/core/constants.ts",
+            "line": 55
+          },
+          {
+            "name": "getCustomNodeServiceName",
+            "file": "plugins/core/constants.ts",
+            "line": 63
+          },
+          {
+            "name": "getConnectSocketName",
+            "file": "plugins/shared/constants.ts",
+            "line": 30
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ox0nq3",
+      "file": "plugins/core/index.ts",
+      "line": 131,
+      "message": "type re-declared 17× across 6 files (e.g. D1Query, D1ResultsFormat, D1Value, +14 more) — agent likely re-built an existing one [group 4gdnqo]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "4gdnqo",
+        "distinctFiles": 6,
+        "totalDeclarations": 17,
+        "preview": "type WorkerdStructuredLog = z.infer<typeof WorkerdStructuredLogSchema>;",
+        "previewFrom": "plugins/core/index.ts:131",
+        "occurrences": [
+          {
+            "name": "WorkerdStructuredLog",
+            "file": "plugins/core/index.ts",
+            "line": 131
+          },
+          {
+            "name": "DOContainerOptions",
+            "file": "plugins/do/index.ts",
+            "line": 16
+          },
+          {
+            "name": "Literal",
+            "file": "shared/types.ts",
+            "line": 17
+          },
+          {
+            "name": "D1Value",
+            "file": "workers/d1/database.worker.ts",
+            "line": 24
+          },
+          {
+            "name": "D1Query",
+            "file": "workers/d1/database.worker.ts",
+            "line": 30
+          },
+          {
+            "name": "D1ResultsFormat",
+            "file": "workers/d1/database.worker.ts",
+            "line": 42
+          },
+          {
+            "name": "QueueProducer",
+            "file": "workers/queues/schemas.ts",
+            "line": 20
+          },
+          {
+            "name": "QueueConsumer",
+            "file": "workers/queues/schemas.ts",
+            "line": 37
+          },
+          {
+            "name": "QueueContentType",
+            "file": "workers/queues/schemas.ts",
+            "line": 48
+          },
+          {
+            "name": "QueueMessageDelay",
+            "file": "workers/queues/schemas.ts",
+            "line": 50
+          },
+          {
+            "name": "QueueIncomingMessage",
+            "file": "workers/queues/schemas.ts",
+            "line": 61
+          },
+          {
+            "name": "R2Range",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 95
+          },
+          {
+            "name": "R2Etag",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 102
+          },
+          {
+            "name": "R2Conditional",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 118
+          },
+          {
+            "name": "R2Checksums",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 136
+          },
+          {
+            "name": "R2PublishedPart",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 142
+          },
+          {
+            "name": "R2HttpFields",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 152
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1gpwpyb",
+      "file": "plugins/core/index.ts",
+      "line": 309,
+      "message": "function re-declared 4× across 3 files (e.g. buildStringScriptPath, escapeId, getAccessIdentityServiceName, +1 more) — agent likely re-built an existing one [group 104uxqs]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "104uxqs",
+        "distinctFiles": 3,
+        "totalDeclarations": 4,
+        "preview": "function getAccessIdentityServiceName(workerIndex: number) {\n\treturn `access-identity:${workerIndex}`;\n}",
+        "previewFrom": "plugins/core/index.ts:309",
+        "occurrences": [
+          {
+            "name": "getAccessIdentityServiceName",
+            "file": "plugins/core/index.ts",
+            "line": 309
+          },
+          {
+            "name": "getOutboundInterceptorName",
+            "file": "plugins/core/index.ts",
+            "line": 313
+          },
+          {
+            "name": "buildStringScriptPath",
+            "file": "plugins/core/modules.ts",
+            "line": 11
+          },
+          {
+            "name": "escapeId",
+            "file": "workers/d1/dumpSql.ts",
+            "line": 234
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:wk2mqc",
+      "file": "plugins/core/inspector-proxy/inspector-proxy-controller.ts",
+      "line": 345,
+      "message": "const re-declared 2× across 2 files (e.g. ALLOWED_HOSTNAMES, ALLOWED_HOST_HOSTNAMES) — agent likely re-built an existing one [group bneow8]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "bneow8",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "ALLOWED_HOST_HOSTNAMES = [\"127.0.0.1\", \"[::1]\", \"localhost\"]",
+        "previewFrom": "plugins/core/inspector-proxy/inspector-proxy-controller.ts:345",
+        "occurrences": [
+          {
+            "name": "ALLOWED_HOST_HOSTNAMES",
+            "file": "plugins/core/inspector-proxy/inspector-proxy-controller.ts",
+            "line": 345
+          },
+          {
+            "name": "ALLOWED_HOSTNAMES",
+            "file": "workers/core/proxy.worker.ts",
+            "line": 27
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ux15r5",
+      "file": "plugins/email/index.ts",
+      "line": 23,
+      "message": "function re-declared 2× across 2 files (e.g. buildJsonBindings) — agent likely re-built an existing one [group zl55ir]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "zl55ir",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function buildJsonBindings(bindings: Record<string, any>): Worker_Binding[] {\n\treturn Object.entries(bindings).map(([name, value]) => ({\n\t\tname,\n\t\tjson: JSON.stringify(value),\n\t}));\n}",
+        "previewFrom": "plugins/email/index.ts:23",
+        "occurrences": [
+          {
+            "name": "buildJsonBindings",
+            "file": "plugins/email/index.ts",
+            "line": 23
+          },
+          {
+            "name": "buildJsonBindings",
+            "file": "plugins/ratelimit/index.ts",
+            "line": 41
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1r5zx84",
+      "file": "runtime/structured-logs.ts",
+      "line": 4,
+      "message": "type re-declared 3× across 2 files (e.g. DeferredPromiseReject, DeferredPromiseResolve, StructuredLogsHandler) — agent likely re-built an existing one [group 1emue8w]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1emue8w",
+        "distinctFiles": 2,
+        "totalDeclarations": 3,
+        "preview": "type StructuredLogsHandler = (\n\tstructuredLog: WorkerdStructuredLog\n) => void;",
+        "previewFrom": "runtime/structured-logs.ts:4",
+        "occurrences": [
+          {
+            "name": "StructuredLogsHandler",
+            "file": "runtime/structured-logs.ts",
+            "line": 4
+          },
+          {
+            "name": "DeferredPromiseResolve",
+            "file": "workers/shared/sync.ts",
+            "line": 4
+          },
+          {
+            "name": "DeferredPromiseReject",
+            "file": "workers/shared/sync.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:15adt1t",
+      "file": "workers/local-explorer/resources/do.ts",
+      "line": 76,
+      "message": "function re-declared 2× across 2 files (e.g. findDONamespaceOwner, findKVNamespaceOwner) — agent likely re-built an existing one [group 1dn306q]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1dn306q",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function findDONamespaceOwner(\n\tc: AppContext,\n\tnamespaceId: string\n): Promise<string | null> {\n\tconst peerUrls = await getPeerUrlsIfAggregating(c);\n\tif (peerUrls.length === 0) return null;\n\n\tconst responses = await Promise.all( …",
+        "previewFrom": "workers/local-explorer/resources/do.ts:76",
+        "occurrences": [
+          {
+            "name": "findDONamespaceOwner",
+            "file": "workers/local-explorer/resources/do.ts",
+            "line": 76
+          },
+          {
+            "name": "findKVNamespaceOwner",
+            "file": "workers/local-explorer/resources/kv.ts",
+            "line": 43
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:56ds47",
+      "file": "workers/local-explorer/resources/do.ts",
+      "line": 132,
+      "message": "type re-declared 5× across 4 files (e.g. ListInstancesQuery, ListKeysQuery, ListNamespacesQuery, +1 more) — agent likely re-built an existing one [group e8n9hg]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "e8n9hg",
+        "distinctFiles": 4,
+        "totalDeclarations": 5,
+        "preview": "type ListObjectsQuery = NonNullable<\n\tz.output<typeof zDurableObjectsNamespaceListObjectsData>[\"query\"]\n>;",
+        "previewFrom": "workers/local-explorer/resources/do.ts:132",
+        "occurrences": [
+          {
+            "name": "ListObjectsQuery",
+            "file": "workers/local-explorer/resources/do.ts",
+            "line": 132
+          },
+          {
+            "name": "ListNamespacesQuery",
+            "file": "workers/local-explorer/resources/kv.ts",
+            "line": 86
+          },
+          {
+            "name": "ListKeysQuery",
+            "file": "workers/local-explorer/resources/kv.ts",
+            "line": 137
+          },
+          {
+            "name": "ListObjectsQuery",
+            "file": "workers/local-explorer/resources/r2.ts",
+            "line": 115
+          },
+          {
+            "name": "ListInstancesQuery",
+            "file": "workers/local-explorer/resources/workflows.ts",
+            "line": 374
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1w5gwmj",
+      "file": "workers/r2/bucket.worker.ts",
+      "line": 126,
+      "message": "function re-declared 2× in 1 file (e.g. generateId, generateVersion) — agent likely re-built an existing one [group e7qlew]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "e7qlew",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function generateVersion() {\n\treturn Buffer.from(crypto.getRandomValues(new Uint8Array(16))).toString(\n\t\t\"hex\"\n\t);\n}",
+        "previewFrom": "workers/r2/bucket.worker.ts:126",
+        "occurrences": [
+          {
+            "name": "generateVersion",
+            "file": "workers/r2/bucket.worker.ts",
+            "line": 126
+          },
+          {
+            "name": "generateId",
+            "file": "workers/r2/bucket.worker.ts",
+            "line": 131
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1s3g3l7",
+      "file": "workers/r2/s3/auth.worker.ts",
+      "line": 59,
+      "message": "function re-declared 2× across 2 files (e.g. invalidArgument, notImplemented) — agent likely re-built an existing one [group 5bxoin]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "5bxoin",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "invalidArgument = (message: string) =>\n\terrorResponse(400, \"InvalidArgument\", message)",
+        "previewFrom": "workers/r2/s3/auth.worker.ts:59",
+        "occurrences": [
+          {
+            "name": "invalidArgument",
+            "file": "workers/r2/s3/auth.worker.ts",
+            "line": 59
+          },
+          {
+            "name": "notImplemented",
+            "file": "workers/r2/s3/errors.worker.ts",
+            "line": 39
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:obyn9y",
+      "file": "workers/r2/s3/auth.worker.ts",
+      "line": 62,
+      "message": "function re-declared 4× across 3 files (e.g. malformedXml, noSuchBucket, routeNotFound, +1 more) — agent likely re-built an existing one [group 5zofe]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "5zofe",
+        "distinctFiles": 3,
+        "totalDeclarations": 4,
+        "preview": "unauthorized = () => errorResponse(401, \"Unauthorized\", \"Unauthorized\")",
+        "previewFrom": "workers/r2/s3/auth.worker.ts:62",
+        "occurrences": [
+          {
+            "name": "unauthorized",
+            "file": "workers/r2/s3/auth.worker.ts",
+            "line": 62
+          },
+          {
+            "name": "noSuchBucket",
+            "file": "workers/r2/s3/errors.worker.ts",
+            "line": 36
+          },
+          {
+            "name": "routeNotFound",
+            "file": "workers/r2/s3/errors.worker.ts",
+            "line": 42
+          },
+          {
+            "name": "malformedXml",
+            "file": "workers/r2/s3/operations.worker.ts",
+            "line": 54
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:16rxr6y",
+      "file": "workers/r2/s3/operations.worker.ts",
+      "line": 50,
+      "message": "function re-declared 2× in 1 file (e.g. noSuchKey, preconditionFailed) — agent likely re-built an existing one [group 1nuz630]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1nuz630",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "noSuchKey = () => s3Error(NO_SUCH_KEY)",
+        "previewFrom": "workers/r2/s3/operations.worker.ts:50",
+        "occurrences": [
+          {
+            "name": "noSuchKey",
+            "file": "workers/r2/s3/operations.worker.ts",
+            "line": 50
+          },
+          {
+            "name": "preconditionFailed",
+            "file": "workers/r2/s3/operations.worker.ts",
+            "line": 52
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:4xb6fc",
+      "file": "workers/r2/schemas.worker.ts",
+      "line": 270,
+      "message": "type re-declared 4× in 1 file (e.g. InternalR2CreateMultipartUploadOptions, InternalR2GetOptions, InternalR2ListOptions, +1 more) — agent likely re-built an existing one [group 1xckngj]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1xckngj",
+        "distinctFiles": 1,
+        "totalDeclarations": 4,
+        "preview": "type InternalR2GetOptions = OmitRequest<\n\tz.infer<typeof R2GetRequestSchema>\n>;",
+        "previewFrom": "workers/r2/schemas.worker.ts:270",
+        "occurrences": [
+          {
+            "name": "InternalR2GetOptions",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 270
+          },
+          {
+            "name": "InternalR2PutOptions",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 273
+          },
+          {
+            "name": "InternalR2ListOptions",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 276
+          },
+          {
+            "name": "InternalR2CreateMultipartUploadOptions",
+            "file": "workers/r2/schemas.worker.ts",
+            "line": 279
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ez2dxu",
+      "file": "workers/shared/data.ts",
+      "line": 10,
+      "message": "function re-declared 2× in 1 file (e.g. base64Decode, base64Encode) — agent likely re-built an existing one [group 1ezcomg]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ezcomg",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function base64Encode(value: string): string {\n\treturn Buffer.from(value, \"utf8\").toString(\"base64\");\n}",
+        "previewFrom": "workers/shared/data.ts:10",
+        "occurrences": [
+          {
+            "name": "base64Encode",
+            "file": "workers/shared/data.ts",
+            "line": 10
+          },
+          {
+            "name": "base64Decode",
+            "file": "workers/shared/data.ts",
+            "line": 13
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ot7sig",
+      "file": "workers/stream/errors.ts",
+      "line": 12,
+      "message": "class re-declared 3× in 1 file (e.g. BadRequestError, InvalidURLError, NotFoundError) — agent likely re-built an existing one [group 1nwx6zq]",
+      "metadata": {
+        "symbolKind": "class",
+        "fingerprintHash": "1nwx6zq",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "class BadRequestError extends StreamBindingError {\n\tconstructor(message = \"Bad Request\") {\n\t\tsuper(message, 10005, 400);\n\t\tthis.name = \"BadRequestError\";\n\t}\n}",
+        "previewFrom": "workers/stream/errors.ts:12",
+        "occurrences": [
+          {
+            "name": "BadRequestError",
+            "file": "workers/stream/errors.ts",
+            "line": 12
+          },
+          {
+            "name": "NotFoundError",
+            "file": "workers/stream/errors.ts",
+            "line": 19
+          },
+          {
+            "name": "InvalidURLError",
+            "file": "workers/stream/errors.ts",
+            "line": 26
+          }
+        ]
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ewcf7x",
+      "file": "workers/core/dev-registry-proxy-shared.worker.ts",
+      "line": 114,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "hasRegistryEntry",
+        "callee": "registry.has",
+        "paramCount": 1
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:mc1pkx",
+      "file": "plugins/core/proxy/client.ts",
+      "line": 134,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "ProxyClient",
+        "methodName": "dispose",
+        "receiver": "this.bridge",
+        "callee": "this.bridge.dispose",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 5,
+        "passThroughRatio": 0.2,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:axmncp",
+      "file": "workers/assets/rpc-proxy.worker.ts",
+      "line": 25,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "RPCProxyWorker",
+        "methodName": "fetch",
+        "receiver": "this.env.ROUTER_WORKER",
+        "callee": "this.env.ROUTER_WORKER.fetch",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 3,
+        "passThroughRatio": 0.3333333333333333,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:nbsuvr",
+      "file": "workers/stream/object.worker.ts",
+      "line": 102,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "StreamObject",
+        "methodName": "updateVideo",
+        "receiver": "this.stmts",
+        "callee": "this.stmts.updateVideo",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 20,
+        "passThroughRatio": 0.05,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ainta8",
+      "file": "workers/workflows/wrapped-binding.worker.ts",
+      "line": 41,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "WorkflowImpl",
+        "methodName": "unsafeGetBindingName",
+        "receiver": "this.binding",
+        "callee": "this.binding.unsafeGetBindingName",
+        "passThroughMethodCount": 10,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.7142857142857143,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:gcww1y",
+      "file": "workers/workflows/wrapped-binding.worker.ts",
+      "line": 45,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "WorkflowImpl",
+        "methodName": "unsafeStartIntrospection",
+        "receiver": "this.binding",
+        "callee": "this.binding.unsafeStartIntrospection",
+        "passThroughMethodCount": 10,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.7142857142857143,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:14krkzv",
+      "file": "workers/workflows/wrapped-binding.worker.ts",
+      "line": 49,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "WorkflowImpl",
+        "methodName": "unsafeStopIntrospection",
+        "receiver": "this.binding",
+        "callee": "this.binding.unsafeStopIntrospection",
+        "passThroughMethodCount": 10,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.7142857142857143,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1k2521f",
+      "file": "workers/workflows/wrapped-binding.worker.ts",
+      "line": 53,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "WorkflowImpl",
+        "methodName": "unsafeSetIntrospectionOperations",
+        "receiver": "this.binding",
+        "callee": "this.binding.unsafeSetIntrospectionOperations",
+        "passThroughMethodCount": 10,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.7142857142857143,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1k3vadr",
+      "file": "workers/workflows/wrapped-binding.worker.ts",
+      "line": 60,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "WorkflowImpl",
+        "methodName": "unsafeGetIntrospectionInstances",
+        "receiver": "this.binding",
+        "callee": "this.binding.unsafeGetIntrospectionInstances",
+        "passThroughMethodCount": 10,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.7142857142857143,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:13e9pzq",
+      "file": "workers/workflows/wrapped-binding.worker.ts",
+      "line": 64,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "WorkflowImpl",
+        "methodName": "unsafeAbort",
+        "receiver": "this.binding",
+        "callee": "this.binding.unsafeAbort",
+        "passThroughMethodCount": 10,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.7142857142857143,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ogtul2",
+      "file": "workers/workflows/wrapped-binding.worker.ts",
+      "line": 68,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "WorkflowImpl",
+        "methodName": "unsafeGetInstanceModifier",
+        "receiver": "this.binding",
+        "callee": "this.binding.unsafeGetInstanceModifier",
+        "passThroughMethodCount": 10,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.7142857142857143,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:5c7tqt",
+      "file": "workers/workflows/wrapped-binding.worker.ts",
+      "line": 72,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "WorkflowImpl",
+        "methodName": "unsafeWaitForStepResult",
+        "receiver": "this.binding",
+        "callee": "this.binding.unsafeWaitForStepResult",
+        "passThroughMethodCount": 10,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.7142857142857143,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ieudeq",
+      "file": "workers/workflows/wrapped-binding.worker.ts",
+      "line": 80,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "WorkflowImpl",
+        "methodName": "unsafeWaitForStatus",
+        "receiver": "this.binding",
+        "callee": "this.binding.unsafeWaitForStatus",
+        "passThroughMethodCount": 10,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.7142857142857143,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:xrqw8z",
+      "file": "workers/workflows/wrapped-binding.worker.ts",
+      "line": 84,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "WorkflowImpl",
+        "methodName": "unsafeGetOutputOrError",
+        "receiver": "this.binding",
+        "callee": "this.binding.unsafeGetOutputOrError",
+        "passThroughMethodCount": 10,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.7142857142857143,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1tbarnh",
+      "file": "shared/dev-control.ts",
+      "line": 29,
+      "message": "interface 'DevControl' has only one implementer: DevControl at workers/core/dev-control.worker.ts:63 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "DevControl",
+        "memberCount": 2,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DevControl",
+            "file": "workers/core/dev-control.worker.ts",
+            "line": 63
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:du2qxd",
+      "file": "workers/shared/object.worker.ts",
+      "line": 41,
+      "message": "abstract class 'MiniflareDurableObject' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "MiniflareDurableObject",
+        "memberCount": 12,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1t5204v",
+      "file": "workers/shared/router.worker.ts",
+      "line": 28,
+      "message": "abstract class 'Router' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "Router",
+        "memberCount": 3,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:tr21p4",
+      "file": "workers/core/email.ts",
+      "line": 25,
+      "message": "handleEmail takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "handleEmail",
+        "requiredParams": 5
+      }
+    }
+  ]
+}

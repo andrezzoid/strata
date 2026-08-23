@@ -26,3 +26,26 @@ This project is grounded in John Ousterhout's _A Philosophy of Software Design_.
 - The CLI should stay thin: argument parsing, invocation, formatting, exit behavior.
 - Detector modules should be grouped by the knowledge they own, not one file per tiny helper.
 - Cross-file detectors may parse the full project even during `--touched-since`; filtering happens after analysis so graph-dependent answers stay correct.
+
+## Gotchas
+
+### A git command run in `eval/.corpus/` answers about _this_ repository unless it is fenced
+
+Corpus checkouts live under `eval/.corpus/`, which is inside this repository. Git
+walks upward looking for a repository, so a command run in an empty checkout
+directory resolves to strata and acts on it. `git remote remove origin` in
+`eval/corpus.ts` did exactly that: it deleted strata's own `origin` and every
+remote-tracking ref with it, and the `git checkout FETCH_HEAD` that followed was
+stopped only by an unrelated dirty working tree. Recovery was `git remote add
+origin <url>` plus `git fetch origin`; no commits were lost, because the checkout
+aborted.
+
+The fence is two things and both are required. `GIT_CEILING_DIRECTORIES` set to
+the parent stops the upward walk, and `assertOwnRepository()` then proves the
+walk stopped in the right place by comparing `rev-parse --show-toplevel` against
+the directory itself. Detect an existing checkout with `existsSync(dir/.git)`,
+never with `git rev-parse --git-dir`, which is itself an upward walk and reports
+success from the enclosing repository. `test/eval-corpus.test.ts` is the gate.
+
+Anything that shells out to git in a directory this repo contains needs the same
+treatment.

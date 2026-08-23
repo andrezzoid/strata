@@ -344,6 +344,8 @@ Lefthook installs the repo's Git hooks during local dependency installation; run
 
 GitHub Actions runs the local gate scripts before merge. `bun run test:coverage` gates LCOV line coverage for `src/` at 85%, which matches the current machine-readable aggregate rather than Bun's human table. `bun run package:check` runs `npm pack --dry-run --json` to validate package contents without publishing.
 
+`bun run eval:run` and `bun run eval:report` scan a pinned corpus of eight real TypeScript repositories, chosen for size and for measured agent-authored commit share, and summarise how much each detector fires on code nobody wrote for strata. Results are committed under `eval/results/`, so a detector threshold change becomes a reviewable diff instead of a guess. Nothing under `eval/` ships to npm. See [`eval/README.md`](eval/README.md).
+
 `bun run scan:ci` runs `strata src --fail-on-findings`. A failing self-scan means the source now contains review candidates that should be fixed or intentionally redesigned; it is still a candidate signal, not an automated final verdict. `bun run scan:sarif` emits the same source scan as SARIF for CI smoke tests or upload workflows. Publish automation is intentionally deferred until release credentials and side effects are handled in a separate change.
 
 ## Contributing

@@ -1,0 +1,1585 @@
+{
+  "repo": "cloudflare-agents",
+  "commit": "a0e134bbc327fc8a519b5aa66cb8ce4038815d05",
+  "target": "packages/agents/src",
+  "files": 368,
+  "lines": 144793,
+  "strataVersion": "0.4.0",
+  "summary": {
+    "totalFindings": 68,
+    "byFlag": {
+      "duplicateSymbol": 24,
+      "exposedMutableRepresentation": 1,
+      "forcedRareOption": 1,
+      "passThroughExport": 1,
+      "passThroughMethod": 31,
+      "uniqueImplementation": 5,
+      "wideSignature": 5
+    },
+    "topFiles": [
+      {
+        "file": "tests/agents/session.ts",
+        "count": 16
+      },
+      {
+        "file": "browser/quick-actions.ts",
+        "count": 8
+      },
+      {
+        "file": "index.ts",
+        "count": 7
+      },
+      {
+        "file": "vite.ts",
+        "count": 6
+      },
+      {
+        "file": "lifecycle/durable-object-lifecycle.ts",
+        "count": 3
+      },
+      {
+        "file": "observability/ai/wrapper/streams.ts",
+        "count": 3
+      },
+      {
+        "file": "retries.ts",
+        "count": 3
+      },
+      {
+        "file": "skills/r2.ts",
+        "count": 3
+      },
+      {
+        "file": "skills/frontmatter.ts",
+        "count": 3
+      },
+      {
+        "file": "tests/browser-connector.test.ts",
+        "count": 3
+      }
+    ]
+  },
+  "findings": [
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1eqd2ms",
+      "file": "agent-routing.ts",
+      "line": 228,
+      "message": "function re-declared 2× across 2 files (e.g. mutableRequest) — agent likely re-built an existing one [group 1uswl2a]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1uswl2a",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function mutableRequest(request: Request): Request {\n  return new Request(request);\n}",
+        "previewFrom": "agent-routing.ts:228",
+        "occurrences": [
+          {
+            "name": "mutableRequest",
+            "file": "agent-routing.ts",
+            "line": 228
+          },
+          {
+            "name": "mutableRequest",
+            "file": "lifecycle/durable-object-lifecycle.ts",
+            "line": 92
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1kkik8z",
+      "file": "browser/quick-actions.ts",
+      "line": 223,
+      "message": "function re-declared 6× in 1 file (e.g. browserContent, browserExtract, browserLinks, +3 more) — agent likely re-built an existing one [group 8tngbr]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "8tngbr",
+        "distinctFiles": 1,
+        "totalDeclarations": 6,
+        "preview": "function browserContent(\n  browser: QuickActionBinding,\n  input: QuickActionPage\n): Promise<string> {\n  return quickActionJson<string>(browser, \"content\", input);\n}",
+        "previewFrom": "browser/quick-actions.ts:223",
+        "occurrences": [
+          {
+            "name": "browserContent",
+            "file": "browser/quick-actions.ts",
+            "line": 223
+          },
+          {
+            "name": "browserMarkdown",
+            "file": "browser/quick-actions.ts",
+            "line": 231
+          },
+          {
+            "name": "browserExtract",
+            "file": "browser/quick-actions.ts",
+            "line": 242
+          },
+          {
+            "name": "browserLinks",
+            "file": "browser/quick-actions.ts",
+            "line": 250
+          },
+          {
+            "name": "browserScrape",
+            "file": "browser/quick-actions.ts",
+            "line": 258
+          },
+          {
+            "name": "browserSnapshot",
+            "file": "browser/quick-actions.ts",
+            "line": 266
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1codo6m",
+      "file": "browser/quick-actions.ts",
+      "line": 279,
+      "message": "function re-declared 2× in 1 file (e.g. browserPdf, browserScreenshot) — agent likely re-built an existing one [group 1oppgc2]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1oppgc2",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function browserScreenshot(\n  browser: QuickActionBinding,\n  input: QuickActionScreenshotInput\n): Promise<QuickActionBinary> {\n  return quickActionBinary(browser, \"screenshot\", input);\n}",
+        "previewFrom": "browser/quick-actions.ts:279",
+        "occurrences": [
+          {
+            "name": "browserScreenshot",
+            "file": "browser/quick-actions.ts",
+            "line": 279
+          },
+          {
+            "name": "browserPdf",
+            "file": "browser/quick-actions.ts",
+            "line": 287
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:cfluct",
+      "file": "browser/session-manager.ts",
+      "line": 1,
+      "message": "type re-declared 3× across 3 files (e.g. MaybePromise) — agent likely re-built an existing one [group 4fth6s]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "4fth6s",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "type MaybePromise<T> = T | Promise<T>;",
+        "previewFrom": "browser/session-manager.ts:1",
+        "occurrences": [
+          {
+            "name": "MaybePromise",
+            "file": "browser/session-manager.ts",
+            "line": 1
+          },
+          {
+            "name": "MaybePromise",
+            "file": "lifecycle/capability-runner.ts",
+            "line": 1
+          },
+          {
+            "name": "MaybePromise",
+            "file": "mcp/types.ts",
+            "line": 3
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:oelji3",
+      "file": "chat/connection.ts",
+      "line": 43,
+      "message": "function re-declared 2× across 2 files (e.g. isClosedWebSocketSendError, isWebSocketClosedSendError) — agent likely re-built an existing one [group 17jlnda]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "17jlnda",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function isWebSocketClosedSendError(error: unknown): boolean {\n  return (\n    error instanceof TypeError &&\n    error.message.includes(\"WebSocket send() after close\")\n  );\n}",
+        "previewFrom": "chat/connection.ts:43",
+        "occurrences": [
+          {
+            "name": "isWebSocketClosedSendError",
+            "file": "chat/connection.ts",
+            "line": 43
+          },
+          {
+            "name": "isClosedWebSocketSendError",
+            "file": "index.ts",
+            "line": 275
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:td9wok",
+      "file": "chat/react.tsx",
+      "line": 210,
+      "message": "function re-declared 2× across 2 files (e.g. agentNameToKebab, camelCaseToKebabCase) — agent likely re-built an existing one [group rfoa8g]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "rfoa8g",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function agentNameToKebab(name: string): string {\n  if (name === name.toUpperCase() && name !== name.toLowerCase()) {\n    return name.toLowerCase().replace(/_/g, \"-\");\n  }\n  let result = name.replace(/[A-Z]/g, (letter) => …",
+        "previewFrom": "chat/react.tsx:210",
+        "occurrences": [
+          {
+            "name": "agentNameToKebab",
+            "file": "chat/react.tsx",
+            "line": 210
+          },
+          {
+            "name": "camelCaseToKebabCase",
+            "file": "utils.ts",
+            "line": 43
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:13ygdpd",
+      "file": "chat/tool-output-truncation.ts",
+      "line": 27,
+      "message": "function re-declared 2× across 2 files (e.g. getSchedulePrompt, truncatedSuffix) — agent likely re-built an existing one [group 104uxqs]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "104uxqs",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function truncatedSuffix(originalLength: number): string {\n  return `... [truncated ${originalLength} chars]`;\n}",
+        "previewFrom": "chat/tool-output-truncation.ts:27",
+        "occurrences": [
+          {
+            "name": "truncatedSuffix",
+            "file": "chat/tool-output-truncation.ts",
+            "line": 27
+          },
+          {
+            "name": "getSchedulePrompt",
+            "file": "schedule.ts",
+            "line": 8
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ciwohy",
+      "file": "client.ts",
+      "line": 204,
+      "message": "type re-declared 4× across 2 files (e.g. OptionalArgsAgentClientCall, OptionalArgsAgentMethodCall, RequiredArgsAgentClientCall, +1 more) — agent likely re-built an existing one [group 1vfbhfh]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1vfbhfh",
+        "distinctFiles": 2,
+        "totalDeclarations": 4,
+        "preview": "type OptionalArgsAgentClientCall<AgentT> = <\n  K extends keyof OptionalAgentMethods<AgentT>\n>(\n  method: K,\n  args?: ClientParameters<OptionalAgentMethods<AgentT>[K]>,\n  options?: CallOptions | StreamOptions\n) => …",
+        "previewFrom": "client.ts:204",
+        "occurrences": [
+          {
+            "name": "OptionalArgsAgentClientCall",
+            "file": "client.ts",
+            "line": 204
+          },
+          {
+            "name": "RequiredArgsAgentClientCall",
+            "file": "client.ts",
+            "line": 212
+          },
+          {
+            "name": "OptionalArgsAgentMethodCall",
+            "file": "react.tsx",
+            "line": 245
+          },
+          {
+            "name": "RequiredArgsAgentMethodCall",
+            "file": "react.tsx",
+            "line": 253
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:cbpiub",
+      "file": "e2e-tests/recovery-helpers.ts",
+      "line": 47,
+      "message": "function re-declared 2× across 2 files (e.g. fiberSleep, sleep) — agent likely re-built an existing one [group 12d9u9n]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "12d9u9n",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function sleep(ms: number): Promise<void> {\n  return new Promise((resolve) => setTimeout(resolve, ms));\n}",
+        "previewFrom": "e2e-tests/recovery-helpers.ts:47",
+        "occurrences": [
+          {
+            "name": "sleep",
+            "file": "e2e-tests/recovery-helpers.ts",
+            "line": 47
+          },
+          {
+            "name": "fiberSleep",
+            "file": "e2e-tests/worker.ts",
+            "line": 30
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:fin32g",
+      "file": "e2e-tests/recovery-helpers.ts",
+      "line": 51,
+      "message": "function re-declared 2× across 2 files (e.g. killProcessOnPort) — agent likely re-built an existing one [group 1imjsu8]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1imjsu8",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function killProcessOnPort(port: number): void {\n  try {\n    const output = execSync(\n      `lsof -tiTCP:${port} -sTCP:LISTEN 2>/dev/null || true`\n    )\n      .toString()\n      .trim();\n    if (output) {\n      const pids = …",
+        "previewFrom": "e2e-tests/recovery-helpers.ts:51",
+        "occurrences": [
+          {
+            "name": "killProcessOnPort",
+            "file": "e2e-tests/recovery-helpers.ts",
+            "line": 51
+          },
+          {
+            "name": "killProcessOnPort",
+            "file": "react-tests/setup.ts",
+            "line": 64
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1kpued5",
+      "file": "observability/ai/read.ts",
+      "line": 2,
+      "message": "function re-declared 2× in 1 file (e.g. readNumber, readString) — agent likely re-built an existing one [group i7kcy0]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "i7kcy0",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function readString(value: unknown): string | undefined {\n  return typeof value === \"string\" ? value : undefined;\n}",
+        "previewFrom": "observability/ai/read.ts:2",
+        "occurrences": [
+          {
+            "name": "readString",
+            "file": "observability/ai/read.ts",
+            "line": 2
+          },
+          {
+            "name": "readNumber",
+            "file": "observability/ai/read.ts",
+            "line": 7
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:9o1uh4",
+      "file": "observability/ai/wrapper/streams.ts",
+      "line": 538,
+      "message": "function re-declared 3× in 1 file (e.g. isAbortChunk, isErrorChunk, isToolCallChunk) — agent likely re-built an existing one [group xjxyuc]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "xjxyuc",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "function isErrorChunk(chunk: unknown): chunk is { readonly error: unknown } {\n  return (\n    typeof chunk === \"object\" &&\n    chunk !== null &&\n    (chunk as Record<string, unknown>).type === \"error\"\n  );\n}",
+        "previewFrom": "observability/ai/wrapper/streams.ts:538",
+        "occurrences": [
+          {
+            "name": "isErrorChunk",
+            "file": "observability/ai/wrapper/streams.ts",
+            "line": 538
+          },
+          {
+            "name": "isAbortChunk",
+            "file": "observability/ai/wrapper/streams.ts",
+            "line": 546
+          },
+          {
+            "name": "isToolCallChunk",
+            "file": "observability/ai/wrapper/streams.ts",
+            "line": 593
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:18dvltg",
+      "file": "observability/ai/wrapper/tools.ts",
+      "line": 521,
+      "message": "function re-declared 2× across 2 files (e.g. isPromiseLike) — agent likely re-built an existing one [group 10ugzum]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "10ugzum",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {\n  return (\n    value !== null &&\n    value !== undefined &&\n    (typeof value === \"object\" || typeof value === \"function\") &&\n    \"then\" in value &&\n    typeof …",
+        "previewFrom": "observability/ai/wrapper/tools.ts:521",
+        "occurrences": [
+          {
+            "name": "isPromiseLike",
+            "file": "observability/ai/wrapper/tools.ts",
+            "line": 521
+          },
+          {
+            "name": "isPromiseLike",
+            "file": "observability/tracing/tracer.ts",
+            "line": 391
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:w58i06",
+      "file": "observability/ai/wrapper/wrap.ts",
+      "line": 328,
+      "message": "function re-declared 2× in 1 file (e.g. isStreamOperation, shouldWrapTools) — agent likely re-built an existing one [group 187ad3b]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "187ad3b",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function isStreamOperation(operationName: AISDKOperationName): boolean {\n  return operationName === \"streamObject\" || operationName === \"streamText\";\n}",
+        "previewFrom": "observability/ai/wrapper/wrap.ts:328",
+        "occurrences": [
+          {
+            "name": "isStreamOperation",
+            "file": "observability/ai/wrapper/wrap.ts",
+            "line": 328
+          },
+          {
+            "name": "shouldWrapTools",
+            "file": "observability/ai/wrapper/wrap.ts",
+            "line": 332
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:pzh1xq",
+      "file": "react-tests/setup.ts",
+      "line": 17,
+      "message": "const re-declared 2× across 2 files (e.g. TEST_WORKER_PORT) — agent likely re-built an existing one [group 1yetbbk]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "1yetbbk",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "TEST_WORKER_PORT = 18787",
+        "previewFrom": "react-tests/setup.ts:17",
+        "occurrences": [
+          {
+            "name": "TEST_WORKER_PORT",
+            "file": "react-tests/setup.ts",
+            "line": 17
+          },
+          {
+            "name": "TEST_WORKER_PORT",
+            "file": "react-tests/vitest.config.ts",
+            "line": 6
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:19vapbs",
+      "file": "retries.ts",
+      "line": 267,
+      "message": "function re-declared 3× in 1 file (e.g. isDurableObjectCodeUpdateReset, isDurableObjectMemoryLimitReset, isDurableObjectStorageReset) — agent likely re-built an existing one [group 1kpx8fg]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1kpx8fg",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "function isDurableObjectCodeUpdateReset(error: unknown): boolean {\n  for (const e of selfAndCauses(error)) {\n    if (SUPERSEDED_ISOLATE_PATTERN.test(errorMessageOf(e))) return true;\n  }\n  return false;\n}",
+        "previewFrom": "retries.ts:267",
+        "occurrences": [
+          {
+            "name": "isDurableObjectCodeUpdateReset",
+            "file": "retries.ts",
+            "line": 267
+          },
+          {
+            "name": "isDurableObjectStorageReset",
+            "file": "retries.ts",
+            "line": 279
+          },
+          {
+            "name": "isDurableObjectMemoryLimitReset",
+            "file": "retries.ts",
+            "line": 293
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1m9oouh",
+      "file": "skills/compile.ts",
+      "line": 36,
+      "message": "function re-declared 4× across 4 files (e.g. extensionOf) — agent likely re-built an existing one [group 6h850x]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "6h850x",
+        "distinctFiles": 4,
+        "totalDeclarations": 4,
+        "preview": "function extensionOf(path: string): string {\n  const file = path.split(\"/\").at(-1) ?? path;\n  const index = file.lastIndexOf(\".\");\n  return index === -1 ? \"\" : file.slice(index).toLowerCase();\n}",
+        "previewFrom": "skills/compile.ts:36",
+        "occurrences": [
+          {
+            "name": "extensionOf",
+            "file": "skills/compile.ts",
+            "line": 36
+          },
+          {
+            "name": "extensionOf",
+            "file": "skills/r2.ts",
+            "line": 86
+          },
+          {
+            "name": "extensionOf",
+            "file": "skills/runner.ts",
+            "line": 61
+          },
+          {
+            "name": "extensionOf",
+            "file": "vite.ts",
+            "line": 155
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:i8aex1",
+      "file": "skills/frontmatter.ts",
+      "line": 8,
+      "message": "function re-declared 2× across 2 files (e.g. parseFrontmatter, parseSkillFrontmatter) — agent likely re-built an existing one [group 18fwr6o]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "18fwr6o",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function parseSkillFrontmatter(raw: string): ParsedSkillMarkdown {\n  const match = raw.match(/^---\\r?\\n([\\s\\S]*?)\\r?\\n---\\r?\\n?([\\s\\S]*)$/);\n  if (!match) return { data: {}, body: raw };\n\n  const parsed = parseYaml(match[1] ?? \"\");\n  const …",
+        "previewFrom": "skills/frontmatter.ts:8",
+        "occurrences": [
+          {
+            "name": "parseSkillFrontmatter",
+            "file": "skills/frontmatter.ts",
+            "line": 8
+          },
+          {
+            "name": "parseFrontmatter",
+            "file": "vite.ts",
+            "line": 68
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1r714if",
+      "file": "skills/frontmatter.ts",
+      "line": 21,
+      "message": "function re-declared 2× across 2 files (e.g. optionalString, stringField) — agent likely re-built an existing one [group ppzhhu]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "ppzhhu",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function optionalString(value: unknown): string | undefined {\n  return typeof value === \"string\" && value.trim() ? value.trim() : undefined;\n}",
+        "previewFrom": "skills/frontmatter.ts:21",
+        "occurrences": [
+          {
+            "name": "optionalString",
+            "file": "skills/frontmatter.ts",
+            "line": 21
+          },
+          {
+            "name": "stringField",
+            "file": "vite.ts",
+            "line": 82
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:oj6p3a",
+      "file": "skills/frontmatter.ts",
+      "line": 25,
+      "message": "function re-declared 2× across 2 files (e.g. optionalRecord, recordField) — agent likely re-built an existing one [group 1ndwksh]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ndwksh",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function optionalRecord(value: unknown): Record<string, unknown> | undefined {\n  return value !== null && typeof value === \"object\" && !Array.isArray(value)\n    ? (value as Record<string, unknown>)\n    : undefined;\n}",
+        "previewFrom": "skills/frontmatter.ts:25",
+        "occurrences": [
+          {
+            "name": "optionalRecord",
+            "file": "skills/frontmatter.ts",
+            "line": 25
+          },
+          {
+            "name": "recordField",
+            "file": "vite.ts",
+            "line": 86
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:fjfspg",
+      "file": "skills/r2.ts",
+      "line": 92,
+      "message": "function re-declared 2× across 2 files (e.g. resourceEncoding) — agent likely re-built an existing one [group 1hv1oqp]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1hv1oqp",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function resourceEncoding(path: string): \"text\" | \"base64\" {\n  return TEXT_EXTENSIONS.has(extensionOf(path)) ? \"text\" : \"base64\";\n}",
+        "previewFrom": "skills/r2.ts:92",
+        "occurrences": [
+          {
+            "name": "resourceEncoding",
+            "file": "skills/r2.ts",
+            "line": 92
+          },
+          {
+            "name": "resourceEncoding",
+            "file": "vite.ts",
+            "line": 161
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:11j4nm1",
+      "file": "skills/r2.ts",
+      "line": 96,
+      "message": "function re-declared 2× across 2 files (e.g. resourceMimeType) — agent likely re-built an existing one [group 13ogz06]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "13ogz06",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function resourceMimeType(path: string): string | undefined {\n  return MIME_TYPES.get(extensionOf(path));\n}",
+        "previewFrom": "skills/r2.ts:96",
+        "occurrences": [
+          {
+            "name": "resourceMimeType",
+            "file": "skills/r2.ts",
+            "line": 96
+          },
+          {
+            "name": "resourceMimeType",
+            "file": "vite.ts",
+            "line": 165
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:y3lf1c",
+      "file": "sub-routing.ts",
+      "line": 172,
+      "message": "function re-declared 2× in 1 file (e.g. buildSubAgentPath, buildSubAgentPathUnchecked) — agent likely re-built an existing one [group lwhlir]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "lwhlir",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "function buildSubAgentPath(\n  path: ReadonlyArray<AgentPathStep>,\n  leafPath?: string\n): string {\n  return serializeSubAgentPath(path, leafPath, true);\n}",
+        "previewFrom": "sub-routing.ts:172",
+        "occurrences": [
+          {
+            "name": "buildSubAgentPath",
+            "file": "sub-routing.ts",
+            "line": 172
+          },
+          {
+            "name": "buildSubAgentPathUnchecked",
+            "file": "sub-routing.ts",
+            "line": 180
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:uxnshb",
+      "file": "tests-d/agent-client-stub.test-d.ts",
+      "line": 103,
+      "message": "class re-declared 3× across 3 files (e.g. MyAgent) — agent likely re-built an existing one [group 182uv5l]",
+      "metadata": {
+        "symbolKind": "class",
+        "fingerprintHash": "182uv5l",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "class MyAgent extends Agent<typeof env, { count: number; name: string }> {\n  @callable()\n  sayHello(name?: string): string {\n    return `Hello, ${name ?? \"World\"}!`;\n  }\n\n  @callable()\n  async perform(_task: string, _p1?: number): …",
+        "previewFrom": "tests-d/agent-client-stub.test-d.ts:103",
+        "occurrences": [
+          {
+            "name": "MyAgent",
+            "file": "tests-d/agent-client-stub.test-d.ts",
+            "line": 103
+          },
+          {
+            "name": "MyAgent",
+            "file": "tests-d/example-stub.test-d.ts",
+            "line": 5
+          },
+          {
+            "name": "MyAgent",
+            "file": "tests-d/example.test-d.ts",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "exposedMutableRepresentation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1175g1z",
+      "file": "experimental/memory/session/context.ts",
+      "line": 404,
+      "message": "ContextBlocks exposes private mutable Set field '_loadedSkills' through 1 public member",
+      "metadata": {
+        "className": "ContextBlocks",
+        "fieldName": "_loadedSkills",
+        "fieldLine": 138,
+        "mutableFamily": "Set",
+        "accessors": [
+          {
+            "name": "getLoadedSkillKeys",
+            "kind": "method",
+            "line": 404
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ftxvjm",
+      "file": "agent-tools.ts",
+      "line": 128,
+      "message": "agentTool callers pass \"Research a topic\" for option 'description' in 4/4 calls - the option is probably a default",
+      "metadata": {
+        "apiName": "agentTool",
+        "apiKind": "function",
+        "kind": "option",
+        "parameterIndex": 1,
+        "parameterName": "options",
+        "optionName": "description",
+        "value": "\"Research a topic\"",
+        "valueKind": "literal",
+        "repeatedCount": 4,
+        "callCount": 4,
+        "callSites": [
+          {
+            "file": "tests-d/agent-tool-schema.test-d.ts",
+            "line": 14
+          },
+          {
+            "file": "tests-d/agent-tool-schema.test-d.ts",
+            "line": 25
+          },
+          {
+            "file": "tests-d/agent-tool-schema.test-d.ts",
+            "line": 39
+          },
+          {
+            "file": "tests-d/agent-tool-schema.test-d.ts",
+            "line": 83
+          }
+        ]
+      }
+    },
+    {
+      "flag": "passThroughExport",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1a0uigh",
+      "file": "mcp/auth-context.ts",
+      "line": 28,
+      "message": "exported function delegates to another callable with same args - public surface without logic",
+      "metadata": {
+        "functionName": "runWithAuthContext",
+        "callee": "authContextStorage.run",
+        "paramCount": 2
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:gcuwpm",
+      "file": "chat/abort-registry.ts",
+      "line": 65,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "AbortRegistry",
+        "methodName": "has",
+        "receiver": "this.controllers",
+        "callee": "this.controllers.has",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 8,
+        "passThroughRatio": 0.125,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ed7yuq",
+      "file": "experimental/memory/session/context.ts",
+      "line": 419,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "ContextBlocks",
+        "methodName": "clearSkillState",
+        "receiver": "this._loadedSkills",
+        "callee": "this._loadedSkills.clear",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 29,
+        "passThroughRatio": 0.034482758620689655,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1tf65xu",
+      "file": "index.ts",
+      "line": 455,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "SubAgentConnectionBridge",
+        "methodName": "send",
+        "receiver": "this.connection",
+        "callee": "this.connection.send",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 4,
+        "passThroughRatio": 0.75,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1u744c8",
+      "file": "index.ts",
+      "line": 459,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "SubAgentConnectionBridge",
+        "methodName": "close",
+        "receiver": "this.connection",
+        "callee": "this.connection.close",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 4,
+        "passThroughRatio": 0.75,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1fxrz84",
+      "file": "index.ts",
+      "line": 463,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "SubAgentConnectionBridge",
+        "methodName": "setState",
+        "receiver": "this.connection",
+        "callee": "this.connection.setState",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 4,
+        "passThroughRatio": 0.75,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:69u4p7",
+      "file": "index.ts",
+      "line": 12996,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "EmailBridge",
+        "methodName": "setReject",
+        "receiver": "this.email",
+        "callee": "this.email.setReject",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 4,
+        "passThroughRatio": 0.5,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1gometf",
+      "file": "index.ts",
+      "line": 13000,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "EmailBridge",
+        "methodName": "forward",
+        "receiver": "this.email",
+        "callee": "this.email.forward",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 4,
+        "passThroughRatio": 0.5,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1b1c8q0",
+      "file": "lifecycle/durable-object-lifecycle.ts",
+      "line": 521,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "Lifecycle",
+        "methodName": "getConnection",
+        "receiver": "this.connectionManager",
+        "callee": "this.connectionManager.getConnection",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.14285714285714285,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ylean1",
+      "file": "lifecycle/durable-object-lifecycle.ts",
+      "line": 526,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "Lifecycle",
+        "methodName": "getConnections",
+        "receiver": "this.connectionManager",
+        "callee": "this.connectionManager.getConnections",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.14285714285714285,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:wz3f02",
+      "file": "tests/agents/session.ts",
+      "line": 48,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "appendMessage",
+        "receiver": "this.session",
+        "callee": "this.session.appendMessage",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1vfk8yr",
+      "file": "tests/agents/session.ts",
+      "line": 55,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "getMessage",
+        "receiver": "this.session",
+        "callee": "this.session.getMessage",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:q05tcx",
+      "file": "tests/agents/session.ts",
+      "line": 59,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "updateMessage",
+        "receiver": "this.session",
+        "callee": "this.session.updateMessage",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:k3bbky",
+      "file": "tests/agents/session.ts",
+      "line": 63,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "deleteMessages",
+        "receiver": "this.session",
+        "callee": "this.session.deleteMessages",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1vw0bly",
+      "file": "tests/agents/session.ts",
+      "line": 67,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "clearMessages",
+        "receiver": "this.session",
+        "callee": "this.session.clearMessages",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ijzzh1",
+      "file": "tests/agents/session.ts",
+      "line": 73,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "getHistory",
+        "receiver": "this.session",
+        "callee": "this.session.getHistory",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1jcfglu",
+      "file": "tests/agents/session.ts",
+      "line": 77,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "getLatestLeaf",
+        "receiver": "this.session",
+        "callee": "this.session.getLatestLeaf",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1azzizu",
+      "file": "tests/agents/session.ts",
+      "line": 81,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "getBranches",
+        "receiver": "this.session",
+        "callee": "this.session.getBranches",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:z4tuzq",
+      "file": "tests/agents/session.ts",
+      "line": 85,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "getPathLength",
+        "receiver": "this.session",
+        "callee": "this.session.getPathLength",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1pfej47",
+      "file": "tests/agents/session.ts",
+      "line": 89,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "getRecentHistory",
+        "receiver": "this.session",
+        "callee": "this.session.getRecentHistory",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:x9wlju",
+      "file": "tests/agents/session.ts",
+      "line": 93,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "getHistoryRowStats",
+        "receiver": "this.session",
+        "callee": "this.session.getHistoryRowStats",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ububmf",
+      "file": "tests/agents/session.ts",
+      "line": 99,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "addCompaction",
+        "receiver": "this.session",
+        "callee": "this.session.addCompaction",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:b0yzs8",
+      "file": "tests/agents/session.ts",
+      "line": 107,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "getCompactions",
+        "receiver": "this.session",
+        "callee": "this.session.getCompactions",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1csbr7y",
+      "file": "tests/agents/session.ts",
+      "line": 134,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgent",
+        "methodName": "search",
+        "receiver": "this.session",
+        "callee": "this.session.search",
+        "passThroughMethodCount": 14,
+        "publicMethodCount": 25,
+        "passThroughRatio": 0.56,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1w9nkzc",
+      "file": "tests/agents/session.ts",
+      "line": 317,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgentWithContext",
+        "methodName": "freezeSystemPrompt",
+        "receiver": "this.session",
+        "callee": "this.session.freezeSystemPrompt",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 6,
+        "passThroughRatio": 0.3333333333333333,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1a05uxg",
+      "file": "tests/agents/session.ts",
+      "line": 321,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestSessionAgentWithContext",
+        "methodName": "refreshSystemPrompt",
+        "receiver": "this.session",
+        "callee": "this.session.refreshSystemPrompt",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 6,
+        "passThroughRatio": 0.3333333333333333,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:13tx8u5",
+      "file": "tests/browser-connector.test.ts",
+      "line": 42,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "MemorySessionStore",
+        "methodName": "get",
+        "receiver": "this.sessions",
+        "callee": "this.sessions.get",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 5,
+        "passThroughRatio": 0.6,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:5ga2ll",
+      "file": "tests/browser-connector.test.ts",
+      "line": 46,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "MemorySessionStore",
+        "methodName": "set",
+        "receiver": "this.sessions",
+        "callee": "this.sessions.set",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 5,
+        "passThroughRatio": 0.6,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ol4wyr",
+      "file": "tests/browser-connector.test.ts",
+      "line": 50,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "MemorySessionStore",
+        "methodName": "delete",
+        "receiver": "this.sessions",
+        "callee": "this.sessions.delete",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 5,
+        "passThroughRatio": 0.6,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ipeej4",
+      "file": "tests/experimental/memory/session/init-lifecycle.test.ts",
+      "line": 89,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TrackingSearchProvider",
+        "methodName": "set",
+        "receiver": "this.entries",
+        "callee": "this.entries.set",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 4,
+        "passThroughRatio": 0.25,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:14r6dth",
+      "file": "tests/experimental/memory/session/search.test.ts",
+      "line": 30,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "MemorySearchProvider",
+        "methodName": "set",
+        "receiver": "this.entries",
+        "callee": "this.entries.set",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 3,
+        "passThroughRatio": 0.3333333333333333,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ufqnpf",
+      "file": "tests/mcp/client-manager.test.ts",
+      "line": 115,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "TestMCPClientManager",
+        "methodName": "fireObservabilityEvent",
+        "receiver": "this._onObservabilityEvent",
+        "callee": "this._onObservabilityEvent.fire",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 2,
+        "passThroughRatio": 0.5,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vcg5r2",
+      "file": "browser/session-manager.ts",
+      "line": 19,
+      "message": "interface 'BrowserSessionStore' has only one implementer: DurableBrowserSessionStore at browser/session-manager.ts:37 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "BrowserSessionStore",
+        "memberCount": 5,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DurableBrowserSessionStore",
+            "file": "browser/session-manager.ts",
+            "line": 37
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1fuzi2o",
+      "file": "chat/recovery-codec.ts",
+      "line": 54,
+      "message": "interface 'ChatRecoveryCodec' has only one implementer: AISDKRecoveryCodec at chat/recovery-codec.ts:122 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "ChatRecoveryCodec",
+        "memberCount": 3,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "AISDKRecoveryCodec",
+            "file": "chat/recovery-codec.ts",
+            "line": 122
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:kz8q3i",
+      "file": "experimental/memory/session/skills.ts",
+      "line": 19,
+      "message": "interface 'SkillProvider' has only one implementer: R2SkillProvider at experimental/memory/session/skills.ts:58 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "SkillProvider",
+        "memberCount": 2,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "R2SkillProvider",
+            "file": "experimental/memory/session/skills.ts",
+            "line": 58
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1mrexa1",
+      "file": "mcp/do-oauth-client-provider.ts",
+      "line": 32,
+      "message": "interface 'AgentMcpOAuthProvider' has only one implementer: DurableObjectOAuthClientProvider at mcp/do-oauth-client-provider.ts:91 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "AgentMcpOAuthProvider",
+        "memberCount": 7,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DurableObjectOAuthClientProvider",
+            "file": "mcp/do-oauth-client-provider.ts",
+            "line": 91
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1dxuowi",
+      "file": "mcp/legacy-agent.ts",
+      "line": 42,
+      "message": "abstract class 'McpAgent' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "McpAgent",
+        "memberCount": 24,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:wxffqi",
+      "file": "index.ts",
+      "line": 7494,
+      "message": "method _cf_handleSubAgentWebSocketClose takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method _cf_handleSubAgentWebSocketClose",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:12zlrks",
+      "file": "mcp/client-runtime.ts",
+      "line": 97,
+      "message": "createMcpSdkClient takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "createMcpSdkClient",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1kev5a4",
+      "file": "observability/ai/wrapper/model.ts",
+      "line": 19,
+      "message": "wrapModel takes 6 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "wrapModel",
+        "requiredParams": 6
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1fkkeou",
+      "file": "tests/agents/sub-agent.ts",
+      "line": 1544,
+      "message": "method nestedScheduleSet takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method nestedScheduleSet",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1svmcq5",
+      "file": "tests/agents/wait-connections.ts",
+      "line": 39,
+      "message": "method insertMcpServer takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method insertMcpServer",
+        "requiredParams": 5
+      }
+    }
+  ]
+}

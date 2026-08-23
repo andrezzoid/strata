@@ -1,0 +1,847 @@
+{
+  "repo": "hono",
+  "commit": "5e5b83d6ed963a2bc7d8384002e1c953648253b1",
+  "target": "src",
+  "files": 311,
+  "lines": 78993,
+  "strataVersion": "0.4.0",
+  "summary": {
+    "totalFindings": 26,
+    "byFlag": {
+      "duplicateSymbol": 21,
+      "passThroughMethod": 2,
+      "uniqueImplementation": 2,
+      "wideSignature": 1
+    },
+    "topFiles": [
+      {
+        "file": "utils/jwt/types.ts",
+        "count": 14
+      },
+      {
+        "file": "jsx/hooks/index.ts",
+        "count": 7
+      },
+      {
+        "file": "types.ts",
+        "count": 4
+      },
+      {
+        "file": "jsx/dom/render.ts",
+        "count": 4
+      },
+      {
+        "file": "utils/ipaddr.ts",
+        "count": 4
+      },
+      {
+        "file": "adapter/aws-lambda/handler.ts",
+        "count": 3
+      },
+      {
+        "file": "helper/css/common.ts",
+        "count": 3
+      },
+      {
+        "file": "utils/crypto.ts",
+        "count": 3
+      },
+      {
+        "file": "adapter/lambda-edge/handler.ts",
+        "count": 2
+      },
+      {
+        "file": "helper/factory/index.ts",
+        "count": 2
+      }
+    ]
+  },
+  "findings": [
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:qef4as",
+      "file": "adapter/aws-lambda/handler.ts",
+      "line": 639,
+      "message": "function re-declared 2× in 1 file (e.g. isLatticeEventV2, isProxyEventALB) — agent likely re-built an existing one [group zxfd8g]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "zxfd8g",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "isProxyEventALB = (event: LambdaEvent): event is ALBProxyEvent => {\n  if (event.requestContext) {\n    return Object.hasOwn(event.requestContext, 'elb')\n  }\n  return false\n}",
+        "previewFrom": "adapter/aws-lambda/handler.ts:639",
+        "occurrences": [
+          {
+            "name": "isProxyEventALB",
+            "file": "adapter/aws-lambda/handler.ts",
+            "line": 639
+          },
+          {
+            "name": "isLatticeEventV2",
+            "file": "adapter/aws-lambda/handler.ts",
+            "line": 653
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:lhmii9",
+      "file": "adapter/aws-lambda/handler.ts",
+      "line": 666,
+      "message": "function re-declared 2× across 2 files (e.g. defaultIsContentTypeBinary, isContentTypeBinary) — agent likely re-built an existing one [group 1a07onh]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1a07onh",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "defaultIsContentTypeBinary = (contentType: string): boolean => {\n  return !/^text\\/(?:plain|html|css|javascript|csv)|(?:\\/|\\+)(?:json|xml)\\s*(?:;|$)/.test(\n    contentType\n  )\n}",
+        "previewFrom": "adapter/aws-lambda/handler.ts:666",
+        "occurrences": [
+          {
+            "name": "defaultIsContentTypeBinary",
+            "file": "adapter/aws-lambda/handler.ts",
+            "line": 666
+          },
+          {
+            "name": "isContentTypeBinary",
+            "file": "adapter/lambda-edge/handler.ts",
+            "line": 214
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:cwkllc",
+      "file": "adapter/bun/ssg.ts",
+      "line": 25,
+      "message": "function re-declared 2× across 2 files (e.g. toSSG) — agent likely re-built an existing one [group 5sav2p]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "5sav2p",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "toSSG: ToSSGAdaptorInterface = async (app, options) => {\n  return baseToSSG(app, bunFileSystemModule, options)\n}",
+        "previewFrom": "adapter/bun/ssg.ts:25",
+        "occurrences": [
+          {
+            "name": "toSSG",
+            "file": "adapter/bun/ssg.ts",
+            "line": 25
+          },
+          {
+            "name": "toSSG",
+            "file": "adapter/deno/ssg.ts",
+            "line": 25
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1vijakq",
+      "file": "adapter/cloudflare-pages/conninfo.ts",
+      "line": 22,
+      "message": "function re-declared 3× across 3 files (e.g. getConnInfo) — agent likely re-built an existing one [group hn4xgl]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "hn4xgl",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "getConnInfo: GetConnInfo = (c) => ({\n  remote: {\n    address: c.req.header('cf-connecting-ip'),\n  },\n})",
+        "previewFrom": "adapter/cloudflare-pages/conninfo.ts:22",
+        "occurrences": [
+          {
+            "name": "getConnInfo",
+            "file": "adapter/cloudflare-pages/conninfo.ts",
+            "line": 22
+          },
+          {
+            "name": "getConnInfo",
+            "file": "adapter/cloudflare-workers/conninfo.ts",
+            "line": 3
+          },
+          {
+            "name": "getConnInfo",
+            "file": "adapter/vercel/conninfo.ts",
+            "line": 3
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1tb95xa",
+      "file": "adapter/lambda-edge/handler.ts",
+      "line": 81,
+      "message": "type re-declared 4× across 2 files (e.g. BlankEnv, BlankInput, BlankSchema, +1 more) — agent likely re-built an existing one [group rskjbo]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "rskjbo",
+        "distinctFiles": 2,
+        "totalDeclarations": 4,
+        "preview": "type CloudFrontContext = {}",
+        "previewFrom": "adapter/lambda-edge/handler.ts:81",
+        "occurrences": [
+          {
+            "name": "CloudFrontContext",
+            "file": "adapter/lambda-edge/handler.ts",
+            "line": 81
+          },
+          {
+            "name": "BlankEnv",
+            "file": "types.ts",
+            "line": 29
+          },
+          {
+            "name": "BlankSchema",
+            "file": "types.ts",
+            "line": 48
+          },
+          {
+            "name": "BlankInput",
+            "file": "types.ts",
+            "line": 49
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:oor8cf",
+      "file": "adapter/service-worker/handler.ts",
+      "line": 10,
+      "message": "type re-declared 6× across 6 files (e.g. ErrorHandler, Handler, InitApp, +3 more) — agent likely re-built an existing one [group 1emue8w]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1emue8w",
+        "distinctFiles": 6,
+        "totalDeclarations": 6,
+        "preview": "type Handler = (evt: FetchEvent) => void",
+        "previewFrom": "adapter/service-worker/handler.ts:10",
+        "occurrences": [
+          {
+            "name": "Handler",
+            "file": "adapter/service-worker/handler.ts",
+            "line": 10
+          },
+          {
+            "name": "OnInvalidSlug",
+            "file": "helper/css/common.ts",
+            "line": 137
+          },
+          {
+            "name": "InitApp",
+            "file": "helper/factory/index.ts",
+            "line": 18
+          },
+          {
+            "name": "ErrorHandler",
+            "file": "jsx/components.ts",
+            "line": 47
+          },
+          {
+            "name": "UpdateMapResolve",
+            "file": "jsx/dom/render.ts",
+            "line": 736
+          },
+          {
+            "name": "UpdateStateFunction",
+            "file": "jsx/hooks/index.ts",
+            "line": 6
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:afmwag",
+      "file": "helper/css/common.ts",
+      "line": 56,
+      "message": "function re-declared 2× in 1 file (e.g. hasUnsafeSelectorChar, isValidClassName) — agent likely re-built an existing one [group 15gfqt6]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "15gfqt6",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "isValidClassName = (name: string): boolean => /^-?[_a-zA-Z][_a-zA-Z0-9-]*$/.test(name)",
+        "previewFrom": "helper/css/common.ts:56",
+        "occurrences": [
+          {
+            "name": "isValidClassName",
+            "file": "helper/css/common.ts",
+            "line": 56
+          },
+          {
+            "name": "hasUnsafeSelectorChar",
+            "file": "helper/css/common.ts",
+            "line": 60
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:2nypkx",
+      "file": "helper/factory/index.ts",
+      "line": 368,
+      "message": "function re-declared 2× across 2 files (e.g. createMiddleware, jsxEscape) — agent likely re-built an existing one [group xhc479]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "xhc479",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "createMiddleware = <\n  E extends Env = any,\n  P extends string = string,\n  I extends Input = {},\n  R extends HandlerResponse<any> | void = void,\n>(\n  middleware: MiddlewareHandler<E, P, I, R extends void ? Response : R>\n): …",
+        "previewFrom": "helper/factory/index.ts:368",
+        "occurrences": [
+          {
+            "name": "createMiddleware",
+            "file": "helper/factory/index.ts",
+            "line": 368
+          },
+          {
+            "name": "jsxEscape",
+            "file": "jsx/jsx-runtime.ts",
+            "line": 51
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:152ecla",
+      "file": "helper/ssg/ssg.ts",
+      "line": 118,
+      "message": "function re-declared 2× in 1 file (e.g. combineAfterResponseHooks, combineBeforeRequestHooks) — agent likely re-built an existing one [group 159s9so]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "159s9so",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "combineBeforeRequestHooks = (\n  hooks: BeforeRequestHook | BeforeRequestHook[]\n): BeforeRequestHook => {\n  if (!Array.isArray(hooks)) {\n    return hooks\n  }\n  return async (req: Request): Promise<Request | false> => {\n    let currentReq = …",
+        "previewFrom": "helper/ssg/ssg.ts:118",
+        "occurrences": [
+          {
+            "name": "combineBeforeRequestHooks",
+            "file": "helper/ssg/ssg.ts",
+            "line": 118
+          },
+          {
+            "name": "combineAfterResponseHooks",
+            "file": "helper/ssg/ssg.ts",
+            "line": 139
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1i6e8hd",
+      "file": "jsx/base.ts",
+      "line": 56,
+      "message": "function re-declared 2× across 2 files (e.g. getNameSpaceContext) — agent likely re-built an existing one [group wu1b50]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "wu1b50",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "getNameSpaceContext = () => nameSpaceContext",
+        "previewFrom": "jsx/base.ts:56",
+        "occurrences": [
+          {
+            "name": "getNameSpaceContext",
+            "file": "jsx/base.ts",
+            "line": 56
+          },
+          {
+            "name": "getNameSpaceContext",
+            "file": "jsx/dom/render.ts",
+            "line": 111
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:3lqqii",
+      "file": "jsx/context.ts",
+      "line": 13,
+      "message": "const re-declared 5× across 4 files (e.g. buildDataStack, currentUpdateSets, emptyParam, +2 more) — agent likely re-built an existing one [group 46vgw2]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "46vgw2",
+        "distinctFiles": 4,
+        "totalDeclarations": 5,
+        "preview": "globalContexts: Context<unknown>[] = []",
+        "previewFrom": "jsx/context.ts:13",
+        "occurrences": [
+          {
+            "name": "globalContexts",
+            "file": "jsx/context.ts",
+            "line": 13
+          },
+          {
+            "name": "buildDataStack",
+            "file": "jsx/dom/render.ts",
+            "line": 106
+          },
+          {
+            "name": "currentUpdateSets",
+            "file": "jsx/dom/render.ts",
+            "line": 741
+          },
+          {
+            "name": "pendingStack",
+            "file": "jsx/hooks/index.ts",
+            "line": 102
+          },
+          {
+            "name": "emptyParam",
+            "file": "router/reg-exp-router/matcher.ts",
+            "line": 9
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:r0oy3a",
+      "file": "jsx/dom/intrinsic-element/components.ts",
+      "line": 423,
+      "message": "function re-declared 4× across 2 files (e.g. button, input) — agent likely re-built an existing one [group cic392]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "cic392",
+        "distinctFiles": 2,
+        "totalDeclarations": 4,
+        "preview": "input: FC<PropsWithChildren<IntrinsicElements['input']>> = (props) =>\n  formActionableElement('input', props)",
+        "previewFrom": "jsx/dom/intrinsic-element/components.ts:423",
+        "occurrences": [
+          {
+            "name": "input",
+            "file": "jsx/dom/intrinsic-element/components.ts",
+            "line": 423
+          },
+          {
+            "name": "button",
+            "file": "jsx/dom/intrinsic-element/components.ts",
+            "line": 426
+          },
+          {
+            "name": "input",
+            "file": "jsx/intrinsic-element/components.ts",
+            "line": 207
+          },
+          {
+            "name": "button",
+            "file": "jsx/intrinsic-element/components.ts",
+            "line": 209
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1162z7e",
+      "file": "jsx/hooks/index.ts",
+      "line": 119,
+      "message": "function re-declared 2× in 1 file (e.g. startTransition, startTransitionHook) — agent likely re-built an existing one [group kp5rz1]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "kp5rz1",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "startTransition = (callback: () => void): void => {\n  runCallback(1, callback)\n}",
+        "previewFrom": "jsx/hooks/index.ts:119",
+        "occurrences": [
+          {
+            "name": "startTransition",
+            "file": "jsx/hooks/index.ts",
+            "line": 119
+          },
+          {
+            "name": "startTransitionHook",
+            "file": "jsx/hooks/index.ts",
+            "line": 122
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:kkizgb",
+      "file": "jsx/hooks/index.ts",
+      "line": 288,
+      "message": "function re-declared 3× in 1 file (e.g. useEffect, useInsertionEffect, useLayoutEffect) — agent likely re-built an existing one [group wbe3jy]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "wbe3jy",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "useEffect = (effect: () => void | (() => void), deps?: readonly unknown[]): void =>\n  useEffectCommon(3, effect, deps)",
+        "previewFrom": "jsx/hooks/index.ts:288",
+        "occurrences": [
+          {
+            "name": "useEffect",
+            "file": "jsx/hooks/index.ts",
+            "line": 288
+          },
+          {
+            "name": "useLayoutEffect",
+            "file": "jsx/hooks/index.ts",
+            "line": 290
+          },
+          {
+            "name": "useInsertionEffect",
+            "file": "jsx/hooks/index.ts",
+            "line": 294
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:144bgwd",
+      "file": "jsx/intrinsic-element/common.ts",
+      "line": 11,
+      "message": "const re-declared 2× across 2 files (e.g. domRenderers, patternCache) — agent likely re-built an existing one [group 4geu7s]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "4geu7s",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "domRenderers: Record<string, Function> = {}",
+        "previewFrom": "jsx/intrinsic-element/common.ts:11",
+        "occurrences": [
+          {
+            "name": "domRenderers",
+            "file": "jsx/intrinsic-element/common.ts",
+            "line": 11
+          },
+          {
+            "name": "patternCache",
+            "file": "utils/url.ts",
+            "line": 50
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:jhhc3f",
+      "file": "middleware/jwk/jwk.ts",
+      "line": 176,
+      "message": "function re-declared 2× across 2 files (e.g. unauthorizedResponse) — agent likely re-built an existing one [group gae7jt]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "gae7jt",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function unauthorizedResponse(opts: {\n  ctx: Context\n  error: string\n  errDescription: string\n  statusText?: string\n  realm?: string\n}) {\n  // `realm` and `error_description` end up inside a quoted-string, so any `\"`\n  // they contain has …",
+        "previewFrom": "middleware/jwk/jwk.ts:176",
+        "occurrences": [
+          {
+            "name": "unauthorizedResponse",
+            "file": "middleware/jwk/jwk.ts",
+            "line": 176
+          },
+          {
+            "name": "unauthorizedResponse",
+            "file": "middleware/jwt/jwt.ts",
+            "line": 165
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:4sm2j5",
+      "file": "utils/crypto.ts",
+      "line": 15,
+      "message": "function re-declared 3× in 1 file (e.g. md5, sha1, sha256) — agent likely re-built an existing one [group 6i6002]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "6i6002",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "sha256 = async (data: Data): Promise<string | null> => {\n  const algorithm: Algorithm = { name: 'SHA-256', alias: 'sha256' }\n  const hash = await createHash(data, algorithm)\n  return hash\n}",
+        "previewFrom": "utils/crypto.ts:15",
+        "occurrences": [
+          {
+            "name": "sha256",
+            "file": "utils/crypto.ts",
+            "line": 15
+          },
+          {
+            "name": "sha1",
+            "file": "utils/crypto.ts",
+            "line": 21
+          },
+          {
+            "name": "md5",
+            "file": "utils/crypto.ts",
+            "line": 27
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ygthhi",
+      "file": "utils/ipaddr.ts",
+      "line": 76,
+      "message": "function re-declared 2× in 1 file (e.g. throwInvalidIPv4Address, throwInvalidIPv6Address) — agent likely re-built an existing one [group 1o8e9ms]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1o8e9ms",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "throwInvalidIPv4Address = (ipv4: string): never => {\n  throw createInvalidIPAddressError(`Invalid IPv4 address: ${ipv4}`)\n}",
+        "previewFrom": "utils/ipaddr.ts:76",
+        "occurrences": [
+          {
+            "name": "throwInvalidIPv4Address",
+            "file": "utils/ipaddr.ts",
+            "line": 76
+          },
+          {
+            "name": "throwInvalidIPv6Address",
+            "file": "utils/ipaddr.ts",
+            "line": 80
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ddmw9e",
+      "file": "utils/ipaddr.ts",
+      "line": 142,
+      "message": "function re-declared 2× in 1 file (e.g. isIPv4MappedIPv6, isIPv6LinkLocal) — agent likely re-built an existing one [group as83m8]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "as83m8",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "isIPv6LinkLocal = (ipv6binary: bigint): boolean => ipv6binary >> 118n === 0x3fan",
+        "previewFrom": "utils/ipaddr.ts:142",
+        "occurrences": [
+          {
+            "name": "isIPv6LinkLocal",
+            "file": "utils/ipaddr.ts",
+            "line": 142
+          },
+          {
+            "name": "isIPv4MappedIPv6",
+            "file": "utils/ipaddr.ts",
+            "line": 314
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:6e5zuf",
+      "file": "utils/jwt/types.ts",
+      "line": 6,
+      "message": "class re-declared 9× in 1 file (e.g. JwtAlgorithmNotImplemented, JwtHeaderInvalid, JwtHeaderRequiresKid, +6 more) — agent likely re-built an existing one [group 17kfszk]",
+      "metadata": {
+        "symbolKind": "class",
+        "fingerprintHash": "17kfszk",
+        "distinctFiles": 1,
+        "totalDeclarations": 9,
+        "preview": "class JwtAlgorithmNotImplemented extends Error {\n  constructor(alg: string) {\n    super(`${alg} is not an implemented algorithm`)\n    this.name = 'JwtAlgorithmNotImplemented'\n  }\n}",
+        "previewFrom": "utils/jwt/types.ts:6",
+        "occurrences": [
+          {
+            "name": "JwtAlgorithmNotImplemented",
+            "file": "utils/jwt/types.ts",
+            "line": 6
+          },
+          {
+            "name": "JwtTokenInvalid",
+            "file": "utils/jwt/types.ts",
+            "line": 27
+          },
+          {
+            "name": "JwtTokenNotBefore",
+            "file": "utils/jwt/types.ts",
+            "line": 34
+          },
+          {
+            "name": "JwtTokenExpired",
+            "file": "utils/jwt/types.ts",
+            "line": 41
+          },
+          {
+            "name": "JwtHeaderInvalid",
+            "file": "utils/jwt/types.ts",
+            "line": 64
+          },
+          {
+            "name": "JwtHeaderRequiresKid",
+            "file": "utils/jwt/types.ts",
+            "line": 71
+          },
+          {
+            "name": "JwtSymmetricAlgorithmNotAllowed",
+            "file": "utils/jwt/types.ts",
+            "line": 78
+          },
+          {
+            "name": "JwtTokenSignatureMismatched",
+            "file": "utils/jwt/types.ts",
+            "line": 92
+          },
+          {
+            "name": "JwtPayloadRequiresAud",
+            "file": "utils/jwt/types.ts",
+            "line": 99
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1kpcdax",
+      "file": "utils/jwt/types.ts",
+      "line": 20,
+      "message": "class re-declared 5× in 1 file (e.g. JwtAlgorithmMismatch, JwtAlgorithmNotAllowed, JwtTokenAudience, +2 more) — agent likely re-built an existing one [group 1r7hmqq]",
+      "metadata": {
+        "symbolKind": "class",
+        "fingerprintHash": "1r7hmqq",
+        "distinctFiles": 1,
+        "totalDeclarations": 5,
+        "preview": "class JwtAlgorithmMismatch extends Error {\n  constructor(expected: string, actual: string) {\n    super(`JWT algorithm mismatch: expected \"${expected}\", got \"${actual}\"`)\n    this.name = 'JwtAlgorithmMismatch'\n  }\n}",
+        "previewFrom": "utils/jwt/types.ts:20",
+        "occurrences": [
+          {
+            "name": "JwtAlgorithmMismatch",
+            "file": "utils/jwt/types.ts",
+            "line": 20
+          },
+          {
+            "name": "JwtTokenIssuedAt",
+            "file": "utils/jwt/types.ts",
+            "line": 48
+          },
+          {
+            "name": "JwtTokenIssuer",
+            "file": "utils/jwt/types.ts",
+            "line": 57
+          },
+          {
+            "name": "JwtAlgorithmNotAllowed",
+            "file": "utils/jwt/types.ts",
+            "line": 85
+          },
+          {
+            "name": "JwtTokenAudience",
+            "file": "utils/jwt/types.ts",
+            "line": 106
+          }
+        ]
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1amxx6p",
+      "file": "helper/websocket/index.ts",
+      "line": 88,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "WSContext",
+        "methodName": "close",
+        "receiver": "this.init",
+        "callee": "this.init.close",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 3,
+        "passThroughRatio": 0.3333333333333333,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1rz7wmg",
+      "file": "middleware/cache/index.test.ts",
+      "line": 22,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "MockCache",
+        "methodName": "keys",
+        "receiver": "this.store",
+        "callee": "this.store.keys",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 3,
+        "passThroughRatio": 0.3333333333333333,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1fgi3b8",
+      "file": "adapter/cloudflare-pages/handler.ts",
+      "line": 104,
+      "message": "abstract class 'FetcherLike' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "FetcherLike",
+        "memberCount": 1,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1mjjaw9",
+      "file": "types.ts",
+      "line": 2773,
+      "message": "abstract class 'FetchEventLike' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "FetchEventLike",
+        "memberCount": 3,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:chr0sp",
+      "file": "router/reg-exp-router/node.ts",
+      "line": 53,
+      "message": "method insert takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method insert",
+        "requiredParams": 5
+      }
+    }
+  ]
+}

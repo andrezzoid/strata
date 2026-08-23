@@ -1,0 +1,278 @@
+{
+  "repo": "mcp-typescript-sdk",
+  "commit": "3924de99df834302d89f5997a1b64ca268282284",
+  "target": "packages/server/src",
+  "files": 33,
+  "lines": 8988,
+  "strataVersion": "0.4.0",
+  "summary": {
+    "totalFindings": 10,
+    "byFlag": {
+      "duplicateSymbol": 4,
+      "passThroughMethod": 4,
+      "uniqueImplementation": 1,
+      "wideSignature": 1
+    },
+    "topFiles": [
+      {
+        "file": "server/mcp.ts",
+        "count": 3
+      },
+      {
+        "file": "server/createMcpHandler.ts",
+        "count": 1
+      },
+      {
+        "file": "server/serveStdio.ts",
+        "count": 1
+      },
+      {
+        "file": "server/mcp.examples.ts",
+        "count": 1
+      },
+      {
+        "file": "server/stdio.examples.ts",
+        "count": 1
+      },
+      {
+        "file": "server/middleware/hostHeaderValidation.ts",
+        "count": 1
+      },
+      {
+        "file": "server/middleware/originValidation.ts",
+        "count": 1
+      },
+      {
+        "file": "shimsBrowser.ts",
+        "count": 1
+      },
+      {
+        "file": "shimsWorkerd.ts",
+        "count": 1
+      },
+      {
+        "file": "server/listenRouter.ts",
+        "count": 1
+      }
+    ]
+  },
+  "findings": [
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1f7fgex",
+      "file": "server/createMcpHandler.ts",
+      "line": 280,
+      "message": "function re-declared 2× across 2 files (e.g. toError) — agent likely re-built an existing one [group 1yv11n7]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1yv11n7",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function toError(value: unknown): Error {\n    return value instanceof Error ? value : new Error(String(value));\n}",
+        "previewFrom": "server/createMcpHandler.ts:280",
+        "occurrences": [
+          {
+            "name": "toError",
+            "file": "server/createMcpHandler.ts",
+            "line": 280
+          },
+          {
+            "name": "toError",
+            "file": "server/serveStdio.ts",
+            "line": 829
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:bz6x7l",
+      "file": "server/mcp.examples.ts",
+      "line": 105,
+      "message": "function re-declared 2× across 2 files (e.g. McpServer_connect_stdio, StdioServerTransport_basicUsage) — agent likely re-built an existing one [group mzvd1c]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "mzvd1c",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function McpServer_connect_stdio() {\n    //#region McpServer_connect_stdio\n    const server = new McpServer({ name: 'my-server', version: '1.0.0' });\n    const transport = new StdioServerTransport();\n    await …",
+        "previewFrom": "server/mcp.examples.ts:105",
+        "occurrences": [
+          {
+            "name": "McpServer_connect_stdio",
+            "file": "server/mcp.examples.ts",
+            "line": 105
+          },
+          {
+            "name": "StdioServerTransport_basicUsage",
+            "file": "server/stdio.examples.ts",
+            "line": 16
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vrmfx7",
+      "file": "server/middleware/hostHeaderValidation.ts",
+      "line": 40,
+      "message": "function re-declared 2× across 2 files (e.g. localhostAllowedHostnames, localhostAllowedOrigins) — agent likely re-built an existing one [group 5azsug]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "5azsug",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function localhostAllowedHostnames(): string[] {\n    return ['localhost', '127.0.0.1', '[::1]'];\n}",
+        "previewFrom": "server/middleware/hostHeaderValidation.ts:40",
+        "occurrences": [
+          {
+            "name": "localhostAllowedHostnames",
+            "file": "server/middleware/hostHeaderValidation.ts",
+            "line": 40
+          },
+          {
+            "name": "localhostAllowedOrigins",
+            "file": "server/middleware/originValidation.ts",
+            "line": 66
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:yva9ug",
+      "file": "shimsBrowser.ts",
+      "line": 16,
+      "message": "function re-declared 2× across 2 files (e.g. notSupported) — agent likely re-built an existing one [group 1dqrote]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1dqrote",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function notSupported(): never {\n    throw new Error('StdioServerTransport is not supported in this environment. Use StreamableHTTPServerTransport instead.');\n}",
+        "previewFrom": "shimsBrowser.ts:16",
+        "occurrences": [
+          {
+            "name": "notSupported",
+            "file": "shimsBrowser.ts",
+            "line": 16
+          },
+          {
+            "name": "notSupported",
+            "file": "shimsWorkerd.ts",
+            "line": 21
+          }
+        ]
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:15w2wh4",
+      "file": "server/listenRouter.ts",
+      "line": 334,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "StdioListenRouter",
+        "methodName": "has",
+        "receiver": "this._subs",
+        "callee": "this._subs.has",
+        "passThroughMethodCount": 1,
+        "publicMethodCount": 6,
+        "passThroughRatio": 0.16666666666666666,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:148zvcf",
+      "file": "server/mcp.ts",
+      "line": 148,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "McpServer",
+        "methodName": "connect",
+        "receiver": "this.server",
+        "callee": "this.server.connect",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 17,
+        "passThroughRatio": 0.17647058823529413,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:8ls7cm",
+      "file": "server/mcp.ts",
+      "line": 155,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "McpServer",
+        "methodName": "close",
+        "receiver": "this.server",
+        "callee": "this.server.close",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 17,
+        "passThroughRatio": 0.17647058823529413,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1bg6pr3",
+      "file": "server/mcp.ts",
+      "line": 1122,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "McpServer",
+        "methodName": "sendLoggingMessage",
+        "receiver": "this.server",
+        "callee": "this.server.sendLoggingMessage",
+        "passThroughMethodCount": 3,
+        "publicMethodCount": 17,
+        "passThroughRatio": 0.17647058823529413,
+        "concentrated": true
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:t4o1zq",
+      "file": "server/serverEventBus.ts",
+      "line": 37,
+      "message": "interface 'ServerEventBus' has only one implementer: InMemoryServerEventBus at server/serverEventBus.ts:56 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "ServerEventBus",
+        "memberCount": 2,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "InMemoryServerEventBus",
+            "file": "server/serverEventBus.ts",
+            "line": 56
+          }
+        ]
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ppdi50",
+      "file": "server/legacyInputRequiredShim.ts",
+      "line": 163,
+      "message": "method fulfill takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "method fulfill",
+        "requiredParams": 5
+      }
+    }
+  ]
+}

@@ -36,6 +36,8 @@
     "access": "public"
   },
   "scripts": {
+    "eval:report": "bun eval/report.ts",
+    "eval:run": "bun eval/run.ts",
     "format:check": "oxfmt --check",
     "hooks:install": "lefthook install",
     "lint": "oxlint",

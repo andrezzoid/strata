@@ -1,0 +1,1033 @@
+{
+  "repo": "vercel-ai",
+  "commit": "9d9a73f1551f2243035491e9de5a2e00ebf9eb17",
+  "target": "packages/ai/src",
+  "files": 490,
+  "lines": 168360,
+  "strataVersion": "0.4.0",
+  "summary": {
+    "totalFindings": 31,
+    "byFlag": {
+      "duplicateSymbol": 10,
+      "forcedRareOption": 1,
+      "passThroughMethod": 2,
+      "uniqueImplementation": 18
+    },
+    "topFiles": [
+      {
+        "file": "ui/ui-messages.ts",
+        "count": 8
+      },
+      {
+        "file": "ui/chat.ts",
+        "count": 7
+      },
+      {
+        "file": "realtime/realtime-session.ts",
+        "count": 3
+      },
+      {
+        "file": "generate-text/stream-text.ts",
+        "count": 2
+      },
+      {
+        "file": "generate-object/stream-object.ts",
+        "count": 1
+      },
+      {
+        "file": "ui-message-stream/ui-message-stream-on-end-callback.ts",
+        "count": 1
+      },
+      {
+        "file": "ui-message-stream/ui-message-stream-on-step-end-callback.ts",
+        "count": 1
+      },
+      {
+        "file": "util/callback.ts",
+        "count": 1
+      },
+      {
+        "file": "generate-text/sum-token-counts.ts",
+        "count": 1
+      },
+      {
+        "file": "types/usage.ts",
+        "count": 1
+      }
+    ]
+  },
+  "findings": [
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:15fwaam",
+      "file": "generate-object/stream-object.ts",
+      "line": 71,
+      "message": "function re-declared 2× across 2 files (e.g. markPromiseAsHandled) — agent likely re-built an existing one [group bul9r6]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "bul9r6",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "async function markPromiseAsHandled<T>(promise: Promise<T>): Promise<void> {\n  try {\n    await promise;\n  } catch {}\n}",
+        "previewFrom": "generate-object/stream-object.ts:71",
+        "occurrences": [
+          {
+            "name": "markPromiseAsHandled",
+            "file": "generate-object/stream-object.ts",
+            "line": 71
+          },
+          {
+            "name": "markPromiseAsHandled",
+            "file": "generate-text/stream-text.ts",
+            "line": 844
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1oewkc4",
+      "file": "generate-text/stream-text.ts",
+      "line": 274,
+      "message": "type re-declared 7× across 5 files (e.g. Callback, ChatAddToolApproveResponseFunction, ChatAddToolOutputFunction, +4 more) — agent likely re-built an existing one [group iu8xls]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "iu8xls",
+        "distinctFiles": 5,
+        "totalDeclarations": 7,
+        "preview": "type StreamTextOnChunkCallback<TOOLS extends ToolSet> = (event: {\n  chunk: TextStreamPart<TOOLS>;\n}) => PromiseLike<void> | void;",
+        "previewFrom": "generate-text/stream-text.ts:274",
+        "occurrences": [
+          {
+            "name": "StreamTextOnChunkCallback",
+            "file": "generate-text/stream-text.ts",
+            "line": 274
+          },
+          {
+            "name": "UIMessageStreamOnEndCallback",
+            "file": "ui-message-stream/ui-message-stream-on-end-callback.ts",
+            "line": 4
+          },
+          {
+            "name": "UIMessageStreamOnStepEndCallback",
+            "file": "ui-message-stream/ui-message-stream-on-step-end-callback.ts",
+            "line": 7
+          },
+          {
+            "name": "ChatAddToolApproveResponseFunction",
+            "file": "ui/chat.ts",
+            "line": 68
+          },
+          {
+            "name": "ChatAddToolOutputFunction",
+            "file": "ui/chat.ts",
+            "line": 95
+          },
+          {
+            "name": "ChatOnToolCallCallback",
+            "file": "ui/chat.ts",
+            "line": 158
+          },
+          {
+            "name": "Callback",
+            "file": "util/callback.ts",
+            "line": 4
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1svuwyy",
+      "file": "generate-text/sum-token-counts.ts",
+      "line": 5,
+      "message": "function re-declared 2× across 2 files (e.g. addTokenCounts, sumTokenCounts) — agent likely re-built an existing one [group o6ohac]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "o6ohac",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function sumTokenCounts(\n  tokenCount1: number | undefined,\n  tokenCount2: number | undefined,\n): number | undefined {\n  return tokenCount1 == null && tokenCount2 == null\n    ? undefined\n    : (tokenCount1 ?? 0) + (tokenCount2 ?? 0);\n}",
+        "previewFrom": "generate-text/sum-token-counts.ts:5",
+        "occurrences": [
+          {
+            "name": "sumTokenCounts",
+            "file": "generate-text/sum-token-counts.ts",
+            "line": 5
+          },
+          {
+            "name": "addTokenCounts",
+            "file": "types/usage.ts",
+            "line": 157
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:jbv1t",
+      "file": "logger/log-warnings.ts",
+      "line": 15,
+      "message": "type re-declared 5× across 3 files (e.g. ChatOnDataCallback, ChatOnErrorCallback, ChatOnFinishCallback, +2 more) — agent likely re-built an existing one [group 1emue8w]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1emue8w",
+        "distinctFiles": 3,
+        "totalDeclarations": 5,
+        "preview": "type LogWarningsFunction = (options: {\n  /**\n   * The warnings returned by the model provider.\n   */\n  warnings: Warning[];\n\n  /**\n   * The provider id used for the call, if scoped to a specific provider.\n   */\n  provider?: string;\n\n  /** …",
+        "previewFrom": "logger/log-warnings.ts:15",
+        "occurrences": [
+          {
+            "name": "LogWarningsFunction",
+            "file": "logger/log-warnings.ts",
+            "line": 15
+          },
+          {
+            "name": "ChatOnErrorCallback",
+            "file": "ui/chat.ts",
+            "line": 156
+          },
+          {
+            "name": "ChatOnDataCallback",
+            "file": "ui/chat.ts",
+            "line": 163
+          },
+          {
+            "name": "ChatOnFinishCallback",
+            "file": "ui/chat.ts",
+            "line": 178
+          },
+          {
+            "name": "ErrorHandler",
+            "file": "util/error-handler.ts",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1j01ru6",
+      "file": "middleware/default-embedding-settings-middleware.ts",
+      "line": 8,
+      "message": "function re-declared 2× across 2 files (e.g. defaultEmbeddingSettingsMiddleware, defaultSettingsMiddleware) — agent likely re-built an existing one [group 1ietpo9]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1ietpo9",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function defaultEmbeddingSettingsMiddleware({\n  settings,\n}: {\n  settings: Partial<{\n    headers?: EmbeddingModelV4CallOptions['headers'];\n    providerOptions?: EmbeddingModelV4CallOptions['providerOptions'];\n  }>;\n}): …",
+        "previewFrom": "middleware/default-embedding-settings-middleware.ts:8",
+        "occurrences": [
+          {
+            "name": "defaultEmbeddingSettingsMiddleware",
+            "file": "middleware/default-embedding-settings-middleware.ts",
+            "line": 8
+          },
+          {
+            "name": "defaultSettingsMiddleware",
+            "file": "middleware/default-settings-middleware.ts",
+            "line": 8
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:11sxx6m",
+      "file": "model/as-embedding-model-v3.ts",
+      "line": 4,
+      "message": "function re-declared 4× across 4 files (e.g. asEmbeddingModelV3, asImageModelV3, asSpeechModelV3, +1 more) — agent likely re-built an existing one [group r83c8s]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "r83c8s",
+        "distinctFiles": 4,
+        "totalDeclarations": 4,
+        "preview": "function asEmbeddingModelV3(\n  model: EmbeddingModelV2<string> | EmbeddingModelV3,\n): EmbeddingModelV3 {\n  if (model.specificationVersion === 'v3') {\n    return model;\n  }\n\n  logV2CompatibilityWarning({\n    provider: model.provider, …",
+        "previewFrom": "model/as-embedding-model-v3.ts:4",
+        "occurrences": [
+          {
+            "name": "asEmbeddingModelV3",
+            "file": "model/as-embedding-model-v3.ts",
+            "line": 4
+          },
+          {
+            "name": "asImageModelV3",
+            "file": "model/as-image-model-v3.ts",
+            "line": 4
+          },
+          {
+            "name": "asSpeechModelV3",
+            "file": "model/as-speech-model-v3.ts",
+            "line": 4
+          },
+          {
+            "name": "asTranscriptionModelV3",
+            "file": "model/as-transcription-model-v3.ts",
+            "line": 7
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:170wdp8",
+      "file": "model/as-reranking-model-v4.ts",
+      "line": 3,
+      "message": "function re-declared 2× across 2 files (e.g. asRerankingModelV4, asVideoModelV4) — agent likely re-built an existing one [group vbu4mv]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "vbu4mv",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function asRerankingModelV4(\n  model: RerankingModelV3 | RerankingModelV4,\n): RerankingModelV4 {\n  if (model.specificationVersion === 'v4') {\n    return model;\n  }\n\n  return new Proxy(model, {\n    get(target, prop: keyof RerankingModelV3) …",
+        "previewFrom": "model/as-reranking-model-v4.ts:3",
+        "occurrences": [
+          {
+            "name": "asRerankingModelV4",
+            "file": "model/as-reranking-model-v4.ts",
+            "line": 3
+          },
+          {
+            "name": "asVideoModelV4",
+            "file": "model/as-video-model-v4.ts",
+            "line": 6
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:utu6i",
+      "file": "types/image-model-response-metadata.ts",
+      "line": 1,
+      "message": "type re-declared 3× across 3 files (e.g. ImageModelResponseMetadata, SpeechTranslationModelResponseMetadata, TranscriptionModelResponseMetadata) — agent likely re-built an existing one [group i3a5bl]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "i3a5bl",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "type ImageModelResponseMetadata = {\n  /**\n   * Timestamp for the start of the generated response.\n   */\n  timestamp: Date;\n\n  /**\n   * The ID of the response model that was used to generate the response.\n   */\n  modelId: string;\n\n  /** …",
+        "previewFrom": "types/image-model-response-metadata.ts:1",
+        "occurrences": [
+          {
+            "name": "ImageModelResponseMetadata",
+            "file": "types/image-model-response-metadata.ts",
+            "line": 1
+          },
+          {
+            "name": "SpeechTranslationModelResponseMetadata",
+            "file": "types/speech-translation-model-response-metadata.ts",
+            "line": 7
+          },
+          {
+            "name": "TranscriptionModelResponseMetadata",
+            "file": "types/transcription-model-response-metadata.ts",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ovaisd",
+      "file": "ui-message-stream/ui-message-chunks.ts",
+      "line": 409,
+      "message": "function re-declared 3× across 2 files (e.g. isDataUIMessageChunk, isDataUIPart, isStaticToolUIPart) — agent likely re-built an existing one [group 6vxuy6]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "6vxuy6",
+        "distinctFiles": 2,
+        "totalDeclarations": 3,
+        "preview": "function isDataUIMessageChunk(\n  chunk: UIMessageChunk,\n): chunk is DataUIMessageChunk<UIDataTypes> {\n  return chunk.type.startsWith('data-');\n}",
+        "previewFrom": "ui-message-stream/ui-message-chunks.ts:409",
+        "occurrences": [
+          {
+            "name": "isDataUIMessageChunk",
+            "file": "ui-message-stream/ui-message-chunks.ts",
+            "line": 409
+          },
+          {
+            "name": "isDataUIPart",
+            "file": "ui/ui-messages.ts",
+            "line": 273
+          },
+          {
+            "name": "isStaticToolUIPart",
+            "file": "ui/ui-messages.ts",
+            "line": 556
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:org99",
+      "file": "ui/ui-messages.ts",
+      "line": 509,
+      "message": "function re-declared 6× in 1 file (e.g. isCustomContentUIPart, isDynamicToolUIPart, isFileUIPart, +3 more) — agent likely re-built an existing one [group nftzin]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "nftzin",
+        "distinctFiles": 1,
+        "totalDeclarations": 6,
+        "preview": "function isTextUIPart(\n  part: UIMessagePart<UIDataTypes, UITools>,\n): part is TextUIPart {\n  return part.type === 'text';\n}",
+        "previewFrom": "ui/ui-messages.ts:509",
+        "occurrences": [
+          {
+            "name": "isTextUIPart",
+            "file": "ui/ui-messages.ts",
+            "line": 509
+          },
+          {
+            "name": "isCustomContentUIPart",
+            "file": "ui/ui-messages.ts",
+            "line": 518
+          },
+          {
+            "name": "isFileUIPart",
+            "file": "ui/ui-messages.ts",
+            "line": 527
+          },
+          {
+            "name": "isReasoningFileUIPart",
+            "file": "ui/ui-messages.ts",
+            "line": 536
+          },
+          {
+            "name": "isReasoningUIPart",
+            "file": "ui/ui-messages.ts",
+            "line": 545
+          },
+          {
+            "name": "isDynamicToolUIPart",
+            "file": "ui/ui-messages.ts",
+            "line": 567
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:fu0yu",
+      "file": "generate-text/generate-text.ts",
+      "line": 233,
+      "message": "generateText callers pass \"Hello\" for option 'prompt' in 47/53 calls - the option is probably a default",
+      "metadata": {
+        "apiName": "generateText",
+        "apiKind": "function",
+        "kind": "option",
+        "parameterIndex": 0,
+        "parameterName": "options1",
+        "optionName": "prompt",
+        "value": "\"Hello\"",
+        "valueKind": "literal",
+        "repeatedCount": 47,
+        "callCount": 53,
+        "callSites": [
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 30
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 69
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 76
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 90
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 116
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 271
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 296
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 308
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 327
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 342
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 357
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 364
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 372
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 380
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 394
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 412
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 432
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 467
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 482
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 512
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 526
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 542
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 558
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 591
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 612
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 624
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 643
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 654
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 667
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 675
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 686
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 694
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 703
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 712
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 721
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 734
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 742
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 752
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 762
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 777
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 785
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 795
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 805
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 816
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 835
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 855
+          },
+          {
+            "file": "generate-text/generate-text.test-d.ts",
+            "line": 877
+          }
+        ]
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:tq591a",
+      "file": "realtime/realtime-session.ts",
+      "line": 155,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "AbstractRealtimeSession",
+        "methodName": "sendEvent",
+        "receiver": "this.transport",
+        "callee": "this.transport.sendEvent",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.14285714285714285,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "passThroughMethod",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1eh759b",
+      "file": "realtime/realtime-session.ts",
+      "line": 247,
+      "message": "class method delegates to instance state with same args — layer without logic",
+      "metadata": {
+        "className": "AbstractRealtimeSession",
+        "methodName": "stopPlayback",
+        "receiver": "this.audio",
+        "callee": "this.audio.stopPlayback",
+        "passThroughMethodCount": 2,
+        "publicMethodCount": 14,
+        "passThroughRatio": 0.14285714285714285,
+        "concentrated": false
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1b6ilie",
+      "file": "agent/agent.ts",
+      "line": 184,
+      "message": "interface 'Agent' has only one implementer: ToolLoopAgent at agent/tool-loop-agent.ts:39 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "Agent",
+        "memberCount": 5,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "ToolLoopAgent",
+            "file": "agent/tool-loop-agent.ts",
+            "line": 39
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1bv10ya",
+      "file": "embed/embed-many-result.ts",
+      "line": 9,
+      "message": "interface 'EmbedManyResult' has only one implementer: DefaultEmbedManyResult at embed/embed-many.ts:418 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "EmbedManyResult",
+        "memberCount": 6,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultEmbedManyResult",
+            "file": "embed/embed-many.ts",
+            "line": 418
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:e7wdln",
+      "file": "embed/embed-result.ts",
+      "line": 9,
+      "message": "interface 'EmbedResult' has only one implementer: DefaultEmbedResult at embed/embed.ts:271 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "EmbedResult",
+        "memberCount": 6,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultEmbedResult",
+            "file": "embed/embed.ts",
+            "line": 271
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1an9bs8",
+      "file": "generate-image/generate-image-result.ts",
+      "line": 11,
+      "message": "interface 'GenerateImageResult' has only one implementer: DefaultGenerateImageResult at generate-image/generate-image.ts:268 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "GenerateImageResult",
+        "memberCount": 6,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultGenerateImageResult",
+            "file": "generate-image/generate-image.ts",
+            "line": 268
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:wxsy6c",
+      "file": "generate-object/generate-object-result.ts",
+      "line": 13,
+      "message": "interface 'GenerateObjectResult' has only one implementer: DefaultGenerateObjectResult at generate-object/generate-object.ts:513 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "GenerateObjectResult",
+        "memberCount": 9,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultGenerateObjectResult",
+            "file": "generate-object/generate-object.ts",
+            "line": 513
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:3ndneu",
+      "file": "generate-object/stream-object-result.ts",
+      "line": 15,
+      "message": "interface 'StreamObjectResult' has only one implementer: DefaultStreamObjectResult at generate-object/stream-object.ts:443 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "StreamObjectResult",
+        "memberCount": 13,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultStreamObjectResult",
+            "file": "generate-object/stream-object.ts",
+            "line": 443
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:v3fvg",
+      "file": "generate-speech/generate-speech-result.ts",
+      "line": 10,
+      "message": "interface 'SpeechResult' has only one implementer: DefaultSpeechResult at generate-speech/generate-speech.ts:173 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "SpeechResult",
+        "memberCount": 4,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultSpeechResult",
+            "file": "generate-speech/generate-speech.ts",
+            "line": 173
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:xfuwmd",
+      "file": "generate-speech/generated-audio-file.ts",
+      "line": 8,
+      "message": "interface 'GeneratedAudioFile' has only one implementer: DefaultGeneratedAudioFile at generate-speech/generated-audio-file.ts:15 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "GeneratedAudioFile",
+        "memberCount": 1,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultGeneratedAudioFile",
+            "file": "generate-speech/generated-audio-file.ts",
+            "line": 15
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1j5s4ku",
+      "file": "generate-text/generate-text-result.ts",
+      "line": 32,
+      "message": "interface 'GenerateTextResult' has only one implementer: DefaultGenerateTextResult at generate-text/generate-text.ts:1613 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "GenerateTextResult",
+        "memberCount": 24,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultGenerateTextResult",
+            "file": "generate-text/generate-text.ts",
+            "line": 1613
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1ljuhy9",
+      "file": "generate-text/generated-file.ts",
+      "line": 9,
+      "message": "interface 'GeneratedFile' has only one implementer: DefaultGeneratedFile at generate-text/generated-file.ts:33 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "GeneratedFile",
+        "memberCount": 3,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultGeneratedFile",
+            "file": "generate-text/generated-file.ts",
+            "line": 33
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:j4jlww",
+      "file": "generate-text/stream-text-result.ts",
+      "line": 119,
+      "message": "interface 'StreamTextResult' has only one implementer: DefaultStreamTextResult at generate-text/stream-text.ts:956 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "StreamTextResult",
+        "memberCount": 36,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultStreamTextResult",
+            "file": "generate-text/stream-text.ts",
+            "line": 956
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:e0xgxg",
+      "file": "realtime/realtime-session.ts",
+      "line": 34,
+      "message": "abstract class 'AbstractRealtimeSession' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "AbstractRealtimeSession",
+        "memberCount": 21,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:18cu6ky",
+      "file": "registry/provider-registry.ts",
+      "line": 45,
+      "message": "interface 'ProviderRegistryProvider' has only one implementer: DefaultProviderRegistry at registry/provider-registry.ts:175 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "ProviderRegistryProvider",
+        "memberCount": 16,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultProviderRegistry",
+            "file": "registry/provider-registry.ts",
+            "line": 175
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:15npefh",
+      "file": "rerank/rerank-result.ts",
+      "line": 7,
+      "message": "interface 'RerankResult' has only one implementer: DefaultRerankResult at rerank/rerank.ts:345 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "RerankResult",
+        "memberCount": 5,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultRerankResult",
+            "file": "rerank/rerank.ts",
+            "line": 345
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1xwxt1q",
+      "file": "transcribe/transcribe-result.ts",
+      "line": 9,
+      "message": "interface 'TranscriptionResult' has only one implementer: DefaultTranscriptionResult at transcribe/transcribe.ts:153 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "TranscriptionResult",
+        "memberCount": 7,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultTranscriptionResult",
+            "file": "transcribe/transcribe.ts",
+            "line": 153
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1aq63we",
+      "file": "ui/chat-transport.ts",
+      "line": 15,
+      "message": "interface 'ChatTransport' has only one implementer: DirectChatTransport at ui/direct-chat-transport.ts:55 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "ChatTransport",
+        "memberCount": 2,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DirectChatTransport",
+            "file": "ui/direct-chat-transport.ts",
+            "line": 55
+          }
+        ]
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1hv18is",
+      "file": "ui/chat.ts",
+      "line": 242,
+      "message": "abstract class 'AbstractChat' has no subclasses — abstract class is dead — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "abstractClass",
+        "name": "AbstractChat",
+        "memberCount": 18,
+        "implementerCount": 0,
+        "implementers": []
+      }
+    },
+    {
+      "flag": "uniqueImplementation",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:kz2u5p",
+      "file": "upload-file/upload-file-result.ts",
+      "line": 5,
+      "message": "interface 'UploadFileResult' has only one implementer: DefaultUploadFileResult at upload-file/upload-file.ts:91 — speculative abstraction (no polymorphism payoff)",
+      "metadata": {
+        "kind": "interface",
+        "name": "UploadFileResult",
+        "memberCount": 5,
+        "implementerCount": 1,
+        "implementers": [
+          {
+            "implementer": "DefaultUploadFileResult",
+            "file": "upload-file/upload-file.ts",
+            "line": 91
+          }
+        ]
+      }
+    }
+  ]
+}

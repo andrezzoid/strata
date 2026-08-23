@@ -1,0 +1,577 @@
+{
+  "repo": "continue",
+  "commit": "5522c6f44ca0ac3528b37244818fbfa39b5af470",
+  "target": "gui/src",
+  "files": 371,
+  "lines": 52234,
+  "strataVersion": "0.4.0",
+  "summary": {
+    "totalFindings": 20,
+    "byFlag": {
+      "duplicateSymbol": 13,
+      "forcedRareOption": 1,
+      "wideSignature": 6
+    },
+    "topFiles": [
+      {
+        "file": "components/ui/Listbox.tsx",
+        "count": 3
+      },
+      {
+        "file": "pages/config/features/keyboard/KeyboardShortcuts.tsx",
+        "count": 3
+      },
+      {
+        "file": "pages/config/sections/HelpSection.tsx",
+        "count": 3
+      },
+      {
+        "file": "components/AssistantAndOrgListbox/shared.tsx",
+        "count": 2
+      },
+      {
+        "file": "components/svg/DiscordIcon.tsx",
+        "count": 2
+      },
+      {
+        "file": "components/svg/GithubIcon.tsx",
+        "count": 2
+      },
+      {
+        "file": "components/svg/GitlabIcon.tsx",
+        "count": 2
+      },
+      {
+        "file": "components/svg/GoogleIcon.tsx",
+        "count": 2
+      },
+      {
+        "file": "components/mainInput/TipTapEditor/utils/getSuggestion.ts",
+        "count": 2
+      },
+      {
+        "file": "util/editOutcomeLogger.ts",
+        "count": 2
+      }
+    ]
+  },
+  "findings": [
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:17rkzuc",
+      "file": "components/AssistantAndOrgListbox/shared.tsx",
+      "line": 90,
+      "message": "function re-declared 2× in 1 file (e.g. StyledArrowTopRightOnSquareIcon, StyledCog6ToothIcon) — agent likely re-built an existing one [group 1g5dgxl]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1g5dgxl",
+        "distinctFiles": 1,
+        "totalDeclarations": 2,
+        "preview": "StyledCog6ToothIcon = ({\n  $hovered,\n  onClick,\n}: {\n  $hovered: boolean;\n  onClick?: (e: any) => void;\n}) => (\n  <IconBase $hovered={$hovered} onClick={onClick}>\n    <Cog6ToothIcon />\n  </IconBase>\n)",
+        "previewFrom": "components/AssistantAndOrgListbox/shared.tsx:90",
+        "occurrences": [
+          {
+            "name": "StyledCog6ToothIcon",
+            "file": "components/AssistantAndOrgListbox/shared.tsx",
+            "line": 90
+          },
+          {
+            "name": "StyledArrowTopRightOnSquareIcon",
+            "file": "components/AssistantAndOrgListbox/shared.tsx",
+            "line": 102
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:s49t9z",
+      "file": "components/mainInput/InputToolbar.tsx",
+      "line": 253,
+      "message": "function re-declared 2× across 2 files (e.g. shallowToolbarOptionsEqual, toolbarOptionsEqual) — agent likely re-built an existing one [group fmj60l]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "fmj60l",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function shallowToolbarOptionsEqual(a?: ToolbarOptions, b?: ToolbarOptions) {\n  if (a === b) return true;\n  if (!a || !b) return false;\n  return (\n    a.hideAddContext === b.hideAddContext &&\n    a.hideImageUpload === b.hideImageUpload && …",
+        "previewFrom": "components/mainInput/InputToolbar.tsx:253",
+        "occurrences": [
+          {
+            "name": "shallowToolbarOptionsEqual",
+            "file": "components/mainInput/InputToolbar.tsx",
+            "line": 253
+          },
+          {
+            "name": "toolbarOptionsEqual",
+            "file": "components/mainInput/TipTapEditor/TipTapEditor.tsx",
+            "line": 317
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vuvvho",
+      "file": "components/mainInput/TipTapEditor/MainEditorProvider.tsx",
+      "line": 119,
+      "message": "function re-declared 3× across 3 files (e.g. useMainEditor, useSubmenuContextProviders, useVscTheme) — agent likely re-built an existing one [group 18hwgq6]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "18hwgq6",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "useMainEditor = (): MainEditorContextType =>\n  useContext(MainEditorContext)",
+        "previewFrom": "components/mainInput/TipTapEditor/MainEditorProvider.tsx:119",
+        "occurrences": [
+          {
+            "name": "useMainEditor",
+            "file": "components/mainInput/TipTapEditor/MainEditorProvider.tsx",
+            "line": 119
+          },
+          {
+            "name": "useSubmenuContextProviders",
+            "file": "context/SubmenuContextProviders.tsx",
+            "line": 627
+          },
+          {
+            "name": "useVscTheme",
+            "file": "context/VscTheme.tsx",
+            "line": 184
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1qqeiik",
+      "file": "components/OnboardingCard/components/OnboardingLocalTab.tsx",
+      "line": 22,
+      "message": "interface re-declared 3× across 3 files (e.g. OnboardingCardProps, OnboardingLocalTabProps, OnboardingProvidersTabProps) — agent likely re-built an existing one [group xstn0w]",
+      "metadata": {
+        "symbolKind": "interface",
+        "fingerprintHash": "xstn0w",
+        "distinctFiles": 3,
+        "totalDeclarations": 3,
+        "preview": "interface OnboardingLocalTabProps {\n  isDialog?: boolean;\n}",
+        "previewFrom": "components/OnboardingCard/components/OnboardingLocalTab.tsx:22",
+        "occurrences": [
+          {
+            "name": "OnboardingLocalTabProps",
+            "file": "components/OnboardingCard/components/OnboardingLocalTab.tsx",
+            "line": 22
+          },
+          {
+            "name": "OnboardingProvidersTabProps",
+            "file": "components/OnboardingCard/components/OnboardingProvidersTab.tsx",
+            "line": 10
+          },
+          {
+            "name": "OnboardingCardProps",
+            "file": "components/OnboardingCard/OnboardingCard.tsx",
+            "line": 16
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:vhwn8b",
+      "file": "components/svg/BotIcon.tsx",
+      "line": 1,
+      "message": "interface re-declared 5× across 5 files (e.g. BotIconProps, CustomGitlabIconProps, CustomGoogleIconProps, +2 more) — agent likely re-built an existing one [group r0jibs]",
+      "metadata": {
+        "symbolKind": "interface",
+        "fingerprintHash": "r0jibs",
+        "distinctFiles": 5,
+        "totalDeclarations": 5,
+        "preview": "interface BotIconProps extends React.SVGProps<SVGSVGElement> {\n  size?: number;\n}",
+        "previewFrom": "components/svg/BotIcon.tsx:1",
+        "occurrences": [
+          {
+            "name": "BotIconProps",
+            "file": "components/svg/BotIcon.tsx",
+            "line": 1
+          },
+          {
+            "name": "DiscordIconProps",
+            "file": "components/svg/DiscordIcon.tsx",
+            "line": 1
+          },
+          {
+            "name": "GithubIconProps",
+            "file": "components/svg/GithubIcon.tsx",
+            "line": 1
+          },
+          {
+            "name": "CustomGitlabIconProps",
+            "file": "components/svg/GitlabIcon.tsx",
+            "line": 1
+          },
+          {
+            "name": "CustomGoogleIconProps",
+            "file": "components/svg/GoogleIcon.tsx",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:q0rfh",
+      "file": "components/svg/DiscordIcon.tsx",
+      "line": 5,
+      "message": "function re-declared 2× across 2 files (e.g. DiscordIcon, GithubIcon) — agent likely re-built an existing one [group 1w4orzm]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "1w4orzm",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function DiscordIcon({\n  size = 24,\n  className,\n  ...props\n}: DiscordIconProps) {\n  return (\n    <svg\n      width={size}\n      height={size}\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      stroke=\"currentColor\" …",
+        "previewFrom": "components/svg/DiscordIcon.tsx:5",
+        "occurrences": [
+          {
+            "name": "DiscordIcon",
+            "file": "components/svg/DiscordIcon.tsx",
+            "line": 5
+          },
+          {
+            "name": "GithubIcon",
+            "file": "components/svg/GithubIcon.tsx",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1fmdcrg",
+      "file": "components/svg/GitlabIcon.tsx",
+      "line": 5,
+      "message": "function re-declared 2× across 2 files (e.g. GitlabIcon, GoogleIcon) — agent likely re-built an existing one [group 8hzl0m]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "8hzl0m",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function GitlabIcon({\n  size = 24,\n  className,\n  ...props\n}: CustomGitlabIconProps) {\n  return (\n    <svg\n      width={size}\n      height={size}\n      viewBox=\"0 0 24 24\"\n      fill=\"none\"\n      stroke=\"currentColor\" …",
+        "previewFrom": "components/svg/GitlabIcon.tsx:5",
+        "occurrences": [
+          {
+            "name": "GitlabIcon",
+            "file": "components/svg/GitlabIcon.tsx",
+            "line": 5
+          },
+          {
+            "name": "GoogleIcon",
+            "file": "components/svg/GoogleIcon.tsx",
+            "line": 5
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:z3w045",
+      "file": "components/ui/Listbox.tsx",
+      "line": 12,
+      "message": "type re-declared 3× in 1 file (e.g. ListboxButtonProps, ListboxOptionProps, ListboxOptionsProps) — agent likely re-built an existing one [group 1euahm4]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "1euahm4",
+        "distinctFiles": 1,
+        "totalDeclarations": 3,
+        "preview": "type ListboxButtonProps = React.ComponentProps<typeof HLButton> & {\n  fontSizeModifier?: FontSizeModifier;\n};",
+        "previewFrom": "components/ui/Listbox.tsx:12",
+        "occurrences": [
+          {
+            "name": "ListboxButtonProps",
+            "file": "components/ui/Listbox.tsx",
+            "line": 12
+          },
+          {
+            "name": "ListboxOptionsProps",
+            "file": "components/ui/Listbox.tsx",
+            "line": 37
+          },
+          {
+            "name": "ListboxOptionProps",
+            "file": "components/ui/Listbox.tsx",
+            "line": 64
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:fz5seq",
+      "file": "pages/config/components/ConfigSection.tsx",
+      "line": 11,
+      "message": "function re-declared 2× across 2 files (e.g. ConfigSection, ConfigSubsection) — agent likely re-built an existing one [group 6rtqjs]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "6rtqjs",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function ConfigSection({\n  title,\n  children,\n  className = \"\",\n}: ConfigSectionProps) {\n  return (\n    <div className={className}>\n      {title && <h3 className=\"mb-4 text-base font-semibold\">{title}</h3>}\n      {children}\n    </div>\n  ); …",
+        "previewFrom": "pages/config/components/ConfigSection.tsx:11",
+        "occurrences": [
+          {
+            "name": "ConfigSection",
+            "file": "pages/config/components/ConfigSection.tsx",
+            "line": 11
+          },
+          {
+            "name": "ConfigSubsection",
+            "file": "pages/config/components/ConfigSubsection.tsx",
+            "line": 9
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:fno53t",
+      "file": "pages/config/features/indexing/IndexingProgressBar.tsx",
+      "line": 4,
+      "message": "interface re-declared 4× across 4 files (e.g. IndexingProgressBarProps, IndexingProgressErrorTextProps, IndexingProgressIndicatorProps, +1 more) — agent likely re-built an existing one [group ycfyq9]",
+      "metadata": {
+        "symbolKind": "interface",
+        "fingerprintHash": "ycfyq9",
+        "distinctFiles": 4,
+        "totalDeclarations": 4,
+        "preview": "interface IndexingProgressBarProps {\n  update: IndexingProgressUpdate;\n}",
+        "previewFrom": "pages/config/features/indexing/IndexingProgressBar.tsx:4",
+        "occurrences": [
+          {
+            "name": "IndexingProgressBarProps",
+            "file": "pages/config/features/indexing/IndexingProgressBar.tsx",
+            "line": 4
+          },
+          {
+            "name": "IndexingProgressErrorTextProps",
+            "file": "pages/config/features/indexing/IndexingProgressErrorText.tsx",
+            "line": 13
+          },
+          {
+            "name": "IndexingProgressIndicatorProps",
+            "file": "pages/config/features/indexing/IndexingProgressIndicator.tsx",
+            "line": 9
+          },
+          {
+            "name": "IndexingProgressTitleTextProps",
+            "file": "pages/config/features/indexing/IndexingProgressTitleText.tsx",
+            "line": 4
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1muvc9m",
+      "file": "pages/config/features/keyboard/KeyboardShortcuts.tsx",
+      "line": 11,
+      "message": "function re-declared 2× across 2 files (e.g. KeyboardShortcut) — agent likely re-built an existing one [group xlexs2]",
+      "metadata": {
+        "symbolKind": "function",
+        "fingerprintHash": "xlexs2",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "function KeyboardShortcut(props: KeyboardShortcutProps) {\n  return (\n    <div\n      className={`flex flex-col items-start p-2 sm:flex-row sm:items-center ${props.isEven ? \"\" : \"bg-table-oddRow\"}`}\n    >\n      <div className=\"w-full …",
+        "previewFrom": "pages/config/features/keyboard/KeyboardShortcuts.tsx:11",
+        "occurrences": [
+          {
+            "name": "KeyboardShortcut",
+            "file": "pages/config/features/keyboard/KeyboardShortcuts.tsx",
+            "line": 11
+          },
+          {
+            "name": "KeyboardShortcut",
+            "file": "pages/config/sections/HelpSection.tsx",
+            "line": 27
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:rlrq33",
+      "file": "pages/config/features/keyboard/KeyboardShortcuts.tsx",
+      "line": 27,
+      "message": "const re-declared 2× across 2 files (e.g. vscodeShortcuts) — agent likely re-built an existing one [group 16k40ja]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "16k40ja",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "vscodeShortcuts: Omit<KeyboardShortcutProps, \"isEven\">[] = [\n  {\n    shortcut: \"cmd '\",\n    description: \"Toggle Selected Model\",\n  },\n  {\n    shortcut: \"cmd I\",\n    description: \"Edit highlighted code\",\n  },\n  {\n    shortcut: \"cmd L\", …",
+        "previewFrom": "pages/config/features/keyboard/KeyboardShortcuts.tsx:27",
+        "occurrences": [
+          {
+            "name": "vscodeShortcuts",
+            "file": "pages/config/features/keyboard/KeyboardShortcuts.tsx",
+            "line": 27
+          },
+          {
+            "name": "vscodeShortcuts",
+            "file": "pages/config/sections/HelpSection.tsx",
+            "line": 43
+          }
+        ]
+      }
+    },
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:lwg35o",
+      "file": "pages/config/features/keyboard/KeyboardShortcuts.tsx",
+      "line": 88,
+      "message": "const re-declared 2× across 2 files (e.g. jetbrainsShortcuts) — agent likely re-built an existing one [group 1ae65fn]",
+      "metadata": {
+        "symbolKind": "const",
+        "fingerprintHash": "1ae65fn",
+        "distinctFiles": 2,
+        "totalDeclarations": 2,
+        "preview": "jetbrainsShortcuts: Omit<KeyboardShortcutProps, \"isEven\">[] = [\n  {\n    shortcut: \"cmd '\",\n    description: \"Toggle Selected Model\",\n  },\n  {\n    shortcut: \"cmd I\",\n    description: \"Edit highlighted code\",\n  },\n  {\n    shortcut: \"cmd J\", …",
+        "previewFrom": "pages/config/features/keyboard/KeyboardShortcuts.tsx:88",
+        "occurrences": [
+          {
+            "name": "jetbrainsShortcuts",
+            "file": "pages/config/features/keyboard/KeyboardShortcuts.tsx",
+            "line": 88
+          },
+          {
+            "name": "jetbrainsShortcuts",
+            "file": "pages/config/sections/HelpSection.tsx",
+            "line": 104
+          }
+        ]
+      }
+    },
+    {
+      "flag": "forcedRareOption",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:ocwwa3",
+      "file": "redux/util/index.ts",
+      "line": 102,
+      "message": "logToolUsage callers pass true for 'success' in 5/6 calls - hide the common case behind the API",
+      "metadata": {
+        "apiName": "logToolUsage",
+        "apiKind": "function",
+        "kind": "parameter",
+        "parameterIndex": 2,
+        "parameterName": "success",
+        "value": "true",
+        "valueKind": "literal",
+        "repeatedCount": 5,
+        "callCount": 6,
+        "callSites": [
+          {
+            "file": "components/mainInput/Lump/LumpToolbar/LumpToolbar.tsx",
+            "line": 98
+          },
+          {
+            "file": "components/mainInput/Lump/LumpToolbar/LumpToolbar.tsx",
+            "line": 154
+          },
+          {
+            "file": "redux/thunks/callToolById.ts",
+            "line": 131
+          },
+          {
+            "file": "redux/thunks/handleApplyStateUpdate.ts",
+            "line": 37
+          },
+          {
+            "file": "redux/thunks/handleApplyStateUpdate.ts",
+            "line": 68
+          }
+        ]
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:5a0rrw",
+      "file": "components/mainInput/TipTapEditor/utils/getSuggestion.ts",
+      "line": 115,
+      "message": "getContextProviderDropdownOptions takes 7 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "getContextProviderDropdownOptions",
+        "requiredParams": 7
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:13scpd1",
+      "file": "components/mainInput/TipTapEditor/utils/getSuggestion.ts",
+      "line": 196,
+      "message": "getSlashCommandDropdownOptions takes 6 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "getSlashCommandDropdownOptions",
+        "requiredParams": 6
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1b9i9i7",
+      "file": "components/mainInput/TipTapEditor/utils/renderSlashCommand.ts",
+      "line": 13,
+      "message": "renderSlashCommandPrompt takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "renderSlashCommandPrompt",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1bsvbd1",
+      "file": "redux/thunks/evaluateToolPolicies.ts",
+      "line": 74,
+      "message": "evaluateToolPolicies takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "evaluateToolPolicies",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:xit36n",
+      "file": "util/editOutcomeLogger.ts",
+      "line": 151,
+      "message": "assembleEditOutcomeData takes 5 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "assembleEditOutcomeData",
+        "requiredParams": 5
+      }
+    },
+    {
+      "flag": "wideSignature",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:1qru64w",
+      "file": "util/editOutcomeLogger.ts",
+      "line": 186,
+      "message": "logAgentModeEditOutcome takes 6 required parameters — wide surface, consider an options object or splitting",
+      "metadata": {
+        "name": "logAgentModeEditOutcome",
+        "requiredParams": 6
+      }
+    }
+  ]
+}

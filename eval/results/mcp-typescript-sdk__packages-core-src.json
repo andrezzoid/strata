@@ -1,0 +1,100 @@
+{
+  "repo": "mcp-typescript-sdk",
+  "commit": "3924de99df834302d89f5997a1b64ca268282284",
+  "target": "packages/core/src",
+  "files": 6,
+  "lines": 3103,
+  "strataVersion": "0.4.0",
+  "summary": {
+    "totalFindings": 1,
+    "byFlag": {
+      "duplicateSymbol": 1
+    },
+    "topFiles": [
+      {
+        "file": "auth.ts",
+        "count": 12
+      }
+    ]
+  },
+  "findings": [
+    {
+      "flag": "duplicateSymbol",
+      "severity": "candidate",
+      "fingerprint": "strata:v1:2g3a8c",
+      "file": "auth.ts",
+      "line": 163,
+      "message": "type re-declared 12× in 1 file (e.g. IdJagTokenExchangeResponse, OAuthClientInformation, OAuthClientInformationFull, +9 more) — agent likely re-built an existing one [group 4gdnqo]",
+      "metadata": {
+        "symbolKind": "type",
+        "fingerprintHash": "4gdnqo",
+        "distinctFiles": 1,
+        "totalDeclarations": 12,
+        "preview": "type IdJagTokenExchangeResponse = z.infer<typeof IdJagTokenExchangeResponseSchema>;",
+        "previewFrom": "auth.ts:163",
+        "occurrences": [
+          {
+            "name": "IdJagTokenExchangeResponse",
+            "file": "auth.ts",
+            "line": 163
+          },
+          {
+            "name": "OAuthMetadata",
+            "file": "auth.ts",
+            "line": 250
+          },
+          {
+            "name": "OpenIdProviderMetadata",
+            "file": "auth.ts",
+            "line": 251
+          },
+          {
+            "name": "OpenIdProviderDiscoveryMetadata",
+            "file": "auth.ts",
+            "line": 252
+          },
+          {
+            "name": "OAuthTokens",
+            "file": "auth.ts",
+            "line": 254
+          },
+          {
+            "name": "OAuthErrorResponse",
+            "file": "auth.ts",
+            "line": 255
+          },
+          {
+            "name": "OAuthClientMetadata",
+            "file": "auth.ts",
+            "line": 256
+          },
+          {
+            "name": "OAuthClientInformation",
+            "file": "auth.ts",
+            "line": 257
+          },
+          {
+            "name": "OAuthClientInformationFull",
+            "file": "auth.ts",
+            "line": 258
+          },
+          {
+            "name": "OAuthClientRegistrationError",
+            "file": "auth.ts",
+            "line": 280
+          },
+          {
+            "name": "OAuthTokenRevocationRequest",
+            "file": "auth.ts",
+            "line": 281
+          },
+          {
+            "name": "OAuthProtectedResourceMetadata",
+            "file": "auth.ts",
+            "line": 282
+          }
+        ]
+      }
+    }
+  ]
+}
