@@ -68,7 +68,7 @@ Labeller agreement on the 64 double-labelled items: 94% on the three-way label (
   - The cost is real but small: about a third fewer actionable findings in absolute terms. Most of that loss is `tsEscapeHatch` in twenty, an estimate resting on 2 of 10 sampled findings.
 - **`uniqueImplementation` mostly makes false claims.** In 10 of 10 twenty samples the "dead" abstract classes do have subclasses, imported through package-rooted aliases that the scan-root resolver can't follow. Ambient `declare abstract class` types caused the hono cases.
 - **`duplicateSymbol` errors come from over-normalisation of small declarations** (string and regex literals, function-type parameter types and `typeof` operands are erased) **and from `examples/` copies.** Its actionable findings are mostly duplicated named constants and functions copied across package boundaries.
-- **`passThroughMethod`'s 0.4.0 additions in twenty were all Playwright page-object methods** (`clickSignUpButton` forwarding to `click`), labelled acceptable. Every actionable case was a class that forwards most of its surface.
+- **`passThroughMethod`'s 0.4.0 additions in twenty were all labelled acceptable.** 8 of the 10 were Playwright page-object methods (`clickSignUpButton` forwarding to `click`). Nearly every actionable case was a class that forwards most of its surface; 6 of the 10 in the shared stratum were the same `DrawShapeTrail` class.
 - **`wideSignature` in twenty is NestJS dependency-injection constructors.** The actionable cases elsewhere involve parameters derivable from other parameters (`app` plus `app.scene`).
 
 ## Caveats
