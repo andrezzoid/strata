@@ -76,6 +76,18 @@ describe("GitHub Action runner", () => {
     expect(metadata).not.toContain("sarif");
   });
 
+  it("pins README usage examples to the latest released tag", async () => {
+    const readme = await Bun.file("README.md").text();
+    const changelog = await Bun.file("CHANGELOG.md").text();
+    // Read the newest dated heading: an Unreleased version has no tag for users to pin yet.
+    const latestRelease = changelog.match(/^## (\d+\.\d+\.\d+) - \d{4}-\d{2}-\d{2}$/m)?.[1];
+    const refs = [...readme.matchAll(/andrezzoid\/strata@(v[\w.-]*)/g)].map((match) => match[1]);
+
+    expect(latestRelease).toBeDefined();
+    expect(refs.length).toBeGreaterThan(0);
+    for (const ref of refs) expect(ref).toBe(`v${latestRelease}`);
+  });
+
   it("normalizes action inputs with PR-friendly defaults", () => {
     expect(
       normalizeActionInputs({
