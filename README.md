@@ -219,7 +219,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: andrezzoid/strata@v0.1.1
+      - uses: andrezzoid/strata@v0.4.0
 ```
 
 The action emits native GitHub warning annotations plus a job summary. It also prints the same scan report shape as `strata --format text` to the live console, followed by whether the GitHub job summary was written. It does not need write permissions because it uses workflow commands and `GITHUB_STEP_SUMMARY`, not PR comments.
@@ -245,7 +245,7 @@ Inputs:
 Blocking gate example:
 
 ```yaml
-- uses: andrezzoid/strata@v0.1.1
+- uses: andrezzoid/strata@v0.4.0
   with:
     only: passThroughMethod,duplicateSymbol
     fail-on-findings: "true"

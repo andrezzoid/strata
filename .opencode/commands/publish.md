@@ -33,9 +33,10 @@ Workflow:
    - Keep the version format consistent with the existing changelog.
    - Add a new topmost unreleased section for the next patch version, e.g. `## X.X.(X+1) - Unreleased`, unless the project uses another explicit changelog convention.
    - Make sure the finalized section is suitable for GitHub Release notes.
+   - Update every `uses: andrezzoid/strata@...` ref in `README.md` to `vX.X.X`; `test/action.test.ts` requires these refs to match the newest dated changelog heading.
 
 5. Commit only the release-note change.
-   - Stage only `CHANGELOG.md` unless version metadata also had to be corrected deliberately.
+   - Stage only `CHANGELOG.md` and `README.md` unless version metadata also had to be corrected deliberately.
    - Commit with an extremely concise message, e.g. `Finalize X.X.X release notes`.
    - Include the required co-author trailer.
 
