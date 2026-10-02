@@ -1,0 +1,104 @@
+labels: 427/427; missing 0; second-labeler 64
+
+=== v0.3.0: per detector (sample is repo-balanced, up to 10 per repo per stratum)
+detector                       findings   n strict  [95% CI]    lenient  wrong: mech / nonRev  volume-weighted strict / lenient
+duplicateSymbol                    1123  40   18% [   9%-  32%]   60%        8 /   8           36% /   76%
+emptyCatch                          137  40    0% [   0%-   9%]   75%        0 /  10            0% /   78%
+genericNaming                       125  38    0% [   0%-   9%]   92%        3 /   0            0% /   98%
+orphanFile                        20441  40    8% [   3%-  20%]   30%       20 /   8            0% /   10%
+passThroughMethod                   179  41   29% [  18%-  44%]   76%        7 /   3           27% /   82%
+passThroughVariable                  50  26    0% [   0%-  13%]   42%       12 /   3            0% /   53%
+shallowModule                       815  40    0% [   0%-   9%]   80%        0 /   8            0% /   87%
+tsEscapeHatch                      1913  40    5% [   1%-  17%]   88%        0 /   5            9% /   90%
+uniqueImplementation                 31  15    0% [   0%-  20%]   13%       12 /   1            0% /    6%
+wideModule                          310  40    5% [   1%-  17%]   73%        0 /  11            3% /   56%
+wideSignature                       368  41   12% [   5%-  26%]   78%        2 /   7            2% /   97%
+ALL (volume-weighted across 4 repos): findings 25492, strict    3%, lenient   25%
+--- v0.3.0: per report (volume-weighted share of a repo's findings)
+hono        findings    597  est. actionable     0 (   0%)  est. not wrong   558 (  94%)
+excalidraw  findings    399  est. actionable    34 (   9%)  est. not wrong   277 (  69%)
+trpc        findings    847  est. actionable     5 (   1%)  est. not wrong   513 (  61%)
+twenty      findings  23649  est. actionable   609 (   3%)  est. not wrong  4934 (  21%)
+
+=== v0.4.0: per detector (sample is repo-balanced, up to 10 per repo per stratum)
+detector                       findings   n strict  [95% CI]    lenient  wrong: mech / nonRev  volume-weighted strict / lenient
+duplicateSymbol                    1123  40   18% [   9%-  32%]   60%        8 /   8           36% /   76%
+exposedMutableRepresentation          1   1    0% [   0%-  79%]  100%        0 /   0            0% /  100%
+forcedRareOption                      4   4   25% [   5%-  70%]   75%        0 /   1           25% /   75%
+passThroughExport                    12  11    0% [   0%-  26%]   82%        1 /   1            0% /   82%
+passThroughMethod                   155  32   31% [  18%-  49%]   94%        0 /   2           18% /   96%
+uniqueImplementation                 31  15    0% [   0%-  20%]   13%       12 /   1            0% /    6%
+wideSignature                       338  20   15% [   5%-  36%]  100%        0 /   0            1% /  100%
+ALL (volume-weighted across 4 repos): findings 1664, strict   26%, lenient   82%
+--- v0.4.0: per report (volume-weighted share of a repo's findings)
+hono        findings     62  est. actionable     0 (   0%)  est. not wrong    42 (  68%)
+excalidraw  findings     74  est. actionable    21 (  28%)  est. not wrong    54 (  73%)
+trpc        findings     54  est. actionable     5 (   9%)  est. not wrong    18 (  33%)
+twenty      findings   1474  est. actionable   408 (  28%)  est. not wrong  1246 (  85%)
+
+=== strata detail (stratum | repo: n act/def/wrong)
+duplicateSymbol:shared|excalidraw                    n=10 2/4/4 {"mechanical":3,"lowValue":4,"nonReviewable":1}
+duplicateSymbol:shared|hono                          n=10 0/7/3 {"acceptableCase":7,"mechanical":2,"nonReviewable":1}
+duplicateSymbol:shared|trpc                          n=10 1/2/7 {"mechanical":1,"nonReviewable":6,"acceptableCase":2}
+duplicateSymbol:shared|twenty                        n=10 4/4/2 {"acceptableCase":1,"lowValue":3,"mechanical":2}
+emptyCatch:only-v0.3.0|excalidraw                    n=10 0/9/1 {"acceptableCase":8,"lowValue":1,"nonReviewable":1}
+emptyCatch:only-v0.3.0|hono                          n=10 0/8/2 {"acceptableCase":8,"nonReviewable":2}
+emptyCatch:only-v0.3.0|trpc                          n=10 0/3/7 {"nonReviewable":7,"acceptableCase":3}
+emptyCatch:only-v0.3.0|twenty                        n=10 0/10/0 {"acceptableCase":10}
+exposedMutableRepresentation:only-v0.4.0|trpc        n=1 0/1/0 {"lowValue":1}
+forcedRareOption:only-v0.4.0|excalidraw              n=2 1/1/0 {"lowValue":1}
+forcedRareOption:only-v0.4.0|trpc                    n=1 0/1/0 {"lowValue":1}
+forcedRareOption:only-v0.4.0|twenty                  n=1 0/0/1 {"nonReviewable":1}
+genericNaming:only-v0.3.0|excalidraw                 n=8 0/5/3 {"mechanical":3,"lowValue":3,"acceptableCase":2}
+genericNaming:only-v0.3.0|hono                       n=10 0/10/0 {"lowValue":4,"acceptableCase":6}
+genericNaming:only-v0.3.0|trpc                       n=10 0/10/0 {"lowValue":3,"acceptableCase":7}
+genericNaming:only-v0.3.0|twenty                     n=10 0/10/0 {"acceptableCase":8,"lowValue":2}
+orphanFile:only-v0.3.0|excalidraw                    n=10 3/0/7 {"mechanical":6,"nonReviewable":1}
+orphanFile:only-v0.3.0|hono                          n=10 0/7/3 {"acceptableCase":7,"nonReviewable":2,"mechanical":1}
+orphanFile:only-v0.3.0|trpc                          n=10 0/1/9 {"nonReviewable":5,"mechanical":4,"acceptableCase":1}
+orphanFile:only-v0.3.0|twenty                        n=10 0/1/9 {"mechanical":9,"acceptableCase":1}
+passThroughExport:only-v0.4.0|excalidraw             n=1 0/1/0 {"acceptableCase":1}
+passThroughExport:only-v0.4.0|twenty                 n=10 0/8/2 {"acceptableCase":4,"nonReviewable":1,"lowValue":4,"mechanical":1}
+passThroughMethod:only-v0.3.0|excalidraw             n=3 0/0/3 {"mechanical":3}
+passThroughMethod:only-v0.3.0|hono                   n=4 0/2/2 {"acceptableCase":2,"nonReviewable":1,"mechanical":1}
+passThroughMethod:only-v0.3.0|trpc                   n=2 0/1/1 {"acceptableCase":1,"mechanical":1}
+passThroughMethod:only-v0.3.0|twenty                 n=10 2/6/2 {"acceptableCase":6,"mechanical":2}
+passThroughMethod:only-v0.4.0|twenty                 n=10 0/10/0 {"acceptableCase":10}
+passThroughMethod:shared|excalidraw                  n=10 6/4/0 {"acceptableCase":4}
+passThroughMethod:shared|hono                        n=2 0/1/1 {"acceptableCase":1,"nonReviewable":1}
+passThroughMethod:shared|twenty                      n=10 4/5/1 {"nonReviewable":1,"acceptableCase":5}
+passThroughVariable:only-v0.3.0|excalidraw           n=10 0/1/9 {"nonReviewable":3,"mechanical":6,"acceptableCase":1}
+passThroughVariable:only-v0.3.0|hono                 n=3 0/2/1 {"mechanical":1,"acceptableCase":2}
+passThroughVariable:only-v0.3.0|trpc                 n=3 0/1/2 {"lowValue":1,"mechanical":2}
+passThroughVariable:only-v0.3.0|twenty               n=10 0/7/3 {"mechanical":3,"acceptableCase":6,"lowValue":1}
+shallowModule:only-v0.3.0|excalidraw                 n=10 0/10/0 {"lowValue":1,"acceptableCase":9}
+shallowModule:only-v0.3.0|hono                       n=10 0/9/1 {"acceptableCase":8,"lowValue":1,"nonReviewable":1}
+shallowModule:only-v0.3.0|trpc                       n=10 0/4/6 {"nonReviewable":6,"acceptableCase":4}
+shallowModule:only-v0.3.0|twenty                     n=10 0/9/1 {"nonReviewable":1,"acceptableCase":9}
+tsEscapeHatch:only-v0.3.0|excalidraw                 n=10 0/7/3 {"lowValue":1,"nonReviewable":3,"acceptableCase":6}
+tsEscapeHatch:only-v0.3.0|hono                       n=10 0/10/0 {"acceptableCase":8,"lowValue":2}
+tsEscapeHatch:only-v0.3.0|trpc                       n=10 0/9/1 {"lowValue":3,"acceptableCase":6,"nonReviewable":1}
+tsEscapeHatch:only-v0.3.0|twenty                     n=10 2/7/1 {"lowValue":2,"acceptableCase":5,"nonReviewable":1}
+uniqueImplementation:shared|excalidraw               n=1 0/1/0 {"acceptableCase":1}
+uniqueImplementation:shared|hono                     n=2 0/0/2 {"mechanical":2}
+uniqueImplementation:shared|trpc                     n=2 0/1/1 {"acceptableCase":1,"nonReviewable":1}
+uniqueImplementation:shared|twenty                   n=10 0/0/10 {"mechanical":10}
+wideModule:only-v0.3.0|excalidraw                    n=10 2/7/1 {"acceptableCase":7,"nonReviewable":1}
+wideModule:only-v0.3.0|hono                          n=10 0/10/0 {"acceptableCase":9,"lowValue":1}
+wideModule:only-v0.3.0|trpc                          n=10 0/6/4 {"nonReviewable":4,"acceptableCase":6}
+wideModule:only-v0.3.0|twenty                        n=10 0/4/6 {"nonReviewable":6,"acceptableCase":4}
+wideSignature:only-v0.3.0|excalidraw                 n=10 0/3/7 {"nonReviewable":7,"lowValue":3}
+wideSignature:only-v0.3.0|hono                       n=1 0/0/1 {"mechanical":1}
+wideSignature:only-v0.3.0|twenty                     n=10 2/7/1 {"lowValue":7,"mechanical":1}
+wideSignature:shared|excalidraw                      n=9 3/6/0 {"lowValue":6}
+wideSignature:shared|hono                            n=1 0/1/0 {"lowValue":1}
+wideSignature:shared|twenty                          n=10 0/10/0 {"acceptableCase":10}
+
+=== agreement on 64 double-labeled items
+3-way:   94% agree, kappa 0.88
+actionable vs not:   98% agree, kappa 0.79
+wrong vs not:   95% agree, kappa 0.90
+  disagree 6e29c1af wideModule: wrong vs defensible
+  disagree bd7a6501 passThroughMethod: actionable vs defensible
+  disagree d353eb35 tsEscapeHatch: wrong vs defensible
+  disagree f7f3d562 passThroughVariable: defensible vs wrong

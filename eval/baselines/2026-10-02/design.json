@@ -1,0 +1,146 @@
+{
+  "date": "2026-10-02",
+  "strataVersions": {
+    "v0.3.0": "72dd2186b1127cd87ba72b4c5682a8818f17a7bb",
+    "v0.4.0": "8ec52fca23bca0561a44c12af64efdf531c8e8e2"
+  },
+  "corpus": {
+    "hono": {
+      "repo": "honojs/hono",
+      "sha": "f23b146afcec63606144cde50b5fbd360dd60238"
+    },
+    "excalidraw": {
+      "repo": "excalidraw/excalidraw",
+      "sha": "ed10ac7dca7e40f3f4a31269b4bfba980d0db41e"
+    },
+    "trpc": {
+      "repo": "trpc/trpc",
+      "sha": "985b76975416fa6b9fdf1e643fdefe6f80b153fc"
+    },
+    "twenty": {
+      "repo": "twentyhq/twenty",
+      "sha": "b74f6eaff29c713f27047f8f09a2e0201376dda2"
+    }
+  },
+  "sampling": {
+    "perCell": 10,
+    "seed": 20261002,
+    "doubleLabelShare": 0.15
+  },
+  "populations": {
+    "duplicateSymbol:shared": {
+      "hono": 57,
+      "excalidraw": 50,
+      "trpc": 50,
+      "twenty": 966
+    },
+    "emptyCatch:only-v0.3.0": {
+      "hono": 18,
+      "excalidraw": 13,
+      "trpc": 36,
+      "twenty": 70
+    },
+    "genericNaming:only-v0.3.0": {
+      "hono": 32,
+      "excalidraw": 8,
+      "trpc": 17,
+      "twenty": 68
+    },
+    "orphanFile:only-v0.3.0": {
+      "hono": 27,
+      "excalidraw": 15,
+      "trpc": 185,
+      "twenty": 20214
+    },
+    "passThroughMethod:shared": {
+      "hono": 2,
+      "excalidraw": 11,
+      "twenty": 54
+    },
+    "passThroughMethod:only-v0.3.0": {
+      "hono": 4,
+      "excalidraw": 3,
+      "trpc": 2,
+      "twenty": 103
+    },
+    "passThroughVariable:only-v0.3.0": {
+      "hono": 3,
+      "excalidraw": 12,
+      "trpc": 3,
+      "twenty": 32
+    },
+    "shallowModule:only-v0.3.0": {
+      "hono": 30,
+      "excalidraw": 16,
+      "trpc": 59,
+      "twenty": 710
+    },
+    "tsEscapeHatch:only-v0.3.0": {
+      "hono": 399,
+      "excalidraw": 197,
+      "trpc": 432,
+      "twenty": 885
+    },
+    "uniqueImplementation:shared": {
+      "hono": 2,
+      "excalidraw": 1,
+      "trpc": 2,
+      "twenty": 26
+    },
+    "wideModule:only-v0.3.0": {
+      "hono": 21,
+      "excalidraw": 50,
+      "trpc": 61,
+      "twenty": 178
+    },
+    "wideSignature:shared": {
+      "hono": 1,
+      "excalidraw": 9,
+      "twenty": 328
+    },
+    "wideSignature:only-v0.3.0": {
+      "hono": 1,
+      "excalidraw": 14,
+      "twenty": 15
+    },
+    "forcedRareOption:only-v0.4.0": {
+      "excalidraw": 2,
+      "trpc": 1,
+      "twenty": 1
+    },
+    "passThroughExport:only-v0.4.0": {
+      "excalidraw": 1,
+      "twenty": 11
+    },
+    "exposedMutableRepresentation:only-v0.4.0": {
+      "trpc": 1
+    },
+    "passThroughMethod:only-v0.4.0": {
+      "twenty": 88
+    }
+  },
+  "composition": {
+    "v0.3.0": {
+      "duplicateSymbol": ["duplicateSymbol:shared"],
+      "emptyCatch": ["emptyCatch:only-v0.3.0"],
+      "genericNaming": ["genericNaming:only-v0.3.0"],
+      "orphanFile": ["orphanFile:only-v0.3.0"],
+      "passThroughMethod": ["passThroughMethod:shared", "passThroughMethod:only-v0.3.0"],
+      "passThroughVariable": ["passThroughVariable:only-v0.3.0"],
+      "shallowModule": ["shallowModule:only-v0.3.0"],
+      "tsEscapeHatch": ["tsEscapeHatch:only-v0.3.0"],
+      "uniqueImplementation": ["uniqueImplementation:shared"],
+      "wideModule": ["wideModule:only-v0.3.0"],
+      "wideSignature": ["wideSignature:shared", "wideSignature:only-v0.3.0"]
+    },
+    "v0.4.0": {
+      "duplicateSymbol": ["duplicateSymbol:shared"],
+      "passThroughMethod": ["passThroughMethod:shared", "passThroughMethod:only-v0.4.0"],
+      "uniqueImplementation": ["uniqueImplementation:shared"],
+      "wideSignature": ["wideSignature:shared"],
+      "forcedRareOption": ["forcedRareOption:only-v0.4.0"],
+      "passThroughExport": ["passThroughExport:only-v0.4.0"],
+      "exposedMutableRepresentation": ["exposedMutableRepresentation:only-v0.4.0"]
+    }
+  }
+}
