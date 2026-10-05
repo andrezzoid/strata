@@ -4,6 +4,8 @@ All notable changes to `strata` will be documented here.
 
 ## 0.4.1 - Unreleased
 
+- Fixes the README GitHub Action examples to pin the latest released tag instead of the nonexistent `v0.1.1`.
+
 ## 0.4.0 - 2026-07-14
 
 - Adds `forcedRareOption` detection for exported APIs whose callers repeatedly pass the same literal, placeholder, or default-like option.

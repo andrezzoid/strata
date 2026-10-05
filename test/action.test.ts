@@ -43,6 +43,8 @@ function runActionScript(env: Record<string, string>): {
     cwd: workspace,
     env: {
       ...process.env,
+      // Pull request runners set this, which would switch these scans to introduced mode.
+      GITHUB_BASE_REF: "",
       GITHUB_ACTION_PATH: workspace,
       GITHUB_WORKSPACE: workspace,
       ...env,
@@ -74,6 +76,21 @@ describe("GitHub Action runner", () => {
     expect(metadata).toContain("STRATA_INPUT_EXCLUDE");
     expect(metadata).toContain("STRATA_INPUT_FAIL_ON_FINDINGS");
     expect(metadata).not.toContain("sarif");
+  });
+
+  it("pins README action refs to the latest changelog release", async () => {
+    const readme = await Bun.file("README.md").text();
+    const changelog = await Bun.file("CHANGELOG.md").text();
+    // Read the newest dated heading: an Unreleased version has no tag for users to pin.
+    const latestRelease = changelog.match(/^## (\d+\.\d+\.\d+) - \d{4}-\d{2}-\d{2}$/m)?.[1];
+    // Skip npm specifiers (`@andrezzoid/strata@...`) and keep trailing punctuation out of refs.
+    const refs = [...readme.matchAll(/(?<!@)andrezzoid\/strata@([\w.-]*[a-zA-Z0-9])/g)].map(
+      (match) => match[1],
+    );
+
+    expect(latestRelease).toBeDefined();
+    expect(refs.length).toBeGreaterThan(0);
+    for (const ref of refs) expect(ref).toBe(`v${latestRelease}`);
   });
 
   it("normalizes action inputs with PR-friendly defaults", () => {
