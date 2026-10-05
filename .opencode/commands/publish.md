@@ -28,14 +28,15 @@ Workflow:
    - If they disagree, stop and ask which version is correct.
    - Use semantic versioning: patch for fixes/docs/release packaging, minor for new user-visible functionality, major for breaking changes.
 
-4. Finalize release notes before publishing.
+4. Finalize release notes and README refs before publishing.
    - Change the current `X.X.X - Unreleased` or `vX.X.X - Unreleased` heading in `CHANGELOG.md` to `X.X.X - YYYY-MM-DD`.
    - Keep the version format consistent with the existing changelog.
    - Add a new topmost unreleased section for the next patch version, e.g. `## X.X.(X+1) - Unreleased`, unless the project uses another explicit changelog convention.
    - Make sure the finalized section is suitable for GitHub Release notes.
-   - Update every `uses: andrezzoid/strata@...` ref in `README.md` to `vX.X.X`; `test/action.test.ts` requires these refs to match the newest dated changelog heading.
+   - Update every `andrezzoid/strata@...` ref in `README.md` to `vX.X.X`, then run `bun test test/action.test.ts`; it requires each ref to match the newest dated changelog heading.
 
-5. Commit only the release-note change.
+5. Commit only the release notes and README refs.
+   - Run `git diff README.md` and stop if it changes anything besides the `andrezzoid/strata@` refs.
    - Stage only `CHANGELOG.md` and `README.md` unless version metadata also had to be corrected deliberately.
    - Commit with an extremely concise message, e.g. `Finalize X.X.X release notes`.
    - Include the required co-author trailer.
@@ -58,8 +59,7 @@ Workflow:
    - If OTP is required, ask for it or use a provided `--otp` value.
 
 9. Push commit and tag.
-   - Run `git push origin HEAD`.
-   - Run `git push origin vX.X.X`.
+   - Run `git push --atomic origin HEAD vX.X.X`; it pushes both or neither, so README never names a tag origin lacks.
    - Do not force-push.
 
 10. Create the GitHub Release.
@@ -71,5 +71,6 @@ Failure handling:
 
 - If publish succeeds but pushing or GitHub Release creation fails, report exactly what shipped and what remains to finish.
 - If publish fails before the registry accepts the package, do not move the tag or create the GitHub Release.
+- If the release stops after step 5, do not push the release commit without its tag: its README already names `vX.X.X`.
 - Never publish from a dirty worktree or from a commit different from the release tag.
 - Never amend, move tags, force-push, or delete published versions without explicit approval.

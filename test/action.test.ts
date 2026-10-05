@@ -78,12 +78,15 @@ describe("GitHub Action runner", () => {
     expect(metadata).not.toContain("sarif");
   });
 
-  it("pins README usage examples to the latest released tag", async () => {
+  it("pins README action refs to the latest changelog release", async () => {
     const readme = await Bun.file("README.md").text();
     const changelog = await Bun.file("CHANGELOG.md").text();
-    // Read the newest dated heading: an Unreleased version has no tag for users to pin yet.
+    // Read the newest dated heading: an Unreleased version has no tag for users to pin.
     const latestRelease = changelog.match(/^## (\d+\.\d+\.\d+) - \d{4}-\d{2}-\d{2}$/m)?.[1];
-    const refs = [...readme.matchAll(/andrezzoid\/strata@(v[\w.-]*)/g)].map((match) => match[1]);
+    // Skip npm specifiers (`@andrezzoid/strata@...`) and keep trailing punctuation out of refs.
+    const refs = [...readme.matchAll(/(?<!@)andrezzoid\/strata@([\w.-]*[a-zA-Z0-9])/g)].map(
+      (match) => match[1],
+    );
 
     expect(latestRelease).toBeDefined();
     expect(refs.length).toBeGreaterThan(0);
