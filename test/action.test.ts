@@ -43,6 +43,8 @@ function runActionScript(env: Record<string, string>): {
     cwd: workspace,
     env: {
       ...process.env,
+      // Pull request runners set this, which would switch these scans to introduced mode.
+      GITHUB_BASE_REF: "",
       GITHUB_ACTION_PATH: workspace,
       GITHUB_WORKSPACE: workspace,
       ...env,
