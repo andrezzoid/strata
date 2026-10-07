@@ -77,11 +77,11 @@ export function formatSarif(result: ScanResult): string {
   return `${JSON.stringify(sarif, null, 2)}\n`;
 }
 
-function rule(id: string, name: string, description: string): SarifRule {
+function rule(id: string, name: string, summary: string, description = summary): SarifRule {
   return {
     id,
     name,
-    shortDescription: { text: description },
+    shortDescription: { text: summary },
     fullDescription: { text: description },
     defaultConfiguration: { level: "warning" },
     help: {
@@ -97,7 +97,7 @@ function rule(id: string, name: string, description: string): SarifRule {
 
 function rulesFor(findings: Finding[]): SarifRule[] {
   const rules = DETECTOR_DEFINITIONS.map((definition) =>
-    rule(definition.id, definition.name, definition.summary),
+    rule(definition.id, definition.name, definition.summary, definition.description),
   );
   const knownRules = new Map(rules.map((descriptor) => [descriptor.id, descriptor]));
   for (const finding of findings) {

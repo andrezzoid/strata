@@ -272,11 +272,11 @@ describe("formatResult", () => {
         text: "Exported class returns an exact private mutable field through a public member.",
       },
       fullDescription: {
-        text: "Exported class returns an exact private mutable field through a public member.",
+        text: "Suspicious when an exported class returns a private mutable field directly; the declared API permits representation mutation outside the class.",
       },
       defaultConfiguration: { level: "warning" },
       help: {
-        text: "Exported class returns an exact private mutable field through a public member. Strata reports this as a candidate for human or AI review, not as an automatic verdict.",
+        text: "Suspicious when an exported class returns a private mutable field directly; the declared API permits representation mutation outside the class. Strata reports this as a candidate for human or AI review, not as an automatic verdict.",
       },
       properties: {
         tags: ["maintainability", "posd"],

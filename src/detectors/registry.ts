@@ -65,29 +65,25 @@ export type DetectorSelection =
 
 export const DETECTOR_IDS = DETECTOR_DEFINITIONS.map((definition) => definition.id) as DetectorId[];
 
+const DEFINITIONS_BY_ID = new Map<string, DetectorDefinition>(
+  DETECTOR_DEFINITIONS.map((definition) => [definition.id, definition]),
+);
+
 /** Returns the review-facing detector explanation used by human-readable reports. */
 export function describeDetector(id: string): string {
-  return definitionFor(id)?.description ?? "Detector emitted a review candidate.";
+  return DEFINITIONS_BY_ID.get(id)?.description ?? "Detector emitted a review candidate.";
 }
 
 /** Files a finding involves: its anchor first, then related files, without repeats. */
 export function findingFiles(finding: Finding): string[] {
-  const definition = definitionFor(finding.flag);
+  const definition = DEFINITIONS_BY_ID.get(finding.flag);
   const related = definition?.kind === "cross" ? definition.relatedFiles(finding) : [];
   return [...new Set([finding.file, ...related])];
 }
 
 /** Text-report evidence lines for a finding; unknown detectors have none. */
 export function findingEvidence(finding: Finding): string[] {
-  return definitionFor(finding.flag)?.evidence(finding) ?? [];
-}
-
-// Looked up per call rather than cached, so test-only definitions pushed onto
-// the catalog are visible to every shared module.
-function definitionFor(id: string): DetectorDefinition | undefined {
-  return (DETECTOR_DEFINITIONS as readonly DetectorDefinition[]).find(
-    (definition) => definition.id === id,
-  );
+  return DEFINITIONS_BY_ID.get(finding.flag)?.evidence(finding) ?? [];
 }
 
 type SelectedDetectorSet = {

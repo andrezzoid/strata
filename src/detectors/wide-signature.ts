@@ -93,7 +93,7 @@ export const wideSignatureDetector = {
   name: "Wide signature",
   summary: "Exported function or public exported-class member has too many required parameters.",
   description:
-    "Suspicious when a function requires many positional parameters; callers must know too much ordering and context.",
+    "Suspicious when an exported function or public exported-class member requires many positional parameters; callers must know too much ordering and context.",
   detect: detectWideSignature,
   evidence(finding) {
     const requiredParams = finding.metadata.requiredParams;
