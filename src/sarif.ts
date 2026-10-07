@@ -1,3 +1,4 @@
+import { DETECTOR_DEFINITIONS } from "./detectors/registry.ts";
 import type { Finding, ScanResult } from "./types.ts";
 
 type SarifLog = {
@@ -47,44 +48,6 @@ type SarifResult = {
 
 const SARIF_SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json";
 
-const RULES: SarifRule[] = [
-  rule(
-    "wideSignature",
-    "Wide signature",
-    "Function, method, or constructor has too many required parameters.",
-  ),
-  rule(
-    "passThroughMethod",
-    "Pass-through method",
-    "Public class method only forwards same-order arguments to a collaborator.",
-  ),
-  rule(
-    "passThroughExport",
-    "Pass-through export",
-    "Exported function only forwards same-order arguments to another callable.",
-  ),
-  rule(
-    "exposedMutableRepresentation",
-    "Exposed mutable representation",
-    "Exported class returns a private mutable field through a public member.",
-  ),
-  rule(
-    "forcedRareOption",
-    "Forced rare option",
-    "Most callers pass the same literal, placeholder, or default-like option to an exported API.",
-  ),
-  rule(
-    "duplicateSymbol",
-    "Duplicate symbol",
-    "Named declarations with identical structure are repeated across the project.",
-  ),
-  rule(
-    "uniqueImplementation",
-    "Unique implementation",
-    "Interface or abstract class appears to have no polymorphism payoff.",
-  ),
-];
-
 /**
  * Converts strata's compact scan result into a SARIF 2.1.0 log.
  *
@@ -133,8 +96,10 @@ function rule(id: string, name: string, description: string): SarifRule {
 }
 
 function rulesFor(findings: Finding[]): SarifRule[] {
-  const knownRules = new Map(RULES.map((descriptor) => [descriptor.id, descriptor]));
-  const rules = [...RULES];
+  const rules = DETECTOR_DEFINITIONS.map((definition) =>
+    rule(definition.id, definition.name, definition.summary),
+  );
+  const knownRules = new Map(rules.map((descriptor) => [descriptor.id, descriptor]));
   for (const finding of findings) {
     if (knownRules.has(finding.flag)) continue;
     const descriptor = rule(finding.flag, finding.flag, finding.message);

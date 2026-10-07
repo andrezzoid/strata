@@ -4,11 +4,8 @@ import { dirname, join, resolve } from "node:path";
 
 import { describe, expect, it } from "bun:test";
 
-import type { Ctx } from "../src/ast.ts";
 import { main } from "../src/cli.ts";
-import { DETECTOR_DEFINITIONS } from "../src/detectors/registry.ts";
-import type { ImportResolver } from "../src/scope.ts";
-import type { Finding } from "../src/types.ts";
+import { DETECTOR_DEFINITIONS, type DetectorDefinition } from "../src/detectors/registry.ts";
 
 const here = dirname(Bun.fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
@@ -20,15 +17,6 @@ const exposedMutableRepresentationFixture = join(
 );
 const passThroughExportFixture = join(repoRoot, "test/fixtures/pass-through-export");
 const passThroughFixture = join(repoRoot, "test/fixtures/pass-through-method");
-
-type TestDetectorDefinition =
-  | { id: string; kind: "single"; description: string; detect: (ctx: Ctx) => Finding[] }
-  | {
-      id: string;
-      kind: "cross";
-      description: string;
-      detect: (ctxs: Ctx[], imports: ImportResolver) => Finding[];
-    };
 
 class ProcessExit extends Error {
   constructor(readonly code: number) {
@@ -112,10 +100,10 @@ async function runStrataInProcess(args: string[]) {
 }
 
 async function withDetectorDefinition<T>(
-  definition: TestDetectorDefinition,
+  definition: DetectorDefinition,
   run: () => Promise<T>,
 ): Promise<T> {
-  const definitions = DETECTOR_DEFINITIONS as unknown as TestDetectorDefinition[];
+  const definitions = DETECTOR_DEFINITIONS as unknown as DetectorDefinition[];
   definitions.push(definition);
   try {
     return await run();
@@ -572,7 +560,10 @@ describe("CLI", () => {
         {
           id: "throwSingle",
           kind: "single",
+          name: "Throw single",
+          summary: "Test-only detector that throws from a file scan.",
           description: "Test-only detector that throws from a file scan.",
+          evidence: () => [],
           detect() {
             throw new Error("forced single detector failure");
           },
@@ -601,7 +592,11 @@ describe("CLI", () => {
         {
           id: "throwCross",
           kind: "cross",
+          name: "Throw cross",
+          summary: "Test-only detector that throws from a project scan.",
           description: "Test-only detector that throws from a project scan.",
+          evidence: () => [],
+          relatedFiles: () => [],
           detect() {
             throw new Error("forced cross detector failure");
           },
@@ -792,6 +787,37 @@ describe("CLI", () => {
           (finding: { flag: string; file: string }) => `${finding.flag}:${finding.file}`,
         ),
       ).toEqual(["passThroughMethod:touched.ts"]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("keeps forced rare option findings when a repeating call site changed", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-cli-touched-call-site-"));
+    try {
+      await Bun.write(
+        join(root, "api.ts"),
+        "export function send(to: string, body: string, retries: number, mode: string) { return [to, body, retries, mode]; }\n",
+      );
+      await Bun.write(
+        join(root, "a.ts"),
+        'import { send } from "./api";\nsend("a", "x", 3, "fast");\nsend("b", "y", 3, "fast");\n',
+      );
+      runGit(root, ["init", "-q", "-b", "main"]);
+      commitAll(root, "base");
+      await Bun.write(
+        join(root, "b.ts"),
+        'import { send } from "./api";\nsend("c", "z", 3, "fast");\n',
+      );
+
+      const json = runStrata([root, "--touched-since", "main", "--format", "json"]);
+      const text = runStrata([root, "--touched-since", "main", "--format", "text"]);
+
+      expect(json.status).toBe(0);
+      expect(JSON.parse(json.stdout).summary.totalFindings).toBe(2);
+      expect(text.stdout).toContain(
+        "    evidence: 3/3 calls pass 3:\n      a.ts:2\n      a.ts:3\n      b.ts:2\n",
+      );
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

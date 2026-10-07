@@ -5,6 +5,10 @@ All notable changes to `strata` will be documented here.
 ## 0.4.1 - Unreleased
 
 - Fixes the README GitHub Action examples to pin the latest released tag instead of the nonexistent `v0.1.1`.
+- Fixes `--touched-since` dropping `forcedRareOption` parameter and option findings when only a call site repeating the value changed.
+- Adds text-report evidence for `forcedRareOption` parameter and option findings: how many calls pass the value, and up to 5 of their locations.
+- Changes `summary.topFiles` to count each finding once for every file it involves: `uniqueImplementation` implementer files and `forcedRareOption` call-site files now count, and a `duplicateSymbol` finding counts each occurrence file once. Ties now sort by file path.
+- Builds SARIF rules from the detector catalog, so rule descriptions match the README; the `wideSignature` rule now describes the exported-API scope added in 0.4.0. Rule ids are unchanged; rules follow catalog order, so `ruleIndex` values shift.
 
 ## 0.4.0 - 2026-07-14
 

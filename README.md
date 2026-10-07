@@ -44,7 +44,7 @@ Defaults:
 - `--format` defaults to `text`, the local review report.
 - `--format sarif` emits SARIF 2.1.0 for GitHub code scanning and other CI consumers.
 - Scan scope modes are mutually exclusive review questions: touched files, new candidate identities, future worsened existing candidates, or their future union.
-- `--touched-since` analyzes the full project graph, then filters findings to files touched since the git ref so cross-file detectors keep correct context.
+- `--touched-since` analyzes the full project graph, then keeps findings that involve a file touched since the git ref, either the anchor or a related file such as a duplicate occurrence, an implementer, or a call site repeating a forced option, so cross-file detectors keep correct context.
 - `--new-since` scans the current target and the base ref, then reports only current candidates whose stable `fingerprint` was absent from the base scan.
 - `--only` and `--exclude` accept comma-separated detector IDs from the table below. They filter which detectors run, not how findings are judged; every emitted finding remains a review candidate.
 - `--fail-on-findings` exits non-zero when candidates are emitted, which is intended for CI gates; default scans remain report-only.
