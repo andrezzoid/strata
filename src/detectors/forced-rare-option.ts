@@ -9,6 +9,7 @@ import {
 } from "../scope.ts";
 import type { Finding } from "../types.ts";
 import { exportDeclaration, localExportedNames } from "./export-surface.ts";
+import type { DetectorDefinition } from "./registry.ts";
 
 const MIN_CALLS_FOR_CONSENSUS = 3;
 const CONSENSUS_RATIO = 0.8;
@@ -616,4 +617,37 @@ function topLevelDeclaration(statement: Node): Node | null {
 
 function declarationKey(file: string, name: string): string {
   return `${file}:${name}`;
+}
+
+const MAX_EVIDENCE_CALL_SITES = 5;
+
+export const forcedRareOptionDetector = {
+  id: "forcedRareOption",
+  kind: "cross",
+  name: "Forced rare option",
+  summary: "Most callers pass the same literal, placeholder, or default-like option.",
+  description:
+    "Suspicious when most callers pass the same literal, placeholder, or default-like option; common usage may be paying for rare flexibility.",
+  detect: detectForcedRareOption,
+  // Parameter and option findings anchor at the declaration and involve the
+  // call sites that repeat the value; placeholder findings anchor at their call.
+  relatedFiles(finding) {
+    return repeatingCallSites(finding).map((callSite) => callSite.file);
+  },
+  evidence(finding) {
+    const callSites = repeatingCallSites(finding);
+    const { repeatedCount, callCount, value } = finding.metadata;
+    if (callSites.length === 0) return [];
+    const shown = callSites.slice(0, MAX_EVIDENCE_CALL_SITES);
+    const hidden = callSites.length - shown.length;
+    return [
+      `evidence: ${repeatedCount}/${callCount} calls pass ${value}:`,
+      ...shown.map((callSite) => `  ${callSite.file}:${callSite.line}`),
+      ...(hidden > 0 ? [`  +${hidden} more`] : []),
+    ];
+  },
+} as const satisfies DetectorDefinition;
+
+function repeatingCallSites(finding: Finding): Array<{ file: string; line: number }> {
+  return (finding.metadata.callSites as Array<{ file: string; line: number }> | undefined) ?? [];
 }

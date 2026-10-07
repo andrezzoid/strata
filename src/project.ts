@@ -2,8 +2,6 @@ import { mkdtempSync, readdirSync, realpathSync, rmSync, statSync } from "node:f
 import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 
-import type { Finding } from "./types.ts";
-
 /** File set needed for one scan; changedFiles filters output after full-project analysis. */
 export type ScanFileSet = {
   /** Root used for relative finding paths. */
@@ -171,16 +169,6 @@ function removeGitWorktree(repoRoot: string, snapshotRoot: string): void {
     stdout: "ignore",
     stderr: "ignore",
   });
-}
-
-/** True when a finding, or one of its related metadata locations, touches the scoped file set. */
-export function findingTouchesChanged(finding: Finding, changed: Set<string>): boolean {
-  if (changed.has(finding.file)) return true;
-  const occurrences = finding.metadata.occurrences as Array<{ file: string }> | undefined;
-  if (occurrences?.some((occurrence) => changed.has(occurrence.file))) return true;
-  const implementers = finding.metadata.implementers as Array<{ file: string }> | undefined;
-  if (implementers?.some((implementer) => changed.has(implementer.file))) return true;
-  return false;
 }
 
 function toPosix(path: string): string {

@@ -1,71 +1,59 @@
 import type { Ctx, SingleDetector } from "../ast.ts";
 import type { ImportResolver } from "../scope.ts";
 import type { Finding } from "../types.ts";
-import { detectDuplicateSymbol } from "./duplicate-symbol.ts";
-import { detectExposedMutableRepresentation } from "./exposed-mutable-representation.ts";
-import { detectForcedRareOption } from "./forced-rare-option.ts";
-import { detectPassThroughExport } from "./pass-through-export.ts";
-import { detectPassThroughMethod } from "./pass-through-method.ts";
-import { detectUniqueImplementation } from "./unique-implementation.ts";
-import { detectWideSignature } from "./wide-signature.ts";
+import { duplicateSymbolDetector } from "./duplicate-symbol.ts";
+import { exposedMutableRepresentationDetector } from "./exposed-mutable-representation.ts";
+import { forcedRareOptionDetector } from "./forced-rare-option.ts";
+import { passThroughExportDetector } from "./pass-through-export.ts";
+import { passThroughMethodDetector } from "./pass-through-method.ts";
+import { uniqueImplementationDetector } from "./unique-implementation.ts";
+import { wideSignatureDetector } from "./wide-signature.ts";
 
 export type CrossProjectDetector = (ctxs: Ctx[], imports: ImportResolver) => Finding[];
 
-type DetectorDefinition =
-  | { id: string; kind: "single"; description: string; detect: SingleDetector }
-  | { id: string; kind: "cross"; description: string; detect: CrossProjectDetector };
+type DetectorDescription = {
+  /** Detector id; also the finding flag, CLI filter name and SARIF rule id. */
+  id: string;
+  /** Title-case display name, used as the SARIF rule name. */
+  name: string;
+  /** One-sentence signal; the README detector table row and SARIF rule description must match it. */
+  summary: string;
+  /** Review-facing explanation shown above the detector's findings in the text report. */
+  description: string;
+  /** Text-report lines under a finding; JSON keeps the full metadata. */
+  evidence: (finding: Finding) => string[];
+};
+
+/**
+ * Everything shared modules know about one detector.
+ *
+ * Scan core, scope filtering, text formatting and SARIF output read these
+ * hooks instead of naming detector ids or metadata keys, so adding or changing
+ * a detector means editing its definition and its docs page.
+ */
+export type DetectorDefinition =
+  | (DetectorDescription & {
+      kind: "single";
+      detect: SingleDetector;
+      /** Single-file findings involve only their anchor file. */
+      relatedFiles?: never;
+    })
+  | (DetectorDescription & {
+      kind: "cross";
+      detect: CrossProjectDetector;
+      /** Files a finding involves besides its anchor; `--touched-since` and `topFiles` use them. */
+      relatedFiles: (finding: Finding) => string[];
+    });
 
 /** Public detector catalog; CLI/API filtering names come from this single ordered list. */
 export const DETECTOR_DEFINITIONS = [
-  {
-    id: "passThroughMethod",
-    kind: "single",
-    description:
-      "Suspicious when a method only forwards same-order args to a collaborator; the layer may add API surface without hiding useful complexity.",
-    detect: detectPassThroughMethod,
-  },
-  {
-    id: "passThroughExport",
-    kind: "single",
-    description:
-      "Suspicious when an exported function only forwards same-order args to another callable; the public name may add surface without behavior.",
-    detect: detectPassThroughExport,
-  },
-  {
-    id: "exposedMutableRepresentation",
-    kind: "single",
-    description:
-      "Suspicious when an exported class returns a private mutable field directly; the declared API permits representation mutation outside the class.",
-    detect: detectExposedMutableRepresentation,
-  },
-  {
-    id: "wideSignature",
-    kind: "single",
-    description:
-      "Suspicious when a function requires many positional parameters; callers must know too much ordering and context.",
-    detect: detectWideSignature,
-  },
-  {
-    id: "forcedRareOption",
-    kind: "cross",
-    description:
-      "Suspicious when most callers pass the same literal, placeholder, or default-like option; common usage may be paying for rare flexibility.",
-    detect: detectForcedRareOption,
-  },
-  {
-    id: "duplicateSymbol",
-    kind: "cross",
-    description:
-      "Suspicious when declarations share the same structure; the project may have rebuilt existing concepts instead of reusing them.",
-    detect: detectDuplicateSymbol,
-  },
-  {
-    id: "uniqueImplementation",
-    kind: "cross",
-    description:
-      "Suspicious when an interface or abstract class has only one implementation; abstraction cost may not buy polymorphism.",
-    detect: detectUniqueImplementation,
-  },
+  passThroughMethodDetector,
+  passThroughExportDetector,
+  exposedMutableRepresentationDetector,
+  wideSignatureDetector,
+  forcedRareOptionDetector,
+  duplicateSymbolDetector,
+  uniqueImplementationDetector,
 ] as const satisfies readonly DetectorDefinition[];
 
 export type DetectorId = (typeof DETECTOR_DEFINITIONS)[number]["id"];
@@ -77,13 +65,25 @@ export type DetectorSelection =
 
 export const DETECTOR_IDS = DETECTOR_DEFINITIONS.map((definition) => definition.id) as DetectorId[];
 
-const DETECTOR_DESCRIPTIONS = new Map<string, string>(
-  DETECTOR_DEFINITIONS.map((definition) => [definition.id, definition.description]),
+const DEFINITIONS_BY_ID = new Map<string, DetectorDefinition>(
+  DETECTOR_DEFINITIONS.map((definition) => [definition.id, definition]),
 );
 
 /** Returns the review-facing detector explanation used by human-readable reports. */
 export function describeDetector(id: string): string {
-  return DETECTOR_DESCRIPTIONS.get(id) ?? "Detector emitted a review candidate.";
+  return DEFINITIONS_BY_ID.get(id)?.description ?? "Detector emitted a review candidate.";
+}
+
+/** Files a finding involves: its anchor first, then related files, without repeats. */
+export function findingFiles(finding: Finding): string[] {
+  const definition = DEFINITIONS_BY_ID.get(finding.flag);
+  const related = definition?.kind === "cross" ? definition.relatedFiles(finding) : [];
+  return [...new Set([finding.file, ...related])];
+}
+
+/** Text-report evidence lines for a finding; unknown detectors have none. */
+export function findingEvidence(finding: Finding): string[] {
+  return DEFINITIONS_BY_ID.get(finding.flag)?.evidence(finding) ?? [];
 }
 
 type SelectedDetectorSet = {

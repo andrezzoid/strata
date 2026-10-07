@@ -3,6 +3,7 @@ import { createFinding } from "../finding.ts";
 import type { Finding } from "../types.ts";
 import { exportDeclaration, localExportedNames } from "./export-surface.ts";
 import { callableIdentity, forwardedCallShape } from "./pass-through-shape.ts";
+import type { DetectorDefinition } from "./registry.ts";
 
 type ExportedCallable = {
   node: Node;
@@ -91,3 +92,27 @@ function callablesFromDeclaration(
 function isFunctionLikeExpression(node: Node): boolean {
   return node?.type === "FunctionExpression" || node?.type === "ArrowFunctionExpression";
 }
+
+export const passThroughExportDetector = {
+  id: "passThroughExport",
+  kind: "single",
+  name: "Pass-through export",
+  summary: "Exported function only forwards same-order args to another callable.",
+  description:
+    "Suspicious when an exported function only forwards same-order args to another callable; the public name may add surface without behavior.",
+  detect: detectPassThroughExport,
+  evidence(finding) {
+    const functionName = finding.metadata.functionName;
+    const callee = finding.metadata.callee;
+    const paramCount = finding.metadata.paramCount;
+    if (
+      typeof functionName !== "string" ||
+      typeof callee !== "string" ||
+      typeof paramCount !== "number"
+    ) {
+      return [];
+    }
+    const noun = paramCount === 1 ? "arg" : "args";
+    return [`evidence: ${functionName} forwards ${paramCount} ${noun} to ${callee}`];
+  },
+} as const satisfies DetectorDefinition;

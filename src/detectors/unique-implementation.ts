@@ -8,6 +8,7 @@ import {
   resolveDeclarationSite,
 } from "../scope.ts";
 import type { Finding } from "../types.ts";
+import type { DetectorDefinition } from "./registry.ts";
 
 type AbstractionDecl = {
   kind: "interface" | "abstractClass";
@@ -139,3 +140,23 @@ export function detectUniqueImplementation(
   }
   return findings;
 }
+
+export const uniqueImplementationDetector = {
+  id: "uniqueImplementation",
+  kind: "cross",
+  name: "Unique implementation",
+  summary: "Interface or abstract class has no real polymorphism payoff.",
+  description:
+    "Suspicious when an interface or abstract class has only one implementation; abstraction cost may not buy polymorphism.",
+  detect: detectUniqueImplementation,
+  relatedFiles(finding) {
+    const implementers =
+      (finding.metadata.implementers as Array<{ file: string }> | undefined) ?? [];
+    return implementers.map((implementer) => implementer.file);
+  },
+  evidence(finding) {
+    const implementerCount = finding.metadata.implementerCount;
+    if (typeof implementerCount !== "number") return [];
+    return [`evidence: implementer count: ${implementerCount}`];
+  },
+} as const satisfies DetectorDefinition;

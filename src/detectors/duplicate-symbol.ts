@@ -2,6 +2,7 @@ import type { Ctx, Node } from "../ast.ts";
 import { createFinding, stableHash } from "../finding.ts";
 import { isNonReviewablePath } from "../skip-patterns.ts";
 import type { Finding } from "../types.ts";
+import type { DetectorDefinition } from "./registry.ts";
 
 // Agents tend to redeclare instead of reusing. Tracking declarations rather
 // than usages keeps the signal concentrated on duplicated design decisions.
@@ -595,4 +596,40 @@ export function detectDuplicateSymbol(ctxs: Ctx[]): Finding[] {
     );
   }
   return findings;
+}
+
+type Occurrence = { name: string; file: string; line: number };
+
+export const duplicateSymbolDetector = {
+  id: "duplicateSymbol",
+  kind: "cross",
+  name: "Duplicate symbol",
+  summary: "Named declarations with identical structure are repeated.",
+  description:
+    "Suspicious when declarations share the same structure; the project may have rebuilt existing concepts instead of reusing them.",
+  detect: detectDuplicateSymbol,
+  relatedFiles(finding) {
+    return occurrencesOf(finding).map((occurrence) => occurrence.file);
+  },
+  evidence(finding) {
+    const evidence: string[] = [];
+    const preview = String(finding.metadata.preview ?? "");
+    const from = String(finding.metadata.previewFrom ?? "");
+    if (preview) {
+      evidence.push(`preview (from ${from}):`);
+      for (const previewLine of preview.split("\n")) evidence.push(`  ${previewLine}`);
+    }
+
+    const occurrences = occurrencesOf(finding);
+    if (occurrences.length > 0) {
+      evidence.push(`occurrences (${occurrences.length}):`);
+      for (const occurrence of occurrences)
+        evidence.push(`  ${occurrence.file}:${occurrence.line}  ${occurrence.name}`);
+    }
+    return evidence;
+  },
+} as const satisfies DetectorDefinition;
+
+function occurrencesOf(finding: Finding): Occurrence[] {
+  return (finding.metadata.occurrences as Occurrence[] | undefined) ?? [];
 }

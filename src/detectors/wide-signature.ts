@@ -2,6 +2,7 @@ import type { Ctx, Node } from "../ast.ts";
 import { createFinding } from "../finding.ts";
 import type { Finding } from "../types.ts";
 import { exportDeclaration, localExportedNames } from "./export-surface.ts";
+import type { DetectorDefinition } from "./registry.ts";
 
 const WIDE_SIGNATURE_MAX = 4;
 
@@ -85,3 +86,18 @@ function publicMemberName(node: Node): string | null {
   const key = node.key?.name ?? node.key?.value;
   return typeof key === "string" ? `method ${key}` : null;
 }
+
+export const wideSignatureDetector = {
+  id: "wideSignature",
+  kind: "single",
+  name: "Wide signature",
+  summary: "Exported function or public exported-class member has too many required parameters.",
+  description:
+    "Suspicious when an exported function or public exported-class member requires many positional parameters; callers must know too much ordering and context.",
+  detect: detectWideSignature,
+  evidence(finding) {
+    const requiredParams = finding.metadata.requiredParams;
+    if (typeof requiredParams !== "number") return [];
+    return [`evidence: ${requiredParams} required parameters`];
+  },
+} as const satisfies DetectorDefinition;

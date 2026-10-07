@@ -3,6 +3,7 @@ import { createFinding } from "../finding.ts";
 import { isNonReviewablePath } from "../skip-patterns.ts";
 import type { Finding } from "../types.ts";
 import { exportDeclaration, localExportedNames } from "./export-surface.ts";
+import type { DetectorDefinition } from "./registry.ts";
 
 type MutableFamily = "object" | "array" | "Map" | "Set" | "WeakMap" | "WeakSet";
 
@@ -348,3 +349,28 @@ function addTypeParameterBindings(names: Set<string>, declaration: Node | null):
     if (typeof name === "string") names.add(name);
   }
 }
+
+export const exposedMutableRepresentationDetector = {
+  id: "exposedMutableRepresentation",
+  kind: "single",
+  name: "Exposed mutable representation",
+  summary: "Exported class returns an exact private mutable field through a public member.",
+  description:
+    "Suspicious when an exported class returns a private mutable field directly; the declared API permits representation mutation outside the class.",
+  detect: detectExposedMutableRepresentation,
+  evidence(finding) {
+    const fieldName = finding.metadata.fieldName;
+    const mutableFamily = finding.metadata.mutableFamily;
+    const accessors = finding.metadata.accessors;
+    if (
+      typeof fieldName !== "string" ||
+      typeof mutableFamily !== "string" ||
+      !Array.isArray(accessors)
+    ) {
+      return [];
+    }
+    return [
+      `evidence: private field '${fieldName}'; mutable family: ${mutableFamily}; exposing members: ${accessors.length}`,
+    ];
+  },
+} as const satisfies DetectorDefinition;

@@ -7,6 +7,7 @@ import {
   forwardedCallShape,
   memberExpressionRoot,
 } from "./pass-through-shape.ts";
+import type { DetectorDefinition } from "./registry.ts";
 
 const CONCENTRATED_METHOD_MIN = 3;
 const CONCENTRATED_RATIO_MIN = 0.5;
@@ -99,3 +100,31 @@ function isCollaboratorCall(callee: Node): boolean {
     memberExpressionRoot(receiver)?.type === "ThisExpression"
   );
 }
+
+export const passThroughMethodDetector = {
+  id: "passThroughMethod",
+  kind: "single",
+  name: "Pass-through method",
+  summary: "Public class method only forwards same-order args to a collaborator.",
+  description:
+    "Suspicious when a method only forwards same-order args to a collaborator; the layer may add API surface without hiding useful complexity.",
+  detect: detectPassThroughMethod,
+  evidence(finding) {
+    if (finding.metadata.concentrated !== true) return [];
+    const count = finding.metadata.passThroughMethodCount;
+    const publicCount = finding.metadata.publicMethodCount;
+    const ratio = finding.metadata.passThroughRatio;
+    const className = finding.metadata.className;
+    if (
+      typeof count !== "number" ||
+      typeof publicCount !== "number" ||
+      typeof ratio !== "number" ||
+      typeof className !== "string"
+    ) {
+      return [];
+    }
+    return [
+      `evidence: ${count}/${publicCount} public methods in ${className} are pass-through (${Math.round(ratio * 100)}%)`,
+    ];
+  },
+} as const satisfies DetectorDefinition;

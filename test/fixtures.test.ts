@@ -3,6 +3,7 @@ import { basename, dirname, join } from "node:path";
 
 import { describe, expect, it } from "bun:test";
 
+import { DETECTOR_IDS } from "../src/detectors/registry.ts";
 import { scanProject } from "../src/scan.ts";
 
 type ExpectedFinding = { flag: string; file: string; line: number };
@@ -39,4 +40,12 @@ describe("fixtures", () => {
       expect(comparable(actualForFlag)).toEqual(comparable(expected.findings));
     });
   }
+
+  it("emits only registered detector flags", async () => {
+    const registered = new Set<string>(DETECTOR_IDS);
+    for (const fixtureDir of fixtureDirs) {
+      const actual = await scanProject({ target: fixtureDir });
+      for (const finding of actual.findings) expect(registered).toContain(finding.flag);
+    }
+  });
 });

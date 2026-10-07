@@ -6,14 +6,10 @@ import { describe, expect, it } from "bun:test";
 
 import { buildLineOf } from "../src/ast.ts";
 import { formatResult } from "../src/format.ts";
-import {
-  collectAllProjectFiles,
-  findingTouchesChanged,
-  withBaseSnapshotTarget,
-} from "../src/project.ts";
+import { collectAllProjectFiles, withBaseSnapshotTarget } from "../src/project.ts";
 import { scanProject, scanProjectAtGitRef } from "../src/scan.ts";
 import { createImportResolver, normalizePath, resolveRelativeImport } from "../src/scope.ts";
-import type { Finding, ScanResult } from "../src/types.ts";
+import type { ScanResult } from "../src/types.ts";
 
 const here = dirname(Bun.fileURLToPath(import.meta.url));
 const fixturesRoot = join(here, "fixtures");
@@ -130,31 +126,6 @@ describe("path and import resolution", () => {
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
-  });
-});
-
-describe("findingTouchesChanged", () => {
-  const finding: Finding = {
-    flag: "uniqueImplementation",
-    severity: "candidate",
-    fingerprint: "strata:v1:changed-file-sample",
-    file: "src/main.ts",
-    line: 12,
-    message: "candidate",
-    metadata: {
-      occurrences: [{ file: "src/related.ts" }],
-      implementers: [{ file: "src/impl.ts" }],
-    },
-  };
-
-  it("keeps findings anchored in changed files or changed metadata locations", () => {
-    expect(findingTouchesChanged(finding, new Set(["src/main.ts"]))).toBe(true);
-    expect(findingTouchesChanged(finding, new Set(["src/related.ts"]))).toBe(true);
-    expect(findingTouchesChanged(finding, new Set(["src/impl.ts"]))).toBe(true);
-  });
-
-  it("drops findings with no changed anchor", () => {
-    expect(findingTouchesChanged(finding, new Set(["src/other.ts"]))).toBe(false);
   });
 });
 
@@ -298,14 +269,14 @@ describe("formatResult", () => {
       id: "exposedMutableRepresentation",
       name: "Exposed mutable representation",
       shortDescription: {
-        text: "Exported class returns a private mutable field through a public member.",
+        text: "Exported class returns an exact private mutable field through a public member.",
       },
       fullDescription: {
-        text: "Exported class returns a private mutable field through a public member.",
+        text: "Suspicious when an exported class returns a private mutable field directly; the declared API permits representation mutation outside the class.",
       },
       defaultConfiguration: { level: "warning" },
       help: {
-        text: "Exported class returns a private mutable field through a public member. Strata reports this as a candidate for human or AI review, not as an automatic verdict.",
+        text: "Suspicious when an exported class returns a private mutable field directly; the declared API permits representation mutation outside the class. Strata reports this as a candidate for human or AI review, not as an automatic verdict.",
       },
       properties: {
         tags: ["maintainability", "posd"],
@@ -503,6 +474,27 @@ describe("scanProject base snapshots", () => {
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
+  });
+});
+
+describe("scanProject summary", () => {
+  it("counts each finding once for every file it involves", async () => {
+    const withinFile = await scanProject({
+      target: join(fixturesRoot, "duplicate-symbol-within-file"),
+    });
+    const implementations = await scanProject({
+      target: join(fixturesRoot, "unique-implementation"),
+    });
+
+    expect(withinFile.summary.topFiles).toEqual([{ file: "case.ts", count: 2 }]);
+    expect(implementations.summary.topFiles).toEqual([
+      { file: "contracts.ts", count: 2 },
+      { file: "forum/moderator.ts", count: 1 },
+      { file: "forum/types.ts", count: 1 },
+      { file: "impls.ts", count: 1 },
+      { file: "payments/processor.ts", count: 1 },
+      { file: "payments/types.ts", count: 1 },
+    ]);
   });
 });
 
