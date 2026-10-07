@@ -86,6 +86,9 @@ describe("detector definitions", () => {
       const row = rows.find((candidate) => candidate.id === definition.id)!;
       expect(row.summary).toBe(definition.summary);
       expect(row.scope).toBe(definition.kind === "single" ? "file" : "project");
+      expect(row.docsPage).toBe(
+        `docs/detectors/${definition.id.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}.md`,
+      );
     }
     expect(rows.map((row) => row.docsPage).sort()).toEqual(docsPages);
   });
