@@ -348,6 +348,51 @@ describe("formatResult", () => {
   });
 });
 
+describe("forcedRareOption option evidence", () => {
+  it("shows how often an option value repeats and where, in the text report", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-forced-rare-option-evidence-"));
+    try {
+      await Bun.write(
+        join(root, "api.ts"),
+        [
+          "export type SendOptions = { to: string; body: string; retries: number; mode: string; trace: boolean };",
+          "export function send(options: SendOptions) { return options; }",
+          "",
+        ].join("\n"),
+      );
+      const call = (to: string) =>
+        `send({ to: "${to}", body: "x", retries: 3, mode: "fast", trace: false });`;
+      await Bun.write(
+        join(root, "a.ts"),
+        `import { send } from "./api";\n${call("a")}\n${call("b")}\n`,
+      );
+      await Bun.write(join(root, "b.ts"), `import { send } from "./api";\n${call("c")}\n`);
+
+      const result = await scanProject({
+        target: root,
+        detectorSelection: { kind: "only", ids: ["forcedRareOption"] },
+      });
+      const option = result.findings.find((finding) => finding.metadata.optionName === "mode");
+      expect(option?.metadata.kind).toBe("option");
+
+      const text = formatResult({ ...result, findings: option ? [option] : [] }, "text");
+      expect(text).toContain(
+        [
+          "  api.ts:2",
+          "    send callers pass \"fast\" for option 'mode' in 3/3 calls - the option is probably a default",
+          '    evidence: 3/3 calls pass "fast"',
+          "    call sites (3):",
+          "      a.ts:2",
+          "      a.ts:3",
+          "      b.ts:2",
+        ].join("\n"),
+      );
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+});
+
 describe("scanProject summary topFiles", () => {
   function byFile(topFiles: Array<{ file: string; count: number }>) {
     return [...topFiles].sort((a, b) => a.file.localeCompare(b.file));

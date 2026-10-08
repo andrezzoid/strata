@@ -204,5 +204,13 @@ describe("detector docs", () => {
       .sort();
     expect(linkedPages).toEqual(pages);
     expect(new Set(linkedPages).size).toBe(DETECTOR_IDS.length);
+
+    for (const row of await readmeRows()) {
+      const page = await Bun.file(join(repoRoot, row.page)).text();
+      expect({ page: row.page, heading: page.split("\n")[0] }).toEqual({
+        page: row.page,
+        heading: expect.stringMatching(new RegExp(`^# \`${row.id}\` `)),
+      });
+    }
   });
 });
