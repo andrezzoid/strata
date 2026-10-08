@@ -91,3 +91,19 @@ function callablesFromDeclaration(
 function isFunctionLikeExpression(node: Node): boolean {
   return node?.type === "FunctionExpression" || node?.type === "ArrowFunctionExpression";
 }
+
+/** Text-report evidence for a passThroughExport finding. */
+export function passThroughExportEvidence(finding: Finding): string[] {
+  const functionName = finding.metadata.functionName;
+  const callee = finding.metadata.callee;
+  const paramCount = finding.metadata.paramCount;
+  if (
+    typeof functionName !== "string" ||
+    typeof callee !== "string" ||
+    typeof paramCount !== "number"
+  ) {
+    return [];
+  }
+  const noun = paramCount === 1 ? "arg" : "args";
+  return [`evidence: ${functionName} forwards ${paramCount} ${noun} to ${callee}`];
+}

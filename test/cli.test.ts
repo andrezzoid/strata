@@ -4,11 +4,8 @@ import { dirname, join, resolve } from "node:path";
 
 import { describe, expect, it } from "bun:test";
 
-import type { Ctx } from "../src/ast.ts";
 import { main } from "../src/cli.ts";
-import { DETECTOR_DEFINITIONS } from "../src/detectors/registry.ts";
-import type { ImportResolver } from "../src/scope.ts";
-import type { Finding } from "../src/types.ts";
+import { DETECTOR_DEFINITIONS, type DetectorDefinition } from "../src/detectors/registry.ts";
 
 const here = dirname(Bun.fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
@@ -20,15 +17,6 @@ const exposedMutableRepresentationFixture = join(
 );
 const passThroughExportFixture = join(repoRoot, "test/fixtures/pass-through-export");
 const passThroughFixture = join(repoRoot, "test/fixtures/pass-through-method");
-
-type TestDetectorDefinition =
-  | { id: string; kind: "single"; description: string; detect: (ctx: Ctx) => Finding[] }
-  | {
-      id: string;
-      kind: "cross";
-      description: string;
-      detect: (ctxs: Ctx[], imports: ImportResolver) => Finding[];
-    };
 
 class ProcessExit extends Error {
   constructor(readonly code: number) {
@@ -112,10 +100,10 @@ async function runStrataInProcess(args: string[]) {
 }
 
 async function withDetectorDefinition<T>(
-  definition: TestDetectorDefinition,
+  definition: DetectorDefinition,
   run: () => Promise<T>,
 ): Promise<T> {
-  const definitions = DETECTOR_DEFINITIONS as unknown as TestDetectorDefinition[];
+  const definitions = DETECTOR_DEFINITIONS as unknown as DetectorDefinition[];
   definitions.push(definition);
   try {
     return await run();
@@ -189,6 +177,26 @@ async function createTouchedPassThroughRepo(): Promise<string> {
   await Bun.write(
     join(root, "src", "touched.ts"),
     "export class TouchedService { constructor(private repo: any) {} getTouched(id: string) { return this.repo.getTouched(id); } }\nexport const touched = true;\n",
+  );
+  return root;
+}
+
+/** The ticket's repro: the call site that pushes `send` over the consensus threshold lands in b.ts. */
+async function createForcedRareOptionCallSiteRepo(): Promise<string> {
+  const root = mkdtempSync(join(tmpdir(), "strata-cli-forced-rare-option-touched-"));
+  await Bun.write(
+    join(root, "api.ts"),
+    "export function send(to: string, body: string, retries: number, mode: string) { return [to, body, retries, mode]; }\n",
+  );
+  await Bun.write(
+    join(root, "a.ts"),
+    'import { send } from "./api";\nsend("a", "x", 3, "fast");\nsend("b", "y", 3, "fast");\n',
+  );
+  runGit(root, ["init", "-q", "-b", "main"]);
+  commitAll(root, "base");
+  await Bun.write(
+    join(root, "b.ts"),
+    'import { send } from "./api";\nsend("c", "z", 3, "fast");\n',
   );
   return root;
 }
@@ -572,7 +580,10 @@ describe("CLI", () => {
         {
           id: "throwSingle",
           kind: "single",
+          name: "Throw single",
+          summary: "Test-only detector that throws from a file scan.",
           description: "Test-only detector that throws from a file scan.",
+          evidence: () => [],
           detect() {
             throw new Error("forced single detector failure");
           },
@@ -601,7 +612,11 @@ describe("CLI", () => {
         {
           id: "throwCross",
           kind: "cross",
+          name: "Throw cross",
+          summary: "Test-only detector that throws from a project scan.",
           description: "Test-only detector that throws from a project scan.",
+          evidence: () => [],
+          relatedFiles: () => [],
           detect() {
             throw new Error("forced cross detector failure");
           },
@@ -616,6 +631,35 @@ describe("CLI", () => {
         "Reason: cross-project detector throwCross failed: forced cross detector failure",
       );
       expect(result.stderr).not.toContain('"summary"');
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("describes a newly registered detector's SARIF rule from its definition", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-cli-registered-sarif-rule-"));
+    try {
+      await Bun.write(join(root, "case.ts"), "export const entry = true;\n");
+
+      const result = await withDetectorDefinition(
+        {
+          id: "sampleRule",
+          kind: "single",
+          name: "Sample rule",
+          summary: "Test-only detector summary.",
+          description: "Test-only detector that emits nothing.",
+          detect: () => [],
+          evidence: () => [],
+        },
+        () => runStrataInProcess([root, "--format", "sarif"]),
+      );
+
+      expect(result.status).toBe(0);
+      const rule = JSON.parse(result.stdout).runs[0].tool.driver.rules.find(
+        (descriptor: { id: string }) => descriptor.id === "sampleRule",
+      );
+      expect(rule?.name).toBe("Sample rule");
+      expect(rule?.shortDescription.text).toBe("Test-only detector summary.");
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
@@ -792,6 +836,34 @@ describe("CLI", () => {
           (finding: { flag: string; file: string }) => `${finding.flag}:${finding.file}`,
         ),
       ).toEqual(["passThroughMethod:touched.ts"]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("keeps forcedRareOption findings whose repeating call site was touched, and shows those call sites", async () => {
+    const root = await createForcedRareOptionCallSiteRepo();
+    try {
+      const introduced = runStrata([root, "--new-since", "main", "--format", "json"]);
+      expect(JSON.parse(introduced.stdout).summary.totalFindings).toBe(2);
+
+      const touched = runStrata([root, "--touched-since", "main", "--format", "json"]);
+      expect(touched.status).toBe(0);
+      expect(JSON.parse(touched.stdout).summary.totalFindings).toBe(2);
+
+      const text = runStrata([root, "--touched-since", "main", "--format", "text"]);
+      expect(text.status).toBe(0);
+      expect(text.stdout).toContain(
+        [
+          "  api.ts:1",
+          "    send callers pass 3 for 'retries' in 3/3 calls - hide the common case behind the API",
+          "    evidence: 3/3 calls pass 3",
+          "    call sites (3):",
+          "      a.ts:2",
+          "      a.ts:3",
+          "      b.ts:2",
+        ].join("\n"),
+      );
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

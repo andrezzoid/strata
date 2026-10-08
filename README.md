@@ -44,7 +44,7 @@ Defaults:
 - `--format` defaults to `text`, the local review report.
 - `--format sarif` emits SARIF 2.1.0 for GitHub code scanning and other CI consumers.
 - Scan scope modes are mutually exclusive review questions: touched files, new candidate identities, future worsened existing candidates, or their future union.
-- `--touched-since` analyzes the full project graph, then filters findings to files touched since the git ref so cross-file detectors keep correct context.
+- `--touched-since` analyzes the full project graph, then keeps findings that involve a file touched since the git ref, so cross-file detectors keep correct context. A finding involves its anchor file plus, for project-scope detectors, its related files: duplicate occurrences, implementers, or the call sites that repeat a forced option.
 - `--new-since` scans the current target and the base ref, then reports only current candidates whose stable `fingerprint` was absent from the base scan.
 - `--only` and `--exclude` accept comma-separated detector IDs from the table below. They filter which detectors run, not how findings are judged; every emitted finding remains a review candidate.
 - `--fail-on-findings` exits non-zero when candidates are emitted, which is intended for CI gates; default scans remain report-only.
@@ -199,7 +199,7 @@ strata . --format json
 }
 ```
 
-Findings are sorted by `(flag, file, line)` for deterministic review and diffing. Each finding has a versioned `fingerprint` so CI systems, agents, and future baselines can match the same candidate across harmless line shifts. Fingerprints are stable identifiers for review workflow state; they are not judgments and are not promised across file renames or detector semantic changes.
+Findings are sorted by `(flag, file, line)` for deterministic review and diffing. `summary.topFiles` counts each finding once for every file it involves, the same files `--touched-since` checks, so a duplicate with several occurrences in one file counts that file once. Each finding has a versioned `fingerprint` so CI systems, agents, and future baselines can match the same candidate across harmless line shifts. Fingerprints are stable identifiers for review workflow state; they are not judgments and are not promised across file renames or detector semantic changes.
 
 ### GitHub Action For PRs
 
@@ -352,5 +352,6 @@ GitHub Actions runs the local gate scripts before merge. `bun run test:coverage`
 - New detectors should target design failures that metric-based tools miss; avoid duplicating what ESLint, SonarQube, or similar tools already cover.
 - Prefer deeper modules over more modules. Split by owned knowledge, not by execution order.
 - Add or update a fixture whenever detector behavior changes.
+- A detector's knowledge lives in its `DETECTOR_DEFINITIONS` entry in `src/detectors/registry.ts`: id, display name, summary, text evidence and, for project-scope detectors, the files a finding involves. Adding, changing or removing a detector means editing that entry, the detector's module, its README table row and its `docs/detectors/` page; tests fail when the row, the page or a hook is missing.
 - Keep detector defaults conservative enough that findings focus the review instead of burying it.
 - Update `CHANGELOG.md` for release-worthy changes and `BACKLOG.md` for deferred ideas.

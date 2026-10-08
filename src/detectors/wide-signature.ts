@@ -85,3 +85,9 @@ function publicMemberName(node: Node): string | null {
   const key = node.key?.name ?? node.key?.value;
   return typeof key === "string" ? `method ${key}` : null;
 }
+
+/** Text-report evidence for a wideSignature finding. */
+export function wideSignatureEvidence(finding: Finding): string[] {
+  if (typeof finding.metadata.requiredParams !== "number") return [];
+  return [`evidence: ${finding.metadata.requiredParams} required parameters`];
+}

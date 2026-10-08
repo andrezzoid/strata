@@ -6,14 +6,10 @@ import { describe, expect, it } from "bun:test";
 
 import { buildLineOf } from "../src/ast.ts";
 import { formatResult } from "../src/format.ts";
-import {
-  collectAllProjectFiles,
-  findingTouchesChanged,
-  withBaseSnapshotTarget,
-} from "../src/project.ts";
+import { collectAllProjectFiles, withBaseSnapshotTarget } from "../src/project.ts";
 import { scanProject, scanProjectAtGitRef } from "../src/scan.ts";
 import { createImportResolver, normalizePath, resolveRelativeImport } from "../src/scope.ts";
-import type { Finding, ScanResult } from "../src/types.ts";
+import type { ScanResult } from "../src/types.ts";
 
 const here = dirname(Bun.fileURLToPath(import.meta.url));
 const fixturesRoot = join(here, "fixtures");
@@ -130,31 +126,6 @@ describe("path and import resolution", () => {
     } finally {
       rmSync(root, { recursive: true, force: true });
     }
-  });
-});
-
-describe("findingTouchesChanged", () => {
-  const finding: Finding = {
-    flag: "uniqueImplementation",
-    severity: "candidate",
-    fingerprint: "strata:v1:changed-file-sample",
-    file: "src/main.ts",
-    line: 12,
-    message: "candidate",
-    metadata: {
-      occurrences: [{ file: "src/related.ts" }],
-      implementers: [{ file: "src/impl.ts" }],
-    },
-  };
-
-  it("keeps findings anchored in changed files or changed metadata locations", () => {
-    expect(findingTouchesChanged(finding, new Set(["src/main.ts"]))).toBe(true);
-    expect(findingTouchesChanged(finding, new Set(["src/related.ts"]))).toBe(true);
-    expect(findingTouchesChanged(finding, new Set(["src/impl.ts"]))).toBe(true);
-  });
-
-  it("drops findings with no changed anchor", () => {
-    expect(findingTouchesChanged(finding, new Set(["src/other.ts"]))).toBe(false);
   });
 });
 
@@ -284,6 +255,87 @@ describe("formatResult", () => {
     ]);
   });
 
+  it("shows how often a forcedRareOption value repeats and lists at most 5 of its call sites", () => {
+    const callSites = Array.from({ length: 7 }, (_, index) => ({
+      file: `src/caller-${index + 1}.ts`,
+      line: index + 10,
+    }));
+    const output = formatResult(
+      {
+        summary: { totalFindings: 1, byFlag: { forcedRareOption: 1 }, topFiles: [] },
+        findings: [
+          {
+            flag: "forcedRareOption",
+            severity: "candidate",
+            fingerprint: "strata:v1:forced-rare-option-sample",
+            file: "src/api.ts",
+            line: 1,
+            message: "send callers pass true for 'retry' in 7/8 calls",
+            metadata: {
+              kind: "parameter",
+              value: "true",
+              repeatedCount: 7,
+              callCount: 8,
+              callSites,
+            },
+          },
+        ],
+      },
+      "text",
+    );
+
+    expect(output).toContain(
+      [
+        "  src/api.ts:1",
+        "    send callers pass true for 'retry' in 7/8 calls",
+        "    evidence: 7/8 calls pass true",
+        "    call sites (7):",
+        "      src/caller-1.ts:10",
+        "      src/caller-2.ts:11",
+        "      src/caller-3.ts:12",
+        "      src/caller-4.ts:13",
+        "      src/caller-5.ts:14",
+        "      ... 2 more",
+      ].join("\n"),
+    );
+    expect(output).not.toContain("src/caller-6.ts");
+  });
+
+  it("keeps the SARIF rule order, so result ruleIndex values stay stable", () => {
+    const output = formatResult(
+      { summary: { totalFindings: 0, byFlag: {}, topFiles: [] }, findings: [] },
+      "sarif",
+    );
+    const ruleIds = JSON.parse(output).runs[0].tool.driver.rules.map(
+      (rule: { id: string }) => rule.id,
+    );
+
+    expect(ruleIds).toEqual([
+      "wideSignature",
+      "passThroughMethod",
+      "passThroughExport",
+      "exposedMutableRepresentation",
+      "forcedRareOption",
+      "duplicateSymbol",
+      "uniqueImplementation",
+    ]);
+  });
+
+  it("describes the current wideSignature behaviour in its SARIF rule", () => {
+    const output = formatResult(
+      { summary: { totalFindings: 0, byFlag: {}, topFiles: [] }, findings: [] },
+      "sarif",
+    );
+    const descriptor = JSON.parse(output).runs[0].tool.driver.rules.find(
+      (rule: { id: string }) => rule.id === "wideSignature",
+    );
+
+    const current =
+      "Exported function or public exported-class member has too many required parameters.";
+    expect(descriptor.shortDescription.text).toBe(current);
+    expect(descriptor.fullDescription.text).toBe(current);
+  });
+
   it("always emits the stable exposedMutableRepresentation SARIF rule", () => {
     const output = formatResult(
       { summary: { totalFindings: 0, byFlag: {}, topFiles: [] }, findings: [] },
@@ -298,14 +350,14 @@ describe("formatResult", () => {
       id: "exposedMutableRepresentation",
       name: "Exposed mutable representation",
       shortDescription: {
-        text: "Exported class returns a private mutable field through a public member.",
+        text: "Exported class returns an exact private mutable field through a public member.",
       },
       fullDescription: {
-        text: "Exported class returns a private mutable field through a public member.",
+        text: "Exported class returns an exact private mutable field through a public member.",
       },
       defaultConfiguration: { level: "warning" },
       help: {
-        text: "Exported class returns a private mutable field through a public member. Strata reports this as a candidate for human or AI review, not as an automatic verdict.",
+        text: "Exported class returns an exact private mutable field through a public member. Strata reports this as a candidate for human or AI review, not as an automatic verdict.",
       },
       properties: {
         tags: ["maintainability", "posd"],
@@ -313,6 +365,79 @@ describe("formatResult", () => {
         "problem.severity": "recommendation",
       },
     });
+  });
+});
+
+describe("forcedRareOption option evidence", () => {
+  it("shows how often an option value repeats and where, in the text report", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-forced-rare-option-evidence-"));
+    try {
+      await Bun.write(
+        join(root, "api.ts"),
+        [
+          "export type SendOptions = { to: string; body: string; retries: number; mode: string; trace: boolean };",
+          "export function send(options: SendOptions) { return options; }",
+          "",
+        ].join("\n"),
+      );
+      const call = (to: string) =>
+        `send({ to: "${to}", body: "x", retries: 3, mode: "fast", trace: false });`;
+      await Bun.write(
+        join(root, "a.ts"),
+        `import { send } from "./api";\n${call("a")}\n${call("b")}\n`,
+      );
+      await Bun.write(join(root, "b.ts"), `import { send } from "./api";\n${call("c")}\n`);
+
+      const result = await scanProject({
+        target: root,
+        detectorSelection: { kind: "only", ids: ["forcedRareOption"] },
+      });
+      const option = result.findings.find((finding) => finding.metadata.optionName === "mode");
+      expect(option?.metadata.kind).toBe("option");
+
+      const text = formatResult({ ...result, findings: option ? [option] : [] }, "text");
+      expect(text).toContain(
+        [
+          "  api.ts:2",
+          "    send callers pass \"fast\" for option 'mode' in 3/3 calls - the option is probably a default",
+          '    evidence: 3/3 calls pass "fast"',
+          "    call sites (3):",
+          "      a.ts:2",
+          "      a.ts:3",
+          "      b.ts:2",
+        ].join("\n"),
+      );
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("scanProject summary topFiles", () => {
+  function byFile(topFiles: Array<{ file: string; count: number }>) {
+    return [...topFiles].sort((a, b) => a.file.localeCompare(b.file));
+  }
+
+  it("counts a duplicate-symbol finding once per file, however many occurrences it holds", async () => {
+    const result = await scanProject({
+      target: join(fixturesRoot, "duplicate-symbol-within-file"),
+    });
+
+    expect(result.findings).toHaveLength(2);
+    expect(result.summary.topFiles).toEqual([{ file: "case.ts", count: 2 }]);
+  });
+
+  it("counts implementer files alongside the abstraction that anchors the finding", async () => {
+    const result = await scanProject({ target: join(fixturesRoot, "unique-implementation") });
+
+    expect(byFile(result.summary.topFiles)).toEqual([
+      { file: "contracts.ts", count: 2 },
+      { file: "forum/moderator.ts", count: 1 },
+      { file: "forum/types.ts", count: 1 },
+      { file: "impls.ts", count: 1 },
+      { file: "payments/processor.ts", count: 1 },
+      { file: "payments/types.ts", count: 1 },
+    ]);
   });
 });
 
