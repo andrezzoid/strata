@@ -48,10 +48,6 @@ type SarifResult = {
 
 const SARIF_SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json";
 
-const RULES: SarifRule[] = DETECTOR_DEFINITIONS.map((definition) =>
-  rule(definition.id, definition.name, definition.summary),
-);
-
 /**
  * Converts strata's compact scan result into a SARIF 2.1.0 log.
  *
@@ -99,9 +95,12 @@ function rule(id: string, name: string, description: string): SarifRule {
   };
 }
 
+/** Every registered detector's rule, plus a fallback rule for any unregistered flag. */
 function rulesFor(findings: Finding[]): SarifRule[] {
-  const knownRules = new Map(RULES.map((descriptor) => [descriptor.id, descriptor]));
-  const rules = [...RULES];
+  const rules = DETECTOR_DEFINITIONS.map((definition) =>
+    rule(definition.id, definition.name, definition.summary),
+  );
+  const knownRules = new Map(rules.map((descriptor) => [descriptor.id, descriptor]));
   for (const finding of findings) {
     if (knownRules.has(finding.flag)) continue;
     const descriptor = rule(finding.flag, finding.flag, finding.message);

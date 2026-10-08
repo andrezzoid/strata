@@ -5,6 +5,9 @@ import type { Finding } from "../types.ts";
 
 // Agents tend to redeclare instead of reusing. Tracking declarations rather
 // than usages keeps the signal concentrated on duplicated design decisions.
+/** One declaration of a duplicated shape, as stored in `metadata.occurrences`. */
+type Occurrence = { name: string; file: string; line: number };
+
 const DUP_MIN_OCCURRENCES_DEFAULT = 2;
 const DUP_MIN_OCCURRENCES_BY_KIND: Record<string, number> = {
   class: 3,
@@ -557,7 +560,7 @@ export function detectDuplicateSymbol(ctxs: Ctx[]): Finding[] {
     const canonical = sorted[0];
     const canonicalSource = sourceByFile.get(canonical.file) ?? "";
     const preview = previewSource(canonicalSource, canonical.start, canonical.end);
-    const occurrences = sorted.map((declaration) => ({
+    const occurrences: Occurrence[] = sorted.map((declaration) => ({
       name: declaration.name,
       file: declaration.file,
       line: declaration.line,
@@ -621,12 +624,6 @@ export function duplicateSymbolRelatedFiles(finding: Finding): string[] {
   return duplicateSymbolOccurrences(finding).map((occurrence) => occurrence.file);
 }
 
-function duplicateSymbolOccurrences(
-  finding: Finding,
-): Array<{ name: string; file: string; line: number }> {
-  return (
-    (finding.metadata.occurrences as
-      | Array<{ name: string; file: string; line: number }>
-      | undefined) ?? []
-  );
+function duplicateSymbolOccurrences(finding: Finding): Occurrence[] {
+  return (finding.metadata.occurrences as Occurrence[] | undefined) ?? [];
 }

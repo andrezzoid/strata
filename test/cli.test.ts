@@ -636,6 +636,35 @@ describe("CLI", () => {
     }
   });
 
+  it("describes a newly registered detector's SARIF rule from its definition", async () => {
+    const root = mkdtempSync(join(tmpdir(), "strata-cli-registered-sarif-rule-"));
+    try {
+      await Bun.write(join(root, "case.ts"), "export const entry = true;\n");
+
+      const result = await withDetectorDefinition(
+        {
+          id: "sampleRule",
+          kind: "single",
+          name: "Sample rule",
+          summary: "Test-only detector summary.",
+          description: "Test-only detector that emits nothing.",
+          detect: () => [],
+          evidence: () => [],
+        },
+        () => runStrataInProcess([root, "--format", "sarif"]),
+      );
+
+      expect(result.status).toBe(0);
+      const rule = JSON.parse(result.stdout).runs[0].tool.driver.rules.find(
+        (descriptor: { id: string }) => descriptor.id === "sampleRule",
+      );
+      expect(rule?.name).toBe("Sample rule");
+      expect(rule?.shortDescription.text).toBe("Test-only detector summary.");
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it("prints SARIF output", () => {
     const result = runStrata([passThroughFixture, "--format", "sarif"]);
 

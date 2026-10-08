@@ -35,7 +35,11 @@ type DetectorDescriptor = {
   summary: string;
   /** Review-facing explanation the text report prints above this detector's findings. */
   description: string;
-  /** Text-report evidence lines for one of this detector's findings; `[]` when it has none. */
+  /**
+   * Text-report evidence lines for one of this detector's findings; `[]` when it
+   * has none. Lines are final text, prefix and indentation included: only the
+   * text report shows evidence, so a structured shape would buy nothing yet.
+   */
   evidence: (finding: Finding) => string[];
 };
 
@@ -167,7 +171,8 @@ export function findingEvidence(finding: Finding): string[] {
   return definitionFor(finding.flag)?.evidence(finding) ?? [];
 }
 
-// Looked up per call rather than cached, so the catalog stays the only state.
+// Tests append definitions to DETECTOR_DEFINITIONS at runtime, so every view of
+// the catalog is derived per call; only DETECTOR_IDS is fixed at load time.
 function definitionFor(id: string): DetectorDefinition | undefined {
   return (DETECTOR_DEFINITIONS as readonly DetectorDefinition[]).find(
     (definition) => definition.id === id,

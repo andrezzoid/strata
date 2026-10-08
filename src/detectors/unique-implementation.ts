@@ -17,6 +17,9 @@ type AbstractionDecl = {
   methodCount: number;
 };
 
+/** One implementer or subclass of a flagged abstraction, as stored in `metadata.implementers`. */
+type Implementer = { implementer: string; file: string; line: number };
+
 /** Flags polymorphism constructs whose implementation count does not justify the abstraction cost. */
 export function detectUniqueImplementation(
   ctxs: Ctx[],
@@ -24,10 +27,7 @@ export function detectUniqueImplementation(
 ): Finding[] {
   const scopes = new Map<string, ReturnType<typeof buildFileScope>>();
   const declarations: AbstractionDecl[] = [];
-  const implementersByDecl = new Map<
-    string,
-    Array<{ implementer: string; file: string; line: number }>
-  >();
+  const implementersByDecl = new Map<string, Implementer[]>();
 
   for (const ctx of ctxs) {
     scopes.set(ctx.file, buildFileScope(ctx, imports));
@@ -148,6 +148,6 @@ export function uniqueImplementationEvidence(finding: Finding): string[] {
 
 /** Files that implement the flagged abstraction; a change to any of them can change the finding. */
 export function uniqueImplementationRelatedFiles(finding: Finding): string[] {
-  const implementers = finding.metadata.implementers as Array<{ file: string }> | undefined;
+  const implementers = finding.metadata.implementers as Implementer[] | undefined;
   return implementers?.map((implementer) => implementer.file) ?? [];
 }

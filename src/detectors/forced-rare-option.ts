@@ -457,7 +457,10 @@ function mostRepeatedValue(
   );
 }
 
-function callSiteLocation(callSite: CallSite): { file: string; line: number } {
+/** A repeating call site, as stored in `metadata.callSites`. */
+type CallSiteLocation = { file: string; line: number };
+
+function callSiteLocation(callSite: CallSite): CallSiteLocation {
   return { file: callSite.file, line: callSite.line };
 }
 
@@ -654,6 +657,6 @@ export function forcedRareOptionRelatedFiles(finding: Finding): string[] {
   return repeatingCallSites(finding).map((callSite) => callSite.file);
 }
 
-function repeatingCallSites(finding: Finding): Array<{ file: string; line: number }> {
-  return (finding.metadata.callSites as Array<{ file: string; line: number }> | undefined) ?? [];
+function repeatingCallSites(finding: Finding): CallSiteLocation[] {
+  return (finding.metadata.callSites as CallSiteLocation[] | undefined) ?? [];
 }
