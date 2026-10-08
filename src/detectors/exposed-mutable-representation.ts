@@ -348,3 +348,20 @@ function addTypeParameterBindings(names: Set<string>, declaration: Node | null):
     if (typeof name === "string") names.add(name);
   }
 }
+
+/** Text-report evidence for an exposedMutableRepresentation finding. */
+export function exposedMutableRepresentationEvidence(finding: Finding): string[] {
+  const fieldName = finding.metadata.fieldName;
+  const mutableFamily = finding.metadata.mutableFamily;
+  const accessors = finding.metadata.accessors;
+  if (
+    typeof fieldName !== "string" ||
+    typeof mutableFamily !== "string" ||
+    !Array.isArray(accessors)
+  ) {
+    return [];
+  }
+  return [
+    `evidence: private field '${fieldName}'; mutable family: ${mutableFamily}; exposing members: ${accessors.length}`,
+  ];
+}

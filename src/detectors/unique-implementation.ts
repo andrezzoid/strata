@@ -139,3 +139,15 @@ export function detectUniqueImplementation(
   }
   return findings;
 }
+
+/** Text-report evidence for a uniqueImplementation finding. */
+export function uniqueImplementationEvidence(finding: Finding): string[] {
+  if (typeof finding.metadata.implementerCount !== "number") return [];
+  return [`evidence: implementer count: ${finding.metadata.implementerCount}`];
+}
+
+/** Files that implement the flagged abstraction; a change to any of them can change the finding. */
+export function uniqueImplementationRelatedFiles(finding: Finding): string[] {
+  const implementers = finding.metadata.implementers as Array<{ file: string }> | undefined;
+  return implementers?.map((implementer) => implementer.file) ?? [];
+}

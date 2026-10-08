@@ -596,3 +596,37 @@ export function detectDuplicateSymbol(ctxs: Ctx[]): Finding[] {
   }
   return findings;
 }
+
+/** Text-report evidence for a duplicateSymbol finding: the shared shape and every occurrence. */
+export function duplicateSymbolEvidence(finding: Finding): string[] {
+  const evidence: string[] = [];
+  const preview = String(finding.metadata.preview ?? "");
+  const from = String(finding.metadata.previewFrom ?? "");
+  if (preview) {
+    evidence.push(`preview (from ${from}):`);
+    for (const previewLine of preview.split("\n")) evidence.push(`  ${previewLine}`);
+  }
+
+  const occurrences = duplicateSymbolOccurrences(finding);
+  if (occurrences.length > 0) {
+    evidence.push(`occurrences (${occurrences.length}):`);
+    for (const occurrence of occurrences)
+      evidence.push(`  ${occurrence.file}:${occurrence.line}  ${occurrence.name}`);
+  }
+  return evidence;
+}
+
+/** Files holding the other declarations of the duplicated shape. */
+export function duplicateSymbolRelatedFiles(finding: Finding): string[] {
+  return duplicateSymbolOccurrences(finding).map((occurrence) => occurrence.file);
+}
+
+function duplicateSymbolOccurrences(
+  finding: Finding,
+): Array<{ name: string; file: string; line: number }> {
+  return (
+    (finding.metadata.occurrences as
+      | Array<{ name: string; file: string; line: number }>
+      | undefined) ?? []
+  );
+}

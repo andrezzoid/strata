@@ -1,3 +1,4 @@
+import { DETECTOR_DEFINITIONS } from "./detectors/registry.ts";
 import type { Finding, ScanResult } from "./types.ts";
 
 type SarifLog = {
@@ -47,43 +48,9 @@ type SarifResult = {
 
 const SARIF_SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json";
 
-const RULES: SarifRule[] = [
-  rule(
-    "wideSignature",
-    "Wide signature",
-    "Function, method, or constructor has too many required parameters.",
-  ),
-  rule(
-    "passThroughMethod",
-    "Pass-through method",
-    "Public class method only forwards same-order arguments to a collaborator.",
-  ),
-  rule(
-    "passThroughExport",
-    "Pass-through export",
-    "Exported function only forwards same-order arguments to another callable.",
-  ),
-  rule(
-    "exposedMutableRepresentation",
-    "Exposed mutable representation",
-    "Exported class returns a private mutable field through a public member.",
-  ),
-  rule(
-    "forcedRareOption",
-    "Forced rare option",
-    "Most callers pass the same literal, placeholder, or default-like option to an exported API.",
-  ),
-  rule(
-    "duplicateSymbol",
-    "Duplicate symbol",
-    "Named declarations with identical structure are repeated across the project.",
-  ),
-  rule(
-    "uniqueImplementation",
-    "Unique implementation",
-    "Interface or abstract class appears to have no polymorphism payoff.",
-  ),
-];
+const RULES: SarifRule[] = DETECTOR_DEFINITIONS.map((definition) =>
+  rule(definition.id, definition.name, definition.summary),
+);
 
 /**
  * Converts strata's compact scan result into a SARIF 2.1.0 log.

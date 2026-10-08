@@ -1,8 +1,8 @@
 import { statSync } from "node:fs";
 
 import { parseContexts } from "./ast.ts";
-import { selectDetectors, type DetectorSelection } from "./detectors/registry.ts";
-import { collectScanFiles, findingTouchesChanged, withBaseSnapshotTarget } from "./project.ts";
+import { findingFiles, selectDetectors, type DetectorSelection } from "./detectors/registry.ts";
+import { collectScanFiles, withBaseSnapshotTarget } from "./project.ts";
 import { createImportResolver } from "./scope.ts";
 import type { Finding, ScanResult } from "./types.ts";
 
@@ -104,7 +104,9 @@ async function scanFilesystemTarget(
   }
 
   if (changedFiles) {
-    allFindings = allFindings.filter((finding) => findingTouchesChanged(finding, changedFiles));
+    allFindings = allFindings.filter((finding) =>
+      findingFiles(finding).some((file) => changedFiles.has(file)),
+    );
   }
 
   return buildScanResult(allFindings);
@@ -125,15 +127,10 @@ function buildScanResult(inputFindings: Finding[]): ScanResult {
   const byFlag: Record<string, number> = {};
   for (const finding of findings) byFlag[finding.flag] = (byFlag[finding.flag] ?? 0) + 1;
 
+  // A finding counts once for every file it involves, not only its anchor.
   const fileCounts: Record<string, number> = {};
   for (const finding of findings) {
-    if (finding.flag === "duplicateSymbol" && Array.isArray(finding.metadata.occurrences)) {
-      for (const occurrence of finding.metadata.occurrences as { file: string }[]) {
-        fileCounts[occurrence.file] = (fileCounts[occurrence.file] ?? 0) + 1;
-      }
-    } else {
-      fileCounts[finding.file] = (fileCounts[finding.file] ?? 0) + 1;
-    }
+    for (const file of findingFiles(finding)) fileCounts[file] = (fileCounts[file] ?? 0) + 1;
   }
 
   const topFiles = Object.entries(fileCounts)

@@ -1,6 +1,6 @@
 import type { OutputFormat, ScanResult } from "./types.ts";
 import type { Finding } from "./types.ts";
-import { describeDetector } from "./detectors/registry.ts";
+import { describeDetector, findingEvidence } from "./detectors/registry.ts";
 import { formatSarif } from "./sarif.ts";
 
 export type TextReportContext =
@@ -70,7 +70,7 @@ function formatText(result: ScanResult, context: TextReportContext): string {
       if (index > 0) lines.push("");
       lines.push(`  ${finding.file}:${finding.line}`);
       lines.push(`    ${textMessage(finding.message)}`);
-      for (const evidence of evidenceLines(finding)) lines.push(`    ${evidence}`);
+      for (const evidence of findingEvidence(finding)) lines.push(`    ${evidence}`);
     });
   }
 
@@ -129,94 +129,4 @@ function textMessage(message: string): string {
     .replace(/—/g, "-")
     .replace(/×/g, "x")
     .replace(/…/g, "...");
-}
-
-function evidenceLines(finding: Finding): string[] {
-  if (finding.flag === "duplicateSymbol") return duplicateSymbolEvidence(finding);
-  if (finding.flag === "exposedMutableRepresentation") {
-    return exposedMutableRepresentationEvidence(finding);
-  }
-  if (finding.flag === "passThroughExport") return passThroughExportEvidence(finding);
-  if (finding.flag === "passThroughMethod") return passThroughMethodEvidence(finding);
-  if (finding.flag === "wideSignature" && typeof finding.metadata.requiredParams === "number") {
-    return [`evidence: ${finding.metadata.requiredParams} required parameters`];
-  }
-  if (
-    finding.flag === "uniqueImplementation" &&
-    typeof finding.metadata.implementerCount === "number"
-  ) {
-    return [`evidence: implementer count: ${finding.metadata.implementerCount}`];
-  }
-  return [];
-}
-
-function exposedMutableRepresentationEvidence(finding: Finding): string[] {
-  const fieldName = finding.metadata.fieldName;
-  const mutableFamily = finding.metadata.mutableFamily;
-  const accessors = finding.metadata.accessors;
-  if (
-    typeof fieldName !== "string" ||
-    typeof mutableFamily !== "string" ||
-    !Array.isArray(accessors)
-  ) {
-    return [];
-  }
-  return [
-    `evidence: private field '${fieldName}'; mutable family: ${mutableFamily}; exposing members: ${accessors.length}`,
-  ];
-}
-
-function passThroughExportEvidence(finding: Finding): string[] {
-  const functionName = finding.metadata.functionName;
-  const callee = finding.metadata.callee;
-  const paramCount = finding.metadata.paramCount;
-  if (
-    typeof functionName !== "string" ||
-    typeof callee !== "string" ||
-    typeof paramCount !== "number"
-  ) {
-    return [];
-  }
-  const noun = paramCount === 1 ? "arg" : "args";
-  return [`evidence: ${functionName} forwards ${paramCount} ${noun} to ${callee}`];
-}
-
-function passThroughMethodEvidence(finding: Finding): string[] {
-  if (finding.metadata.concentrated !== true) return [];
-  const count = finding.metadata.passThroughMethodCount;
-  const publicCount = finding.metadata.publicMethodCount;
-  const ratio = finding.metadata.passThroughRatio;
-  const className = finding.metadata.className;
-  if (
-    typeof count !== "number" ||
-    typeof publicCount !== "number" ||
-    typeof ratio !== "number" ||
-    typeof className !== "string"
-  ) {
-    return [];
-  }
-  return [
-    `evidence: ${count}/${publicCount} public methods in ${className} are pass-through (${Math.round(ratio * 100)}%)`,
-  ];
-}
-
-function duplicateSymbolEvidence(finding: Finding): string[] {
-  const evidence: string[] = [];
-  const preview = String(finding.metadata.preview ?? "");
-  const from = String(finding.metadata.previewFrom ?? "");
-  if (preview) {
-    evidence.push(`preview (from ${from}):`);
-    for (const previewLine of preview.split("\n")) evidence.push(`  ${previewLine}`);
-  }
-
-  const occurrences =
-    (finding.metadata.occurrences as
-      | Array<{ name: string; file: string; line: number }>
-      | undefined) ?? [];
-  if (occurrences.length > 0) {
-    evidence.push(`occurrences (${occurrences.length}):`);
-    for (const occurrence of occurrences)
-      evidence.push(`  ${occurrence.file}:${occurrence.line}  ${occurrence.name}`);
-  }
-  return evidence;
 }

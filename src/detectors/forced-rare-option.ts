@@ -617,3 +617,43 @@ function topLevelDeclaration(statement: Node): Node | null {
 function declarationKey(file: string, name: string): string {
   return `${file}:${name}`;
 }
+
+/** The text report lists this many repeating call sites; JSON metadata keeps all of them. */
+const EVIDENCE_CALL_SITE_LIMIT = 5;
+
+/** Text-report evidence: how often the value repeats, and where. Placeholder findings have none. */
+export function forcedRareOptionEvidence(finding: Finding): string[] {
+  const { repeatedCount, callCount, value } = finding.metadata;
+  if (
+    typeof repeatedCount !== "number" ||
+    typeof callCount !== "number" ||
+    typeof value !== "string"
+  ) {
+    return [];
+  }
+
+  const callSites = repeatingCallSites(finding);
+  const evidence = [`evidence: ${repeatedCount}/${callCount} calls pass ${value}`];
+  if (callSites.length === 0) return evidence;
+
+  evidence.push(`call sites (${callSites.length}):`);
+  for (const callSite of callSites.slice(0, EVIDENCE_CALL_SITE_LIMIT)) {
+    evidence.push(`  ${callSite.file}:${callSite.line}`);
+  }
+  const rest = callSites.length - EVIDENCE_CALL_SITE_LIMIT;
+  if (rest > 0) evidence.push(`  ... ${rest} more`);
+  return evidence;
+}
+
+/**
+ * Files of the call sites that repeat the value: adding one of them can push an
+ * API over the consensus threshold. Placeholder findings already sit at their
+ * call site, so they involve only their anchor.
+ */
+export function forcedRareOptionRelatedFiles(finding: Finding): string[] {
+  return repeatingCallSites(finding).map((callSite) => callSite.file);
+}
+
+function repeatingCallSites(finding: Finding): Array<{ file: string; line: number }> {
+  return (finding.metadata.callSites as Array<{ file: string; line: number }> | undefined) ?? [];
+}
