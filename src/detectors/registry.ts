@@ -68,6 +68,16 @@ export type DetectorDefinition =
 /** Public detector catalog; CLI/API filtering names come from this single ordered list. */
 export const DETECTOR_DEFINITIONS = [
   {
+    id: "wideSignature",
+    kind: "single",
+    name: "Wide signature",
+    summary: "Exported function or public exported-class member has too many required parameters.",
+    description:
+      "Suspicious when a function requires many positional parameters; callers must know too much ordering and context.",
+    detect: detectWideSignature,
+    evidence: wideSignatureEvidence,
+  },
+  {
     id: "passThroughMethod",
     kind: "single",
     name: "Pass-through method",
@@ -96,16 +106,6 @@ export const DETECTOR_DEFINITIONS = [
       "Suspicious when an exported class returns a private mutable field directly; the declared API permits representation mutation outside the class.",
     detect: detectExposedMutableRepresentation,
     evidence: exposedMutableRepresentationEvidence,
-  },
-  {
-    id: "wideSignature",
-    kind: "single",
-    name: "Wide signature",
-    summary: "Exported function or public exported-class member has too many required parameters.",
-    description:
-      "Suspicious when a function requires many positional parameters; callers must know too much ordering and context.",
-    detect: detectWideSignature,
-    evidence: wideSignatureEvidence,
   },
   {
     id: "forcedRareOption",

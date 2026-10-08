@@ -301,6 +301,26 @@ describe("formatResult", () => {
     expect(output).not.toContain("src/caller-6.ts");
   });
 
+  it("keeps the SARIF rule order, so result ruleIndex values stay stable", () => {
+    const output = formatResult(
+      { summary: { totalFindings: 0, byFlag: {}, topFiles: [] }, findings: [] },
+      "sarif",
+    );
+    const ruleIds = JSON.parse(output).runs[0].tool.driver.rules.map(
+      (rule: { id: string }) => rule.id,
+    );
+
+    expect(ruleIds).toEqual([
+      "wideSignature",
+      "passThroughMethod",
+      "passThroughExport",
+      "exposedMutableRepresentation",
+      "forcedRareOption",
+      "duplicateSymbol",
+      "uniqueImplementation",
+    ]);
+  });
+
   it("describes the current wideSignature behaviour in its SARIF rule", () => {
     const output = formatResult(
       { summary: { totalFindings: 0, byFlag: {}, topFiles: [] }, findings: [] },
