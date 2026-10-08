@@ -255,6 +255,67 @@ describe("formatResult", () => {
     ]);
   });
 
+  it("shows how often a forcedRareOption value repeats and lists at most 5 of its call sites", () => {
+    const callSites = Array.from({ length: 7 }, (_, index) => ({
+      file: `src/caller-${index + 1}.ts`,
+      line: index + 10,
+    }));
+    const output = formatResult(
+      {
+        summary: { totalFindings: 1, byFlag: { forcedRareOption: 1 }, topFiles: [] },
+        findings: [
+          {
+            flag: "forcedRareOption",
+            severity: "candidate",
+            fingerprint: "strata:v1:forced-rare-option-sample",
+            file: "src/api.ts",
+            line: 1,
+            message: "send callers pass true for 'retry' in 7/8 calls",
+            metadata: {
+              kind: "parameter",
+              value: "true",
+              repeatedCount: 7,
+              callCount: 8,
+              callSites,
+            },
+          },
+        ],
+      },
+      "text",
+    );
+
+    expect(output).toContain(
+      [
+        "  src/api.ts:1",
+        "    send callers pass true for 'retry' in 7/8 calls",
+        "    evidence: 7/8 calls pass true",
+        "    call sites (7):",
+        "      src/caller-1.ts:10",
+        "      src/caller-2.ts:11",
+        "      src/caller-3.ts:12",
+        "      src/caller-4.ts:13",
+        "      src/caller-5.ts:14",
+        "      ... 2 more",
+      ].join("\n"),
+    );
+    expect(output).not.toContain("src/caller-6.ts");
+  });
+
+  it("describes the current wideSignature behaviour in its SARIF rule", () => {
+    const output = formatResult(
+      { summary: { totalFindings: 0, byFlag: {}, topFiles: [] }, findings: [] },
+      "sarif",
+    );
+    const descriptor = JSON.parse(output).runs[0].tool.driver.rules.find(
+      (rule: { id: string }) => rule.id === "wideSignature",
+    );
+
+    const current =
+      "Exported function or public exported-class member has too many required parameters.";
+    expect(descriptor.shortDescription.text).toBe(current);
+    expect(descriptor.fullDescription.text).toBe(current);
+  });
+
   it("always emits the stable exposedMutableRepresentation SARIF rule", () => {
     const output = formatResult(
       { summary: { totalFindings: 0, byFlag: {}, topFiles: [] }, findings: [] },
@@ -284,6 +345,34 @@ describe("formatResult", () => {
         "problem.severity": "recommendation",
       },
     });
+  });
+});
+
+describe("scanProject summary topFiles", () => {
+  function byFile(topFiles: Array<{ file: string; count: number }>) {
+    return [...topFiles].sort((a, b) => a.file.localeCompare(b.file));
+  }
+
+  it("counts a duplicate-symbol finding once per file, however many occurrences it holds", async () => {
+    const result = await scanProject({
+      target: join(fixturesRoot, "duplicate-symbol-within-file"),
+    });
+
+    expect(result.findings).toHaveLength(2);
+    expect(result.summary.topFiles).toEqual([{ file: "case.ts", count: 2 }]);
+  });
+
+  it("counts implementer files alongside the abstraction that anchors the finding", async () => {
+    const result = await scanProject({ target: join(fixturesRoot, "unique-implementation") });
+
+    expect(byFile(result.summary.topFiles)).toEqual([
+      { file: "contracts.ts", count: 2 },
+      { file: "forum/moderator.ts", count: 1 },
+      { file: "forum/types.ts", count: 1 },
+      { file: "impls.ts", count: 1 },
+      { file: "payments/processor.ts", count: 1 },
+      { file: "payments/types.ts", count: 1 },
+    ]);
   });
 });
 
